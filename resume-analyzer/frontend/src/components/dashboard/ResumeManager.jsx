@@ -86,7 +86,11 @@ const ResumeManager = ({ userId }) => {
                     <span className="text-sm text-slate-400">Uploaded {new Date(selectedResume.uploaded_at).toLocaleDateString()}</span>
                 </div>
                 {selectedResume.analysis_result ? (
-                    <ResultsDashboard data={selectedResume.analysis_result} />
+                    <ResultsDashboard
+                        data={selectedResume.analysis_result}
+                        resumeId={selectedResume.id}
+                        jobDescription={selectedResume.job_description || ""}
+                    />
                 ) : (
                     <div className="text-center py-20 bg-slate-800/50 rounded-2xl border border-slate-700/50">
                         <Loader2 className="w-10 h-10 text-primary animate-spin mx-auto mb-4" />

@@ -54,7 +54,11 @@ function App() {
                         Demo Analysis Result
                     </h1>
                 </div>
-                <ResultsDashboard data={demoResults} />
+                <ResultsDashboard
+                    data={demoResults}
+                    resumeId="demo-resume-id"
+                    jobDescription="Seeking a Senior Full Stack Engineer with expertise in Python, React, and AWS. Experience with Machine Learning and Cloud Architecture is a plus."
+                />
             </div>
         </div>
     );
