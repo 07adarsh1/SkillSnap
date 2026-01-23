@@ -37,45 +37,53 @@ async def upload_resume(
 
 @router.post("/analyze-resume", response_model=AIAnalysisResult)
 async def analyze_resume(request: AnalysisRequest, db = Depends(get_database)):
+    from services.gemini_service import gemini_service
+    
     resume = await db["resumes"].find_one({"id": request.resume_id})
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
     
-    # If no job description provided, perform General Resume Audit
-    if not request.job_description or len(request.job_description.strip()) < 10:
-        resume_skills = nlp_engine.extract_skills(resume["content_text"])
-        
-        try:
-            llm_suggestions = ai_generator.generate_feedback(resume["content_text"], "General Software Engineering Role", [])
-        except Exception as e:
-            print(f"AI Generation Error: {e}")
-            llm_suggestions = ["Ensure your resume content is parsable.", "Check for consistent formatting."]
-        
-        result = AIAnalysisResult(
-            ats_score=85.0, # Base score for a valid resume
-            matched_skills=resume_skills, # Show what we found
-            missing_skills=[],
-            experience_match="Good",
-            ai_suggestions=llm_suggestions
+    try:
+        # Use Gemini AI for analysis
+        analysis = await gemini_service.analyze_resume(
+            resume["content_text"], 
+            request.job_description or ""
         )
-    else:
-        # Otherwise perform comparison
-        result = nlp_engine.analyze_resume_vs_job(resume["content_text"], request.job_description)
-        llm_suggestions = ai_generator.generate_feedback(resume["content_text"], request.job_description, result.missing_skills)
-        if llm_suggestions:
-             result.ai_suggestions = llm_suggestions
-
-    # SAVE RESULT TO DB
-    await db["resumes"].update_one(
-        {"id": request.resume_id},
-        {"$set": {
-            "ats_score": result.ats_score,
-            "analysis_result": result.dict(),
-            "last_analyzed_at": datetime.utcnow()
-        }}
-    )
-
-    return result
+        
+        # Map Gemini response to our schema
+        result = AIAnalysisResult(
+            ats_score=float(analysis.get("ats_score", 75)),
+            matched_skills=analysis.get("skills", {}).get("matched", []),
+            missing_skills=analysis.get("skills", {}).get("missing", []),
+            experience_match=analysis.get("experience_match", "Moderate"),
+            ai_suggestions=analysis.get("improvement_tips", [])
+        )
+        
+        # SAVE RESULT TO DB with additional Gemini data
+        await db["resumes"].update_one(
+            {"id": request.resume_id},
+            {"$set": {
+                "ats_score": result.ats_score,
+                "analysis_result": result.dict(),
+                "gemini_analysis": analysis,  # Store full Gemini response
+                "last_analyzed_at": datetime.utcnow()
+            }}
+        )
+        
+        return result
+        
+    except Exception as e:
+        print(f"Gemini Analysis Error: {e}")
+        # Fallback to basic analysis if Gemini fails
+        resume_skills = nlp_engine.extract_skills(resume["content_text"])
+        result = AIAnalysisResult(
+            ats_score=75.0,
+            matched_skills=resume_skills,
+            missing_skills=[],
+            experience_match="Moderate",
+            ai_suggestions=["Analysis service temporarily unavailable. Please try again."]
+        )
+        return result
 
 @router.get("/resumes/{user_id}")
 async def get_user_resumes(user_id: str, db = Depends(get_database)):

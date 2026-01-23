@@ -4,6 +4,7 @@ import Overview from './dashboard/Overview';
 import ResumeManager from './dashboard/ResumeManager';
 import JobMatcher from './dashboard/JobMatcher';
 import Analytics from './dashboard/Analytics';
+import CareerPathGenerator from './dashboard/CareerPathGenerator';
 import { Menu, X } from 'lucide-react';
 import { UserButton } from "@clerk/clerk-react";
 
@@ -21,6 +22,8 @@ const UserDashboard = ({ user, onClose }) => {
                 return <JobMatcher />;
             case 'analytics':
                 return <Analytics userId={user?.id} />;
+            case 'career-path':
+                return <CareerPathGenerator />;
             default:
                 return <Overview />;
         }
@@ -48,13 +51,13 @@ const UserDashboard = ({ user, onClose }) => {
                 <div className="fixed inset-0 z-20 bg-black/50 backdrop-blur-sm md:hidden" onClick={() => setIsMobileMenuOpen(false)}>
                     <div className="w-64 bg-slate-900 h-full p-4 pt-20" onClick={e => e.stopPropagation()}>
                         <div className="space-y-4">
-                            {['overview', 'resumes', 'jobs', 'analytics'].map(tab => (
+                            {['overview', 'resumes', 'jobs', 'analytics', 'career-path'].map(tab => (
                                 <button
                                     key={tab}
                                     onClick={() => { setActiveTab(tab); setIsMobileMenuOpen(false); }}
                                     className={`block w-full text-left px-4 py-3 rounded-xl capitalize ${activeTab === tab ? 'bg-primary text-white' : 'text-slate-400 hover:bg-slate-800'}`}
                                 >
-                                    {tab}
+                                    {tab.replace('-', ' ')}
                                 </button>
                             ))}
                         </div>

@@ -2,6 +2,9 @@ import React from 'react';
 import { FileText, Award, Briefcase, Clock, ArrowUpRight, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import JobReadinessGauge from './JobReadinessGauge';
+import ATSHeatmap from './ATSHeatmap';
+import ResumeSimulator from './ResumeSimulator';
 
 const Overview = ({ onUploadClick }) => {
     // Mock Data
@@ -63,8 +66,11 @@ const Overview = ({ onUploadClick }) => {
                 ))}
             </div>
 
-            {/* Charts & Recent Row */}
+            {/* Job Readiness & Score Trend Row */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Job Readiness Gauge */}
+                <JobReadinessGauge score={75} />
+
                 {/* Score Trend Chart */}
                 <div className="lg:col-span-2 bg-slate-800/50 border border-slate-700/50 p-6 rounded-2xl">
                     <h3 className="text-lg font-bold text-white mb-6">Score Improvement Trend</h3>
@@ -88,30 +94,36 @@ const Overview = ({ onUploadClick }) => {
                         </ResponsiveContainer>
                     </div>
                 </div>
+            </div>
 
-                {/* Recent Activity */}
-                <div className="bg-slate-800/50 border border-slate-700/50 p-6 rounded-2xl">
-                    <h3 className="text-lg font-bold text-white mb-6">Recent Activity</h3>
-                    <div className="space-y-4">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="flex items-center gap-4 p-3 hover:bg-slate-800 rounded-xl transition-colors cursor-pointer group">
-                                <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center shrink-0">
-                                    <FileText className="w-5 h-5 text-slate-400 group-hover:text-white" />
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-semibold text-white group-hover:text-primary transition-colors">Software_Eng_Resume_v{i}.pdf</h4>
-                                    <p className="text-xs text-slate-500">Analyzed {i * 2} hours ago</p>
-                                </div>
-                                <div className="ml-auto">
-                                    <span className="text-xs font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded">8{i}%</span>
-                                </div>
+            {/* ATS Heatmap */}
+            <ATSHeatmap />
+
+            {/* Resume Simulator */}
+            <ResumeSimulator />
+
+            {/* Recent Activity */}
+            <div className="bg-slate-800/50 border border-slate-700/50 p-6 rounded-2xl">
+                <h3 className="text-lg font-bold text-white mb-6">Recent Activity</h3>
+                <div className="space-y-4">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="flex items-center gap-4 p-3 hover:bg-slate-800 rounded-xl transition-colors cursor-pointer group">
+                            <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center shrink-0">
+                                <FileText className="w-5 h-5 text-slate-400 group-hover:text-white" />
                             </div>
-                        ))}
-                    </div>
-                    <button className="w-full mt-6 py-2 text-sm text-slate-400 hover:text-white font-medium border border-slate-700 hover:bg-slate-800 rounded-lg transition-all">
-                        View All History
-                    </button>
+                            <div>
+                                <h4 className="text-sm font-semibold text-white group-hover:text-primary transition-colors">Software_Eng_Resume_v{i}.pdf</h4>
+                                <p className="text-xs text-slate-500">Analyzed {i * 2} hours ago</p>
+                            </div>
+                            <div className="ml-auto">
+                                <span className="text-xs font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded">8{i}%</span>
+                            </div>
+                        </div>
+                    ))}
                 </div>
+                <button className="w-full mt-6 py-2 text-sm text-slate-400 hover:text-white font-medium border border-slate-700 hover:bg-slate-800 rounded-lg transition-all">
+                    View All History
+                </button>
             </div>
         </div>
     );

@@ -7,7 +7,7 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
         { id: 'resumes', label: 'My Resumes', icon: FileText },
         { id: 'jobs', label: 'Job Matcher', icon: Briefcase },
         { id: 'analytics', label: 'Analytics', icon: BarChart2 },
-        // { id: 'settings', label: 'Settings', icon: Settings },
+        { id: 'career-path', label: 'Career Path', icon: Settings },
     ];
 
     return (
@@ -28,8 +28,8 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
                             key={item.id}
                             onClick={() => setActiveTab(item.id)}
                             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${isActive
-                                    ? 'bg-primary text-white shadow-lg shadow-primary/25'
-                                    : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                                ? 'bg-primary text-white shadow-lg shadow-primary/25'
+                                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                                 }`}
                         >
                             <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
