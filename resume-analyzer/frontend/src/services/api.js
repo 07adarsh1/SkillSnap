@@ -72,3 +72,58 @@ export const generateCareerPath = async (currentRole, targetRole, currentSkills 
     });
     return response.data;
 };
+
+// ============================================
+// ADVANCED FEATURES API
+// ============================================
+
+// Feature 1: Resume Optimization
+export const optimizeResume = async (resumeId, jobDescription, companyName = '') => {
+    const response = await api.post('/optimize-resume', {
+        resume_id: resumeId,
+        job_description: jobDescription,
+        company_name: companyName
+    });
+    return response.data;
+};
+
+// Feature 2: Interview Questions
+export const generateInterviewQuestions = async (resumeId, jobDescription) => {
+    const response = await api.post('/interview-questions', {
+        resume_id: resumeId,
+        job_description: jobDescription
+    });
+    return response.data;
+};
+
+// Feature 3: Explainable AI
+export const explainScore = async (resumeId, jobDescription) => {
+    const response = await api.post('/explain-score', {
+        resume_id: resumeId,
+        job_description: jobDescription
+    });
+    return response.data;
+};
+
+// Feature 4: Version Control
+export const getResumeVersions = async (resumeId) => {
+    const response = await api.get(`/resume-versions/${resumeId}`);
+    return response.data;
+};
+
+export const compareVersions = async (resumeId, version1, version2) => {
+    const response = await api.post('/compare-versions', {
+        resume_id: resumeId,
+        version1: version1,
+        version2: version2
+    });
+    return response.data;
+};
+
+// Feature 5: Quality Check
+export const checkResumeQuality = async (resumeId) => {
+    const response = await api.post('/resume-quality-check', {
+        resume_id: resumeId
+    });
+    return response.data;
+};

@@ -1,49 +1,64 @@
 import React from 'react';
+import { Loader2 } from 'lucide-react';
 
+/**
+ * Reusable Button Component
+ * Supports multiple variants, sizes, and loading states
+ */
 const Button = ({
     children,
+    onClick,
     variant = 'primary',
     size = 'md',
-    icon: Icon,
-    iconPosition = 'left',
-    disabled = false,
     loading = false,
+    disabled = false,
+    icon: Icon,
+    fullWidth = false,
     className = '',
-    ...props
+    type = 'button'
 }) => {
-    const baseStyles = 'font-medium rounded-lg transition-all flex items-center justify-center gap-2';
+    const baseClasses = 'font-medium transition-all flex items-center justify-center gap-2 rounded-lg';
 
     const variants = {
-        primary: 'bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 disabled:bg-slate-700',
-        secondary: 'bg-slate-700 hover:bg-slate-600 text-white border border-slate-600 disabled:bg-slate-800',
-        danger: 'bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-900/20 disabled:bg-slate-700',
-        ghost: 'bg-transparent hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700',
-        outline: 'bg-transparent hover:bg-slate-800/50 text-primary border border-primary/50 hover:border-primary'
+        primary: 'bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white',
+        secondary: 'bg-slate-700 hover:bg-slate-600 text-white',
+        success: 'bg-green-600 hover:bg-green-700 text-white',
+        danger: 'bg-red-600 hover:bg-red-700 text-white',
+        outline: 'border-2 border-primary text-primary hover:bg-primary/10',
+        ghost: 'text-slate-400 hover:text-white hover:bg-slate-800'
     };
 
     const sizes = {
         sm: 'px-3 py-1.5 text-sm',
-        md: 'px-4 py-2',
-        lg: 'px-6 py-3 text-lg'
+        md: 'px-6 py-3',
+        lg: 'px-8 py-4 text-lg'
     };
+
+    const disabledClasses = 'disabled:from-slate-700 disabled:to-slate-700 disabled:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50';
 
     return (
         <button
-            className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className} ${disabled || loading ? 'cursor-not-allowed opacity-50' : ''
-                }`}
+            type={type}
+            onClick={onClick}
             disabled={disabled || loading}
-            {...props}
+            className={`
+                ${baseClasses}
+                ${variants[variant]}
+                ${sizes[size]}
+                ${disabledClasses}
+                ${fullWidth ? 'w-full' : ''}
+                ${className}
+            `}
         >
             {loading ? (
                 <>
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin" />
                     Loading...
                 </>
             ) : (
                 <>
-                    {Icon && iconPosition === 'left' && <Icon className="w-5 h-5" />}
+                    {Icon && <Icon className="w-5 h-5" />}
                     {children}
-                    {Icon && iconPosition === 'right' && <Icon className="w-5 h-5" />}
                 </>
             )}
         </button>

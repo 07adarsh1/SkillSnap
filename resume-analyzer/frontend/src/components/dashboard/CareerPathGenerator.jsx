@@ -7,41 +7,31 @@ const CareerPathGenerator = () => {
     const [targetRole, setTargetRole] = useState('');
     const [showRoadmap, setShowRoadmap] = useState(false);
 
-    const generateRoadmap = () => {
-        setShowRoadmap(true);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [roadmapData, setRoadmapData] = useState(null);
+
+    const generateRoadmap = async () => {
+        setLoading(true);
+        setError(null);
+        setShowRoadmap(false);
+
+        try {
+            const { generateCareerPath } = await import('../../services/api');
+            const data = await generateCareerPath(currentRole, targetRole, []); // Pass empty array for currentSkills for now
+            setRoadmapData(data);
+            setShowRoadmap(true);
+        } catch (err) {
+            console.error("Failed to generate career path:", err);
+            setError("Failed to generate roadmap. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Mock roadmap data
-    const roadmapSteps = [
-        {
-            phase: 'Phase 1: Foundation',
-            duration: '2-3 months',
-            skills: ['TypeScript', 'Advanced React Patterns', 'State Management (Redux/Zustand)'],
-            resources: ['Official TypeScript Docs', 'React Advanced Patterns Course', 'Redux Toolkit Tutorial'],
-            milestone: 'Build a complex dashboard application'
-        },
-        {
-            phase: 'Phase 2: Backend & APIs',
-            duration: '2-3 months',
-            skills: ['Node.js/Express', 'RESTful APIs', 'Database Design (PostgreSQL)'],
-            resources: ['Node.js Complete Guide', 'API Design Best Practices', 'PostgreSQL Mastery'],
-            milestone: 'Create a full-stack CRUD application'
-        },
-        {
-            phase: 'Phase 3: DevOps & Deployment',
-            duration: '1-2 months',
-            skills: ['Docker', 'CI/CD (GitHub Actions)', 'AWS/Cloud Deployment'],
-            resources: ['Docker for Developers', 'GitHub Actions Tutorial', 'AWS Fundamentals'],
-            milestone: 'Deploy application to production with CI/CD'
-        },
-        {
-            phase: 'Phase 4: System Design & Scale',
-            duration: '2-3 months',
-            skills: ['System Design', 'Microservices', 'Performance Optimization'],
-            resources: ['System Design Interview Prep', 'Microservices Patterns', 'Web Performance Guide'],
-            milestone: 'Design and document a scalable system architecture'
-        }
-    ];
+    // Use API data or fallback to empty array if not yet loaded
+    const roadmapSteps = roadmapData?.roadmap || [];
+    const totalDuration = roadmapData?.total_duration || '';
 
     const popularTransitions = [
         { from: 'Frontend Developer', to: 'Full Stack Developer', demand: 'High' },
@@ -61,6 +51,12 @@ const CareerPathGenerator = () => {
                 <p className="text-sm text-slate-400 mb-6">
                     Get a personalized learning roadmap based on your current skills and career goals.
                 </p>
+
+                {error && (
+                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-sm">
+                        {error}
+                    </div>
+                )}
 
                 {/* Input Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -93,11 +89,20 @@ const CareerPathGenerator = () => {
 
                 <button
                     onClick={generateRoadmap}
-                    disabled={!currentRole || !targetRole}
+                    disabled={!currentRole || !targetRole || loading}
                     className="w-full px-6 py-3 bg-primary hover:bg-primary/90 disabled:bg-slate-700 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
                 >
-                    <TrendingUp className="w-5 h-5" />
-                    Generate Career Roadmap
+                    {loading ? (
+                        <>
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            Generating Roadmap...
+                        </>
+                    ) : (
+                        <>
+                            <TrendingUp className="w-5 h-5" />
+                            Generate Career Roadmap
+                        </>
+                    )}
                 </button>
             </div>
 
@@ -120,8 +125,8 @@ const CareerPathGenerator = () => {
                                 <span className="text-white font-medium">{transition.to}</span>
                             </div>
                             <span className={`text-xs px-2 py-1 rounded-full ${transition.demand === 'Very High'
-                                    ? 'bg-green-500/10 text-green-400'
-                                    : 'bg-blue-500/10 text-blue-400'
+                                ? 'bg-green-500/10 text-green-400'
+                                : 'bg-blue-500/10 text-blue-400'
                                 }`}>
                                 {transition.demand} Demand
                             </span>
@@ -143,7 +148,7 @@ const CareerPathGenerator = () => {
                         </h4>
                         <div className="flex items-center gap-2 text-sm text-slate-400">
                             <Clock className="w-4 h-4" />
-                            <span>Total: 7-11 months</span>
+                            <span>Total: {totalDuration}</span>
                         </div>
                     </div>
 

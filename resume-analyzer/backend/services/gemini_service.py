@@ -13,7 +13,8 @@ class GeminiService:
             raise ValueError("GEMINI_API_KEY not found in environment variables")
         
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-1.5-pro')
+        # Using gemini-flash-latest as an alias for the latest stable flash model (likely 1.5)
+        self.model = genai.GenerativeModel('gemini-flash-latest')
         
     def _parse_json_response(self, response_text: str) -> Dict[str, Any]:
         """Extract and parse JSON from Gemini response"""
@@ -272,6 +273,276 @@ Provide a structured roadmap in STRICT JSON format:
 }}
 
 Provide 4 phases with specific, actionable skills and resources.
+Return ONLY the JSON object."""
+
+        try:
+            response = self.model.generate_content(prompt)
+            return self._parse_json_response(response.text)
+        except Exception as e:
+            print(f"Gemini API Error: {str(e)}")
+            raise
+    
+    async def optimize_resume(
+        self,
+        resume_text: str,
+        job_description: str,
+        company_name: str = ""
+    ) -> Dict[str, Any]:
+        """Optimize resume content for specific job and company"""
+        
+        company_context = f" at {company_name}" if company_name else ""
+        
+        prompt = f"""You are an expert resume writer and ATS optimization specialist. 
+Rewrite the following resume to perfectly match the job description{company_context}.
+
+CRITICAL RULES:
+1. Preserve ALL factual information (dates, companies, education)
+2. Enhance language to match job requirements
+3. Add relevant ATS keywords from the job description
+4. Improve action verbs and quantifiable achievements
+5. Maintain professional tone
+
+Original Resume:
+{resume_text}
+
+Job Description:
+{job_description}
+
+Provide optimization in STRICT JSON format:
+{{
+    "optimized_summary": "<rewritten professional summary>",
+    "optimized_skills": ["<skill 1>", "<skill 2>", ...],
+    "optimized_experience": [
+        {{
+            "original": "<original bullet point>",
+            "optimized": "<improved bullet point>",
+            "reason": "<why this change improves ATS score>"
+        }}
+    ],
+    "ats_improvement_score": <number 0-100 representing expected improvement>,
+    "changes_explanation": "<summary of key optimizations made>"
+}}
+
+Return ONLY the JSON object."""
+
+        try:
+            response = self.model.generate_content(prompt)
+            return self._parse_json_response(response.text)
+        except Exception as e:
+            print(f"Gemini API Error: {str(e)}")
+            raise
+    
+    async def generate_interview_questions(
+        self,
+        resume_text: str,
+        job_description: str,
+        missing_skills: list = None
+    ) -> Dict[str, Any]:
+        """Generate role-specific interview questions"""
+        
+        missing_context = ""
+        if missing_skills:
+            missing_context = f"\nMissing Skills to Focus On: {', '.join(missing_skills)}"
+        
+        prompt = f"""You are an expert technical interviewer. Generate comprehensive interview questions 
+based on the candidate's resume and the job requirements.
+
+Resume:
+{resume_text}
+
+Job Description:
+{job_description}
+{missing_context}
+
+Generate questions in STRICT JSON format:
+{{
+    "technical": [
+        {{
+            "question": "<technical question>",
+            "focus_area": "<skill/technology>",
+            "difficulty": "easy|medium|hard"
+        }}
+    ],
+    "behavioral": [
+        {{
+            "question": "<behavioral question>",
+            "focus_area": "<competency>",
+            "difficulty": "easy|medium|hard"
+        }}
+    ],
+    "situational": [
+        {{
+            "question": "<situational question>",
+            "focus_area": "<scenario type>",
+            "difficulty": "easy|medium|hard"
+        }}
+    ],
+    "overall_difficulty": "easy|medium|hard",
+    "preparation_tips": ["<tip 1>", "<tip 2>", ...]
+}}
+
+Generate 5 questions per category. Return ONLY the JSON object."""
+
+        try:
+            response = self.model.generate_content(prompt)
+            return self._parse_json_response(response.text)
+        except Exception as e:
+            print(f"Gemini API Error: {str(e)}")
+            raise
+    
+    async def explain_score(
+        self,
+        resume_text: str,
+        job_description: str,
+        ats_score: float,
+        matched_skills: list,
+        missing_skills: list
+    ) -> Dict[str, Any]:
+        """Provide explainable AI reasoning for scores"""
+        
+        prompt = f"""You are an AI explainability expert. Provide clear, actionable reasoning 
+for why this resume received its ATS score.
+
+Resume:
+{resume_text}
+
+Job Description:
+{job_description}
+
+Current ATS Score: {ats_score}%
+Matched Skills: {', '.join(matched_skills)}
+Missing Skills: {', '.join(missing_skills)}
+
+Provide explanation in STRICT JSON format:
+{{
+    "reasoning": "<detailed explanation of the score>",
+    "positive_factors": [
+        {{
+            "factor": "<what helped the score>",
+            "impact": "high|medium|low",
+            "evidence": "<specific example from resume>"
+        }}
+    ],
+    "negative_factors": [
+        {{
+            "factor": "<what hurt the score>",
+            "impact": "high|medium|low",
+            "evidence": "<specific gap or issue>"
+        }}
+    ],
+    "improvement_actions": [
+        {{
+            "action": "<specific action to take>",
+            "expected_impact": "+<number> points",
+            "priority": "high|medium|low"
+        }}
+    ],
+    "score_breakdown": {{
+        "skills_match": <0-100>,
+        "experience_relevance": <0-100>,
+        "keyword_optimization": <0-100>,
+        "formatting_quality": <0-100>
+    }}
+}}
+
+Return ONLY the JSON object."""
+
+        try:
+            response = self.model.generate_content(prompt)
+            return self._parse_json_response(response.text)
+        except Exception as e:
+            print(f"Gemini API Error: {str(e)}")
+            raise
+    
+    async def check_resume_quality(
+        self,
+        resume_text: str
+    ) -> Dict[str, Any]:
+        """Analyze resume for confidence, authenticity, and quality issues"""
+        
+        prompt = f"""You are a resume quality auditor. Analyze this resume for:
+1. Weak/passive language
+2. Buzzword overuse
+3. Vague claims without evidence
+4. Unrealistic skill claims
+5. Inconsistencies
+
+Resume:
+{resume_text}
+
+Provide analysis in STRICT JSON format:
+{{
+    "confidence_score": <number 0-100>,
+    "authenticity_score": <number 0-100>,
+    "issues": [
+        {{
+            "type": "weak_language|buzzwords|vague_claim|unrealistic|inconsistency",
+            "severity": "high|medium|low",
+            "location": "<where in resume>",
+            "issue": "<description of the problem>",
+            "example": "<specific text from resume>"
+        }}
+    ],
+    "suggestions": [
+        {{
+            "issue_type": "<type>",
+            "current": "<current text>",
+            "suggested": "<improved text>",
+            "reason": "<why this is better>"
+        }}
+    ],
+    "risk_level": "low|medium|high",
+    "overall_assessment": "<summary of resume quality>"
+}}
+
+Return ONLY the JSON object."""
+
+        try:
+            response = self.model.generate_content(prompt)
+            return self._parse_json_response(response.text)
+        except Exception as e:
+            print(f"Gemini API Error: {str(e)}")
+            raise
+    
+    async def compare_resume_versions(
+        self,
+        version1_text: str,
+        version2_text: str,
+        version1_score: float,
+        version2_score: float
+    ) -> Dict[str, Any]:
+        """Compare two resume versions and explain improvements"""
+        
+        prompt = f"""You are a resume improvement analyst. Compare these two resume versions 
+and explain what changed and why it improved (or worsened) the score.
+
+Version 1 (Score: {version1_score}%):
+{version1_text}
+
+Version 2 (Score: {version2_score}%):
+{version2_text}
+
+Provide comparison in STRICT JSON format:
+{{
+    "score_change": {{
+        "previous": {version1_score},
+        "current": {version2_score},
+        "delta": <difference>,
+        "trend": "improved|declined|unchanged"
+    }},
+    "key_changes": [
+        {{
+            "section": "<which section changed>",
+            "change_type": "added|removed|modified",
+            "description": "<what changed>",
+            "impact": "positive|negative|neutral"
+        }}
+    ],
+    "improvements": ["<improvement 1>", "<improvement 2>", ...],
+    "regressions": ["<regression 1>", "<regression 2>", ...],
+    "recommendation": "<overall advice for next iteration>"
+}}
+
 Return ONLY the JSON object."""
 
         try:
