@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --color-primary: #3B82F6;
+  --color-secondary: #8B5CF6;
+  --color-dark: #0F172A;
+  --color-dark-card: #1E293B;
+
+  --color-background: var(--color-dark);
+  --color-foreground: #ffffff;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--color-dark);
+  color: var(--color-foreground);
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:opacity-90 transition-all shadow-lg shadow-blue-500/30;
+  }
+
+  .card {
+    @apply bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl;
+  }
+}

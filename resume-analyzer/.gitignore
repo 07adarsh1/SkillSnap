@@ -1,0 +1,28 @@
+# Resume Analyzer - Root .gitignore
+
+# Backend
+backend/__pycache__/
+backend/venv/
+backend/.env
+backend/*.db
+backend/*.sqlite
+backend/uploads/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
