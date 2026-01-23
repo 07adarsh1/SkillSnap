@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import LandingPage from './components/LandingPage';
 import UserDashboard from './components/UserDashboard';
+import DashboardLayout from './components/layout/DashboardLayout';
 import { SignedIn, SignedOut, useClerk, useUser } from "@clerk/clerk-react";
-import ResultsDashboard from './components/ResultsDashboard'; // Keeping for Demo Mode only
+import ResultsDashboard from './components/ResultsDashboard';
+import JobMatcher from './components/dashboard/JobMatcher';
+import VersionControl from './components/dashboard/VersionControl';
+import CareerPathGenerator from './components/dashboard/CareerPathGenerator';
+import ResumeOptimizer from './components/dashboard/ResumeOptimizer';
 
 function App() {
     const [demoMode, setDemoMode] = useState(false);
@@ -43,25 +48,55 @@ function App() {
     };
 
     // Shared Dashboard Wrapper for Demo
-    const DemoView = () => (
-        <div className="min-h-screen bg-slate-900 text-white p-8">
-            <div className="max-w-6xl mx-auto">
-                <button onClick={handleExitDemo} className="mb-8 text-slate-400 hover:text-white">
-                    ← Back to Home
-                </button>
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-primary to-purple-400">
-                        Demo Analysis Result
-                    </h1>
-                </div>
-                <ResultsDashboard
-                    data={demoResults}
-                    resumeId="demo-resume-id"
-                    jobDescription="Seeking a Senior Full Stack Engineer with expertise in Python, React, and AWS. Experience with Machine Learning and Cloud Architecture is a plus."
-                />
-            </div>
-        </div>
-    );
+    // Shared Dashboard Wrapper for Demo
+    const DemoView = () => {
+        const [activeTab, setActiveTab] = useState('overview');
+
+        // Mock Demo User
+        const demoUser = { fullName: 'Demo Guest', id: 'demo-user' };
+
+        const renderContent = () => {
+            switch (activeTab) {
+                case 'overview':
+                    return <ResultsDashboard
+                        data={demoResults}
+                        resumeId="demo-resume-id"
+                        jobDescription="Seeking a Senior Full Stack Engineer with expertise in Python, React, and AWS."
+                    />;
+                case 'resumes':
+                    return <ResultsDashboard
+                        data={demoResults}
+                        resumeId="demo-resume-id"
+                        jobDescription="Seeking a Senior Full Stack Engineer with expertise in Python, React, and AWS."
+                    />;
+                case 'jobs':
+                    return <JobMatcher />;
+                case 'history':
+                    return <VersionControl resumeId="demo-resume-id" />;
+                case 'career-path':
+                    return <CareerPathGenerator />;
+                case 'optimizer':
+                    return <ResumeOptimizer resumeId="demo-resume-id" onClose={() => setActiveTab('overview')} />;
+                case 'analytics':
+                    // Just reusing ResultsDashboard pie chart logic or keep placeholder if Analytics component is complex
+                    // Actually let's use ResultsDashboard for simplicity in Demo
+                    return <ResultsDashboard data={demoResults} resumeId="demo-resume-id" />;
+                default:
+                    return <ResultsDashboard data={demoResults} />;
+            }
+        };
+
+        return (
+            <DashboardLayout
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                onLogout={handleExitDemo}
+                user={demoUser}
+            >
+                {renderContent()}
+            </DashboardLayout>
+        );
+    };
 
     return (
         <>

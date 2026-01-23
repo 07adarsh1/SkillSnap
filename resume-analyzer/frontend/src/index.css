@@ -4,29 +4,74 @@
 
 :root {
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  --color-primary: #3B82F6;
-  --color-secondary: #8B5CF6;
-  --color-dark: #0F172A;
-  --color-dark-card: #1E293B;
-
-  --color-background: var(--color-dark);
-  --color-foreground: #ffffff;
+  --bg-color: #0F172A;
+  --text-color: #ffffff;
 }
+
+/* .dark selector removed as it's default now */
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: var(--color-dark);
-  color: var(--color-foreground);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-white/80 dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl dark:shadow-2xl;
+  }
+
+  .glass-card-hover {
+    @apply hover:bg-white dark:hover:bg-slate-800/60 hover:border-slate-300 dark:hover:border-white/20 transition-all duration-300 hover:shadow-lg dark:hover:shadow-blue-500/20 hover:-translate-y-1;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400;
+  }
+
+  .btn-gradient {
+    @apply px-6 py-3 rounded-xl font-medium text-white shadow-lg shadow-blue-500/25 transition-all duration-300 hover:shadow-blue-500/50 hover:scale-[1.02] active:scale-[0.98] bg-gradient-to-r from-blue-600 to-indigo-600;
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 dark:bg-slate-700 rounded-full hover:bg-slate-400 dark:hover:bg-slate-600;
+  }
 }
 
 @layer components {
-  .btn-primary {
-    @apply px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:opacity-90 transition-all shadow-lg shadow-blue-500/30;
+  .card {
+    @apply bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl dark:shadow-2xl rounded-2xl p-6;
+  }
+}
+
+/* Custom Animation Utils */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
   }
 
-  .card {
-    @apply bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl;
+  50% {
+    transform: translateY(-20px);
+  }
+
+  100% {
+    transform: translateY(0px);
   }
 }
