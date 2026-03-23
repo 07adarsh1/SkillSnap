@@ -94,7 +94,7 @@ class MongoDB:
             print("Successfully connected to MongoDB!")
         except Exception as e:
             print(f"Unable to connect to MongoDB: {e}")
-            print("⚠️  using In-Memory Mock Database for demonstration.")
+            print("WARNING: using In-Memory Mock Database for demonstration.")
             self.db = MockDatabase()
 
     async def close_database_connection(self):
