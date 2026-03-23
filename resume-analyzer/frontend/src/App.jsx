@@ -100,6 +100,10 @@ function App() {
 
     return (
         <>
+            <div className="neural-bg">
+                <div className="neural-blob-1"></div>
+                <div className="neural-blob-2"></div>
+            </div>
             {/* Demo Mode Override */}
             {demoMode ? (
                 <DemoView />

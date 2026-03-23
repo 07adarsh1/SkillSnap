@@ -14,7 +14,7 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
     }, []);
 
     return (
-        <div className="min-h-screen bg-slate-950 text-white font-sans flex text-slate-900 dark:text-white">
+        <div className="min-h-screen text-white font-sans flex relative z-10">
             {/* Sidebar */}
             <Sidebar
                 activeTab={activeTab}
@@ -32,41 +32,43 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                 )}
             >
                 {/* Top Navbar */}
-                <header className="h-16 px-8 flex items-center justify-between border-b border-white/5 bg-slate-900/50 backdrop-blur-xl sticky top-0 z-10 transition-colors">
+                <header className="h-16 px-8 flex items-center justify-between border-b border-white/10 bg-[#121318]/60 backdrop-blur-xl sticky top-0 z-10 transition-colors shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
                     {/* Breadcrumbs / Page Title */}
                     <div className="flex items-center gap-4">
-                        <h2 className="text-xl font-semibold capitalize text-white">
+                        <h2 className="text-xl font-bold tracking-tight capitalize text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                             {activeTab.replace('-', ' ')}
                         </h2>
                     </div>
 
                     {/* Right Actions */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-6">
                         {/* Search Bar - Hidden on small screens */}
-                        <div className="hidden md:flex items-center px-3 py-1.5 bg-slate-800/50 border border-white/5 rounded-full text-sm w-64 focus-within:ring-2 focus-within:ring-indigo-500/50 transition-all">
-                            <Search className="w-4 h-4 text-slate-400 mr-2" />
+                        <div className="hidden md:flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm w-64 focus-within:border-primary/50 focus-within:shadow-[0_0_15px_rgba(0,210,255,0.15)] focus-within:bg-white/10 transition-all group">
+                            <Search className="w-4 h-4 text-slate-400 mr-2 group-focus-within:text-primary transition-colors" />
                             <input
                                 type="text"
                                 placeholder="Search candidates or jobs..."
-                                className="bg-transparent border-none outline-none text-slate-200 placeholder:text-slate-500 w-full"
+                                className="bg-transparent border-none outline-none text-white placeholder:text-slate-500 w-full"
                             />
                         </div>
 
                         {/* Notifications */}
-                        <button className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-full relative transition-colors">
+                        <button className="p-2.5 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl relative transition-all border border-transparent hover:border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]">
                             <Bell className="w-5 h-5" />
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-slate-900"></span>
+                            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)] border border-[#121318]"></span>
                         </button>
 
-                        <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+                        <div className="h-8 w-px bg-white/10 mx-1"></div>
 
                         {/* User Profile */}
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4">
                             <div className="text-right hidden md:block">
-                                <p className="text-sm font-medium text-slate-900 dark:text-white">{user?.fullName || 'Demo User'}</p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">Pro Plan</p>
+                                <p className="text-sm font-semibold text-white">{user?.fullName || 'Demo User'}</p>
+                                <p className="text-xs text-primary/80 font-medium">Pro Plan</p>
                             </div>
-                            <UserButton afterSignOutUrl="/" />
+                            <div className="ring-2 ring-white/10 rounded-full p-0.5 hover:ring-primary/50 transition-all hover:shadow-[0_0_15px_rgba(0,210,255,0.3)]">
+                                <UserButton afterSignOutUrl="/" />
+                            </div>
                         </div>
                     </div>
                 </header>

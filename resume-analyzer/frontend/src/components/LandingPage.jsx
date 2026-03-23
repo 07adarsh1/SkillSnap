@@ -6,14 +6,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-reac
 
 const LandingPage = ({ onStart, onDemo }) => {
     return (
-        <div className="min-h-screen bg-dark text-white selection:bg-primary/30 flex flex-col">
-            {/* Background Gradients */}
-            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 rounded-full blur-[120px] animate-float" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[120px] animate-float" style={{ animationDelay: '2s' }} />
-                <div className="absolute top-[40%] left-[30%] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] animate-float" style={{ animationDelay: '4s' }} />
-            </div>
-
+        <div className="min-h-screen bg-transparent text-white selection:bg-primary/30 flex flex-col">
             {/* Navbar Placeholder */}
             <nav className="relative z-10 container mx-auto px-6 py-6 flex justify-between items-center">
                 <div className="flex items-center gap-2 font-bold text-xl tracking-tight">

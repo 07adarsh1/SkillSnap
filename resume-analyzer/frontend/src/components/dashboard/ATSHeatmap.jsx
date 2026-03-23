@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { getATSHeatmap } from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
 
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
+
 const ATSHeatmap = ({ resumeId, sections }) => {
     const [heatmapData, setHeatmapData] = useState(sections || null);
     const [loading, setLoading] = useState(false);
@@ -31,17 +33,17 @@ const ATSHeatmap = ({ resumeId, sections }) => {
     const getColorClass = (status) => {
         switch (status) {
             case 'excellent':
-                return 'bg-green-500/20 border-green-500/50 hover:bg-green-500/30';
+                return 'bg-green-500/10 border-green-500/30 hover:shadow-[0_0_15px_rgba(34,197,94,0.2)]';
             case 'good':
-                return 'bg-blue-500/20 border-blue-500/50 hover:bg-blue-500/30';
+                return 'bg-blue-500/10 border-blue-500/30 hover:shadow-[0_0_15px_rgba(59,130,246,0.2)]';
             case 'moderate':
-                return 'bg-yellow-500/20 border-yellow-500/50 hover:bg-yellow-500/30';
+                return 'bg-yellow-500/10 border-yellow-500/30 hover:shadow-[0_0_15px_rgba(234,179,8,0.2)]';
             case 'needs-work':
-                return 'bg-orange-500/20 border-orange-500/50 hover:bg-orange-500/30';
+                return 'bg-orange-500/10 border-orange-500/30 hover:shadow-[0_0_15px_rgba(249,115,22,0.2)]';
             case 'critical':
-                return 'bg-red-500/20 border-red-500/50 hover:bg-red-500/30';
+                return 'bg-red-500/10 border-red-500/30 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]';
             default:
-                return 'bg-slate-500/20 border-slate-500/50';
+                return 'bg-slate-500/10 border-slate-500/30';
         }
     };
 
@@ -64,23 +66,27 @@ const ATSHeatmap = ({ resumeId, sections }) => {
 
     if (loading) {
         return (
-            <div className="bg-slate-800/50 border border-slate-700/50 p-6 rounded-2xl">
-                <LoadingSpinner text="Analyzing ATS compatibility..." />
-            </div>
+            <Card>
+                <div className="p-6">
+                    <LoadingSpinner text="Analyzing ATS compatibility..." />
+                </div>
+            </Card>
         );
     }
 
     if (error) {
         return (
-            <div className="bg-slate-800/50 border border-slate-700/50 p-6 rounded-2xl">
-                <p className="text-red-400">{error}</p>
-                <button
-                    onClick={fetchHeatmap}
-                    className="mt-4 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg"
-                >
-                    Retry
-                </button>
-            </div>
+            <Card>
+                <div className="p-6">
+                    <p className="text-red-400">{error}</p>
+                    <button
+                        onClick={fetchHeatmap}
+                        className="mt-4 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg"
+                    >
+                        Retry
+                    </button>
+                </div>
+            </Card>
         );
     }
 
@@ -89,11 +95,12 @@ const ATSHeatmap = ({ resumeId, sections }) => {
     }
 
     return (
-        <div className="bg-slate-800/50 border border-slate-700/50 p-6 rounded-2xl">
-            <div className="mb-6">
-                <h3 className="text-lg font-bold text-white mb-2">ATS Compatibility Heatmap</h3>
+        <Card>
+            <CardHeader>
+                <CardTitle>ATS Compatibility Heatmap</CardTitle>
                 <p className="text-sm text-slate-400">Visual breakdown of how ATS systems will parse your resume</p>
-            </div>
+            </CardHeader>
+            <CardContent>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {heatmapData.map((section, index) => (
@@ -132,7 +139,7 @@ const ATSHeatmap = ({ resumeId, sections }) => {
             </div>
 
             {/* Legend */}
-            <div className="mt-6 pt-4 border-t border-slate-700/50 flex flex-wrap gap-4 text-xs">
+            <div className="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-4 text-xs">
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded bg-green-500" />
                     <span className="text-slate-400">Excellent (90-100%)</span>
@@ -154,7 +161,8 @@ const ATSHeatmap = ({ resumeId, sections }) => {
                     <span className="text-slate-400">Critical (&lt;50%)</span>
                 </div>
             </div>
-        </div>
+            </CardContent>
+        </Card>
     );
 };
 

@@ -27,33 +27,33 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, collapsed, setCollapsed })
     return (
         <aside
             className={cn(
-                "bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen fixed left-0 top-0 z-20 transition-all duration-300 overflow-hidden",
+                "bg-[#121318]/60 backdrop-blur-xl border-r border-white/10 flex flex-col h-screen fixed left-0 top-0 z-20 transition-all duration-300 overflow-hidden",
                 collapsed ? "w-20" : "w-64"
             )}
         >
             {/* Header */}
-            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div className="p-4 border-b border-white/10 flex items-center justify-between">
                 {!collapsed && (
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                        <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
                             <Sparkles className="w-5 h-5 text-white" />
                         </div>
-                        <h1 className="font-bold text-slate-800 dark:text-white text-lg tracking-tight">
-                            Resume AI
+                        <h1 className="font-bold text-white text-lg tracking-tight">
+                            SkillSnap
                         </h1>
                     </div>
                 )}
                 {collapsed && (
-                    <div className="mx-auto w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-                        <span className="font-bold text-white">RA</span>
+                    <div className="mx-auto w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                        <span className="font-bold text-white">SS</span>
                     </div>
                 )}
 
                 <button
                     onClick={() => setCollapsed(!collapsed)}
                     className={cn(
-                        "p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors",
-                        collapsed && "absolute -right-3 top-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-lg"
+                        "p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors",
+                        collapsed && "absolute -right-3 top-6 bg-[#121318] border border-white/10 rounded-full shadow-lg"
                     )}
                 >
                     {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={18} />}
@@ -73,20 +73,22 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, collapsed, setCollapsed })
                             className={cn(
                                 "w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all font-medium group relative",
                                 isActive
-                                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/25"
-                                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+                                    ? "bg-primary/20 text-primary shadow-[0_0_15px_rgba(0,210,255,0.15)] border border-primary/30"
+                                    : "text-slate-400 hover:bg-white/5 hover:text-white border border-transparent"
                             )}
                             title={collapsed ? item.label : undefined}
                         >
-                            <Icon className={cn("w-5 h-5 min-w-[20px]", isActive ? "text-white" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white")} />
+                            <Icon className={cn("w-5 h-5 min-w-[20px]", isActive ? "text-primary" : "text-slate-400 group-hover:text-white transition-colors")} />
 
                             {!collapsed && (
-                                <span className="truncate">{item.label}</span>
+                                <span className={cn("truncate transition-colors", isActive ? "text-primary" : "text-slate-400 group-hover:text-white")}>
+                                    {item.label}
+                                </span>
                             )}
 
                             {/* Tooltip for collapsed state */}
                             {collapsed && (
-                                <div className="absolute left-full ml-4 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 border border-slate-700 shadow-xl">
+                                <div className="absolute left-full ml-4 px-3 py-1.5 bg-[#121318]/90 backdrop-blur-md text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-all whitespace-nowrap z-50 border border-white/10 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                                     {item.label}
                                 </div>
                             )}
@@ -96,11 +98,11 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, collapsed, setCollapsed })
             </nav>
 
             {/* Footer */}
-            <div className="p-3 border-t border-slate-200 dark:border-slate-800">
+            <div className="p-3 border-t border-white/10">
                 <button
                     onClick={onLogout}
                     className={cn(
-                        "w-full flex items-center gap-3 px-3 py-3 rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-500 dark:text-slate-400 dark:hover:bg-red-500/10 dark:hover:text-red-400 transition-all font-medium group",
+                        "w-full flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all font-medium group border border-transparent hover:border-red-500/20",
                         collapsed && "justify-center"
                     )}
                 >

@@ -10,9 +10,9 @@ const JobReadinessGauge = ({ score = 75 }) => {
     ];
 
     const getColor = (score) => {
-        if (score >= 80) return '#22c55e';
-        if (score >= 60) return '#eab308';
-        return '#ef4444';
+        if (score >= 80) return '#00d2ff'; // Primary cyan
+        if (score >= 60) return '#fbbf24'; // Amber
+        return '#f87171'; // Red
     };
 
     const getLabel = (score) => {
@@ -24,61 +24,85 @@ const JobReadinessGauge = ({ score = 75 }) => {
     const scoreColor = getColor(score);
 
     return (
-        <div className="bg-slate-800/50 border border-slate-700/50 p-6 rounded-2xl">
-            <div className="flex items-center gap-2 mb-6">
-                <Gauge className="w-5 h-5 text-primary" />
-                <h3 className="text-lg font-bold text-white">Job Readiness Score</h3>
-            </div>
-
+        <div className="w-full py-2">
             <div className="flex flex-col items-center">
-                <div className="relative w-48 h-48">
+                <div className="relative w-48 h-48 drop-shadow-[0_0_15px_rgba(0,210,255,0.2)]">
                     <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
+                            <defs>
+                                <linearGradient id="scoreGradient" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0%" stopColor={scoreColor} stopOpacity={1} />
+                                    <stop offset="100%" stopColor={scoreColor === '#00d2ff' ? '#3a7bd5' : scoreColor === '#fbbf24' ? '#d97706' : '#dc2626'} stopOpacity={1} />
+                                </linearGradient>
+                            </defs>
                             <Pie
                                 data={data}
                                 cx="50%"
                                 cy="50%"
-                                innerRadius={60}
-                                outerRadius={80}
-                                startAngle={90}
-                                endAngle={-270}
+                                innerRadius={70}
+                                outerRadius={85}
+                                startAngle={225}
+                                endAngle={-45}
                                 dataKey="value"
-                                stroke="none"
+                                stroke="rgba(255,255,255,0.05)"
+                                strokeWidth={2}
+                                cornerRadius={8}
                             >
-                                <Cell key="score" fill={scoreColor} />
-                                <Cell key="remaining" fill="#334155" />
+                                <Cell key="score" fill="url(#scoreGradient)" />
+                                <Cell key="remaining" fill="rgba(255,255,255,0.05)" />
                             </Pie>
                         </PieChart>
                     </ResponsiveContainer>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-5xl font-bold text-white">{score}</span>
-                        <span className="text-sm text-slate-400 mt-1">{getLabel(score)}</span>
+                        <span className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-white to-slate-400 drop-shadow-sm">{score}</span>
+                        <span className="text-sm font-medium text-primary mt-1 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">{getLabel(score)}</span>
                     </div>
                 </div>
 
-                <div className="mt-6 w-full space-y-3">
-                    <div className="flex justify-between items-center text-sm">
-                        <span className="text-slate-400">Resume Quality</span>
-                        <span className="text-white font-semibold">85%</span>
-                    </div>
-                    <div className="w-full bg-slate-700 rounded-full h-1.5">
-                        <div className="bg-green-500 h-1.5 rounded-full" style={{ width: '85%' }} />
+                <div className="mt-8 w-full space-y-4">
+                    <div>
+                        <div className="flex justify-between items-center text-sm mb-1.5">
+                            <span className="text-slate-400 font-medium">Resume Quality</span>
+                            <span className="text-white font-bold tracking-wide">85%</span>
+                        </div>
+                        <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden border border-white/5">
+                            <motion.div 
+                                initial={{ width: 0 }}
+                                animate={{ width: '85%' }}
+                                transition={{ duration: 1, ease: 'easeOut' }}
+                                className="h-full rounded-full bg-gradient-to-r from-blue-400 to-blue-600 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
+                            />
+                        </div>
                     </div>
 
-                    <div className="flex justify-between items-center text-sm">
-                        <span className="text-slate-400">Skill Completeness</span>
-                        <span className="text-white font-semibold">70%</span>
-                    </div>
-                    <div className="w-full bg-slate-700 rounded-full h-1.5">
-                        <div className="bg-yellow-500 h-1.5 rounded-full" style={{ width: '70%' }} />
+                    <div>
+                        <div className="flex justify-between items-center text-sm mb-1.5">
+                            <span className="text-slate-400 font-medium">Skill Completeness</span>
+                            <span className="text-white font-bold tracking-wide">70%</span>
+                        </div>
+                        <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden border border-white/5">
+                            <motion.div 
+                                initial={{ width: 0 }}
+                                animate={{ width: '70%' }}
+                                transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
+                                className="h-full rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 shadow-[0_0_10px_rgba(250,204,21,0.5)]" 
+                            />
+                        </div>
                     </div>
 
-                    <div className="flex justify-between items-center text-sm">
-                        <span className="text-slate-400">Experience Match</span>
-                        <span className="text-white font-semibold">90%</span>
-                    </div>
-                    <div className="w-full bg-slate-700 rounded-full h-1.5">
-                        <div className="bg-green-500 h-1.5 rounded-full" style={{ width: '90%' }} />
+                    <div>
+                        <div className="flex justify-between items-center text-sm mb-1.5">
+                            <span className="text-slate-400 font-medium">Experience Match</span>
+                            <span className="text-white font-bold tracking-wide">90%</span>
+                        </div>
+                        <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden border border-white/5">
+                            <motion.div 
+                                initial={{ width: 0 }}
+                                animate={{ width: '90%' }}
+                                transition={{ duration: 1, ease: 'easeOut', delay: 0.4 }}
+                                className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-500 shadow-[0_0_10px_rgba(74,222,128,0.5)]" 
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

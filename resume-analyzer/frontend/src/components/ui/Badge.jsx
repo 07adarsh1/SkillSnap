@@ -9,12 +9,12 @@ export const Badge = ({
     ...props
 }) => {
     const variants = {
-        default: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200',
-        primary: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
-        success: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-        warning: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-        danger: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-        info: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+        default: 'bg-white/5 border border-white/10 text-slate-200 shadow-[0_0_10px_rgba(255,255,255,0.05)]',
+        primary: 'bg-primary/10 border border-primary/30 text-primary-light shadow-[0_0_10px_rgba(0,210,255,0.2)]',
+        success: 'bg-green-500/10 border border-green-500/30 text-green-400 shadow-[0_0_10px_rgba(34,197,94,0.2)]',
+        warning: 'bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.2)]',
+        danger: 'bg-red-500/10 border border-red-500/30 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]',
+        info: 'bg-blue-500/10 border border-blue-500/30 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.2)]',
     };
 
     const sizes = {

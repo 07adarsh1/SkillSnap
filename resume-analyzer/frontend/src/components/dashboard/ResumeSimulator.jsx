@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, X, TrendingUp, BarChart3 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 
 const ResumeSimulator = () => {
     const [currentScore, setCurrentScore] = useState(75);
@@ -64,12 +65,12 @@ const ResumeSimulator = () => {
     ];
 
     return (
-        <div className="bg-slate-800/50 border border-slate-700/50 p-6 rounded-2xl">
-            <div className="flex items-center gap-2 mb-6">
+        <Card>
+            <CardHeader className="flex flex-row items-center gap-2 pb-2">
                 <TrendingUp className="w-5 h-5 text-primary" />
-                <h3 className="text-lg font-bold text-white">Resume Improvement Simulator</h3>
-            </div>
-
+                <CardTitle>Resume Improvement Simulator</CardTitle>
+            </CardHeader>
+            <CardContent>
             <p className="text-sm text-slate-400 mb-6">
                 Add skills, projects, or certifications to see how they impact your resume score and job match percentage in real-time.
             </p>
@@ -80,7 +81,7 @@ const ResumeSimulator = () => {
                     <select
                         value={itemType}
                         onChange={(e) => setItemType(e.target.value)}
-                        className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+                        className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-primary focus:border-transparent"
                     >
                         <option value="skill">Skill</option>
                         <option value="project">Project</option>
@@ -92,9 +93,9 @@ const ResumeSimulator = () => {
                         type="text"
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleAddItem()}
+                        onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
                         placeholder={`Add a ${itemType}...`}
-                        className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent"
+                        className="flex-1 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent"
                     />
 
                     <button
@@ -109,7 +110,7 @@ const ResumeSimulator = () => {
                 {/* Added Items */}
                 <AnimatePresence>
                     {addedItems.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 mt-4">
                             {addedItems.map((item) => (
                                 <motion.div
                                     key={item.id}
@@ -135,19 +136,19 @@ const ResumeSimulator = () => {
             </div>
 
             {/* Comparison Chart */}
-            <div className="bg-slate-900/50 rounded-xl p-4 mb-4">
+            <div className="bg-white/5 rounded-xl p-4 mb-4 border border-white/5">
                 <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
                             <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
                             <YAxis stroke="#94a3b8" fontSize={12} domain={[0, 100]} />
                             <Tooltip
-                                contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', color: '#f8fafc' }}
+                                contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', color: '#f8fafc', borderRadius: '8px' }}
                             />
                             <Legend />
-                            <Bar dataKey="current" fill="#64748b" name="Current" radius={[8, 8, 0, 0]} />
-                            <Bar dataKey="simulated" fill="#3b82f6" name="Simulated" radius={[8, 8, 0, 0]} />
+                            <Bar dataKey="current" fill="#64748b" name="Current" radius={[4, 4, 0, 0]} />
+                            <Bar dataKey="simulated" fill="#3b82f6" name="Simulated" radius={[4, 4, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
@@ -160,22 +161,22 @@ const ResumeSimulator = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="grid grid-cols-2 gap-4"
                 >
-                    <div className="p-4 bg-slate-900/50 rounded-xl border border-slate-700/50">
+                    <div className="p-4 bg-white/5 rounded-xl border border-white/10 text-center">
                         <div className="text-sm text-slate-400 mb-1">Resume Score</div>
-                        <div className="flex items-baseline gap-2">
+                        <div className="flex items-baseline justify-center gap-2">
                             <span className="text-2xl font-bold text-white">{simulatedScore}%</span>
-                            <span className="text-sm text-green-400 flex items-center gap-1">
+                            <span className="text-sm text-green-400 flex items-center gap-1 font-medium bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/20">
                                 <TrendingUp className="w-3 h-3" />
                                 +{simulatedScore - currentScore}%
                             </span>
                         </div>
                     </div>
 
-                    <div className="p-4 bg-slate-900/50 rounded-xl border border-slate-700/50">
+                    <div className="p-4 bg-white/5 rounded-xl border border-white/10 text-center">
                         <div className="text-sm text-slate-400 mb-1">Job Match</div>
-                        <div className="flex items-baseline gap-2">
+                        <div className="flex items-baseline justify-center gap-2">
                             <span className="text-2xl font-bold text-white">{simulatedJobMatch}%</span>
-                            <span className="text-sm text-green-400 flex items-center gap-1">
+                            <span className="text-sm text-green-400 flex items-center gap-1 font-medium bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/20">
                                 <TrendingUp className="w-3 h-3" />
                                 +{simulatedJobMatch - currentJobMatch}%
                             </span>
@@ -183,7 +184,8 @@ const ResumeSimulator = () => {
                     </div>
                 </motion.div>
             )}
-        </div>
+            </CardContent>
+        </Card>
     );
 };
 
