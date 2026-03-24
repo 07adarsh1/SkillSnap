@@ -1,14 +1,13 @@
+--prefer-binary
 fastapi
 uvicorn[standard]
 motor
-spacy
-sentence-transformers
+spacy==3.7.2
+sentence-transformers==2.2.2
 openai
 pymupdf
 python-docx
 python-dotenv
 python-multipart
 pydantic<2.0.0
-setuptools
-wheel
 google-generativeai

@@ -6,7 +6,7 @@ from db.mongodb import db
 
 settings = get_settings()
 
-app = FastAPI(title=settings.PROJECT_NAME, version=settings.VERSION)
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,

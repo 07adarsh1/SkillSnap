@@ -9,16 +9,28 @@ settings = get_settings()
 
 class NLPService:
     def __init__(self):
-        print("Loading NLP Models...")
-        try:
-            self.nlp = spacy.load(settings.SPACY_MODEL)
-        except OSError:
-            print(f"Downloading {settings.SPACY_MODEL}...")
-            from spacy.cli import download
-            download(settings.SPACY_MODEL)
-            self.nlp = spacy.load(settings.SPACY_MODEL)
-        self.model = SentenceTransformer(settings.TRANSFORMER_MODEL)
-        print("NLP Models loaded.")
+        self._nlp = None
+        self._model = None
+
+    @property
+    def nlp(self):
+        if self._nlp is None:
+            print("Loading spaCy Model...")
+            try:
+                self._nlp = spacy.load(settings.SPACY_MODEL)
+            except OSError:
+                print(f"Downloading {settings.SPACY_MODEL}...")
+                from spacy.cli import download
+                download(settings.SPACY_MODEL)
+                self._nlp = spacy.load(settings.SPACY_MODEL)
+        return self._nlp
+
+    @property
+    def model(self):
+        if self._model is None:
+            print("Loading SentenceTransformer Model...")
+            self._model = SentenceTransformer(settings.TRANSFORMER_MODEL)
+        return self._model
 
     def extract_skills(self, text: str) -> list[str]:
         doc = self.nlp(text.lower())
