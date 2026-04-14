@@ -9,9 +9,11 @@ services:
         value: 10000
       - key: PYTHON_VERSION
         value: "3.11.9"
-      - key: MONGODB_URL
+      - key: FIREBASE_PROJECT_ID
+        value: ai-resume-400b1
+      - key: FIREBASE_CREDENTIALS_PATH
+        sync: false
+      - key: FIREBASE_CREDENTIALS_JSON
         sync: false
       - key: GEMINI_API_KEY
         sync: false
-      - key: DATABASE_NAME
-        value: resume_analyzer_db

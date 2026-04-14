@@ -2,7 +2,7 @@ from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from services.parser import parse_resume
 from services.nlp_engine import nlp_engine
 from services.ai_generator import ai_generator
-from db.mongodb import get_database
+from db.firebase import get_database
 from models.schemas import AIAnalysisResult, AnalysisRequest
 import uuid
 from datetime import datetime
@@ -83,6 +83,19 @@ async def analyze_resume(request: AnalysisRequest, db = Depends(get_database)):
             experience_match="Moderate",
             ai_suggestions=["Analysis service temporarily unavailable. Please try again."]
         )
+
+        # Persist fallback result so UI exits "Processing Analysis" state.
+        await db["resumes"].update_one(
+            {"id": request.resume_id},
+            {"$set": {
+                "ats_score": result.ats_score,
+                "analysis_result": result.dict(),
+                "analysis_fallback": True,
+                "analysis_error": str(e),
+                "last_analyzed_at": datetime.utcnow()
+            }}
+        )
+
         return result
 
 @router.get("/resumes/{user_id}")

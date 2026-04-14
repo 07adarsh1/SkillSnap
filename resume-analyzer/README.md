@@ -14,9 +14,9 @@ A production-ready full-stack application that parses resumes (PDF/DOCX), extrac
 ## 🛠 Tech Stack
 
 - **Frontend**: React (Vite), Tailwind CSS, Framer Motion, Recharts.
-- **Backend**: Python FastAPI, Motor (Async MongoDB).
+- **Backend**: Python FastAPI, Firebase Admin SDK.
 - **AI/ML**: Spacy, Sentence-Transformers, OpenAI (Optional).
-- **Database**: MongoDB.
+- **Database**: Firebase Firestore.
 
 ## 📂 Project Structure
 
@@ -41,7 +41,7 @@ resume-analyzer/
 ### Prerequisites
 - Python 3.9+
 - Node.js 16+
-- MongoDB (Running locally on default port 27017)
+- Firebase project with Firestore enabled
 
 ### 1. Backend Setup
 
@@ -87,9 +87,22 @@ Frontend will run at `http://localhost:5173`.
 Create a `.env` file in the `backend/` folder if you want to use OpenAI API features:
 
 ```env
-MONGODB_URL=mongodb://localhost:27017
-DATABASE_NAME=resume_analyzer_db
+FIREBASE_PROJECT_ID=ai-resume-400b1
+FIREBASE_CREDENTIALS_PATH=/absolute/path/to/service-account.json
+FIREBASE_CREDENTIALS_JSON=
 OPENAI_API_KEY=sk-...
+```
+
+Create a `.env` file in the `frontend/` folder for frontend SDK keys:
+
+```env
+VITE_CLERK_PUBLISHABLE_KEY=pk_...
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=ai-resume-400b1.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=ai-resume-400b1
+VITE_FIREBASE_STORAGE_BUCKET=ai-resume-400b1.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=290679156507
+VITE_FIREBASE_APP_ID=1:290679156507:web:8ed6e44a15e47f252c2dbe
 ```
 
 ## 🧪 Usage Flow

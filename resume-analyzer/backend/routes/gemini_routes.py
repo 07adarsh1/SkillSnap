@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from services.gemini_service import gemini_service
-from db.mongodb import get_database
+from db.firebase import get_database
 
 router = APIRouter()
 

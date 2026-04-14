@@ -15,6 +15,7 @@ const ResumeManager = ({ userId }) => {
     const [uploadSuccess, setUploadSuccess] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+    const [retryingId, setRetryingId] = useState(null);
 
     const fetchResumes = async () => {
         if (!userId) return;
@@ -133,17 +134,22 @@ const ResumeManager = ({ userId }) => {
                                         // 1. Upload
                                         const uploadResp = await uploadResume(file, userId);
 
-                                        // 2. Auto-analyze (default empty JD for general analysis)
-                                        await analyzeResume(uploadResp.resume_id, "");
-
-                                        // 3. Success & Refresh
+                                        // 2. Show success immediately after upload.
                                         setUploadSuccess(true);
                                         await fetchResumes();
+
+                                        // 3. Run analysis in background so rate limits don't block UI.
+                                        analyzeResume(uploadResp.resume_id, "")
+                                            .then(() => fetchResumes())
+                                            .catch((error) => {
+                                                console.error("Background analysis failed", error);
+                                            });
+
                                         setTimeout(() => {
                                             setUploadSuccess(false);
                                             setIsProcessing(false);
                                             setShowUploadPanel(false);
-                                        }, 1500);
+                                        }, 800);
                                     } catch (error) {
                                         console.error("Upload failed", error);
                                         alert("Failed to upload and analyze resume.");
@@ -225,10 +231,28 @@ const ResumeManager = ({ userId }) => {
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="bg-yellow-500/5 border border-yellow-500/20 p-4 rounded-xl flex items-center justify-center">
+                                    <div className="bg-yellow-500/5 border border-yellow-500/20 p-4 rounded-xl flex flex-col items-center justify-center gap-3">
                                         <span className="flex items-center gap-2 text-yellow-400 text-sm font-semibold">
                                             <Loader2 className="w-4 h-4 animate-spin drop-shadow-[0_0_5px_rgba(234,179,8,0.5)]" /> Processing Analysis...
                                         </span>
+                                        <button
+                                            onClick={async () => {
+                                                setRetryingId(resume.id);
+                                                try {
+                                                    await analyzeResume(resume.id, "");
+                                                    await fetchResumes();
+                                                } catch (error) {
+                                                    console.error("Retry analysis failed", error);
+                                                    alert("Analysis retry failed. Please try again shortly.");
+                                                } finally {
+                                                    setRetryingId(null);
+                                                }
+                                            }}
+                                            disabled={retryingId === resume.id}
+                                            className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-yellow-500/40 text-yellow-300 hover:bg-yellow-500/10 disabled:opacity-60"
+                                        >
+                                            {retryingId === resume.id ? "Retrying..." : "Retry Analysis"}
+                                        </button>
                                     </div>
                                 )}
                             </div>

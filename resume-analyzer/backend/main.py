@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes import resume, gemini_routes, advanced_features
 from core.config import get_settings
-from db.mongodb import db
+from db.firebase import db
 
 settings = get_settings()
 
