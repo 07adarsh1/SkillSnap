@@ -9,7 +9,7 @@ import VersionControl from './components/dashboard/VersionControl';
 import CareerPathGenerator from './components/dashboard/CareerPathGenerator';
 import ResumeOptimizer from './components/dashboard/ResumeOptimizer';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth, loginWithEmail, loginWithGoogle, logoutUser, signupWithEmail } from './services/firebase';
+import { auth, loginWithEmail, loginWithGoogle, logoutUser, resetPasswordEmail, signupWithEmail } from './services/firebase';
 
 function App() {
     const [demoMode, setDemoMode] = useState(false);
@@ -183,6 +183,7 @@ function App() {
                                 onGoogleSignIn={handleSignIn}
                                 onEmailLogin={handleEmailLogin}
                                 onEmailSignup={handleEmailSignup}
+                                onForgotPassword={resetPasswordEmail}
                                 isLoading={authActionLoading}
                             />
                         ) : (

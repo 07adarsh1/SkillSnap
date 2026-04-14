@@ -3,6 +3,7 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   GoogleAuthProvider,
+  sendPasswordResetEmail,
   signInWithRedirect,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -56,6 +57,10 @@ export const signupWithEmail = async (name, email, password) => {
     await updateProfile(credential.user, { displayName: name });
   }
   return credential;
+};
+
+export const resetPasswordEmail = async (email) => {
+  return sendPasswordResetEmail(auth, email);
 };
 
 export const logoutUser = async () => {

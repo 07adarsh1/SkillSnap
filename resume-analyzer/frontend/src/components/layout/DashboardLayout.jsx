@@ -21,7 +21,7 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
         <div className="min-h-screen text-white font-sans relative z-10 px-4 md:px-8 py-6">
             <header className="max-w-7xl mx-auto mb-8 rounded-2xl border border-white/10 bg-[rgba(5,5,5,0.92)] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.55)]">
                 <div className="h-16 px-5 md:px-6 flex items-center justify-between gap-4">
-                    <div className="font-bold text-xl tracking-tight text-white">Streakify</div>
+                    <div className="font-bold text-xl tracking-tight text-white">SkillSnap</div>
 
                     <nav className="hidden md:flex items-center gap-2">
                         {navItems.map((item) => {
@@ -65,16 +65,6 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                 </div>
             </main>
 
-            <div className="fixed bottom-4 right-4 hidden md:flex items-center gap-3 rounded-full border border-white/10 bg-[rgba(5,5,5,0.9)] backdrop-blur-xl px-3 py-2">
-                {user?.photoURL ? (
-                    <img src={user.photoURL} alt="User" className="w-8 h-8 rounded-full object-cover" />
-                ) : (
-                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold">
-                        {(user?.fullName || 'U').charAt(0).toUpperCase()}
-                    </div>
-                )}
-                <span className="text-sm text-slate-300">{user?.fullName || 'Demo User'}</span>
-            </div>
         </div>
     );
 };
