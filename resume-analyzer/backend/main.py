@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import resume, gemini_routes, advanced_features
+from routes import resume, ai_routes, advanced_features
 from core.config import get_settings
 from db.firebase import db
 
@@ -17,7 +17,7 @@ app.add_middleware(
 )
 
 app.include_router(resume.router, prefix="/api", tags=["Resume"])
-app.include_router(gemini_routes.router, prefix="/api", tags=["Gemini AI"])
+app.include_router(ai_routes.router, prefix="/api", tags=["Groq AI"])
 app.include_router(advanced_features.router, prefix="/api", tags=["Advanced Features"])
 
 class DBHandler:

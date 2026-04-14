@@ -1,43 +1,56 @@
-import google.generativeai as genai
 import os
 import json
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from dotenv import load_dotenv
+from groq import Groq
 
 load_dotenv()
 
-class GeminiService:
+
+class AIService:
     def __init__(self):
-        api_key = os.getenv("GEMINI_API_KEY")
+        api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
-            raise ValueError("GEMINI_API_KEY not found in environment variables")
-        
-        genai.configure(api_key=api_key)
-        # Using gemini-flash-latest as an alias for the latest stable flash model (likely 1.5)
-        self.model = genai.GenerativeModel('gemini-flash-latest')
-        
+            raise ValueError("GROQ_API_KEY not found in environment variables")
+
+        self.client = Groq(api_key=api_key)
+        self.model_name = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+
     def _parse_json_response(self, response_text: str) -> Dict[str, Any]:
-        """Extract and parse JSON from Gemini response"""
+        """Extract and parse JSON from model response"""
         try:
-            # Try to find JSON in the response
             start_idx = response_text.find('{')
             end_idx = response_text.rfind('}') + 1
-            
+
             if start_idx != -1 and end_idx > start_idx:
                 json_str = response_text[start_idx:end_idx]
                 return json.loads(json_str)
-            else:
-                # If no JSON found, try parsing the entire response
-                return json.loads(response_text)
+
+            return json.loads(response_text)
         except json.JSONDecodeError as e:
             print(f"JSON Parse Error: {e}")
             print(f"Response: {response_text}")
-            raise ValueError(f"Failed to parse JSON from Gemini response: {str(e)}")
-    
+            raise ValueError(f"Failed to parse JSON from model response: {str(e)}")
+
+    def _generate_json(self, prompt: str) -> Dict[str, Any]:
+        """Call Groq chat completion and return a parsed JSON payload."""
+        response = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a strict JSON API. Return only valid JSON with no markdown.",
+                },
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.2,
+            response_format={"type": "json_object"},
+        )
+        message = response.choices[0].message.content if response.choices else "{}"
+        return self._parse_json_response(message or "{}")
+
     async def analyze_resume(self, resume_text: str, job_description: str = "") -> Dict[str, Any]:
-        """Analyze resume and return structured scores and insights"""
-        
-        prompt = f"""You are an expert ATS (Applicant Tracking System) and resume analyzer. 
+        prompt = f"""You are an expert ATS (Applicant Tracking System) and resume analyzer.
 Analyze the following resume and provide a comprehensive evaluation.
 
 Resume Text:
@@ -68,16 +81,13 @@ Provide your analysis in STRICT JSON format with the following structure:
 IMPORTANT: Return ONLY the JSON object, no additional text or explanation."""
 
         try:
-            response = self.model.generate_content(prompt)
-            return self._parse_json_response(response.text)
+            return self._generate_json(prompt)
         except Exception as e:
-            print(f"Gemini API Error: {str(e)}")
+            print(f"Groq API Error: {str(e)}")
             raise
-    
+
     async def analyze_ats_heatmap(self, resume_text: str) -> Dict[str, Any]:
-        """Analyze resume sections for ATS compatibility"""
-        
-        prompt = f"""You are an ATS (Applicant Tracking System) expert. Analyze the following resume 
+        prompt = f"""You are an ATS (Applicant Tracking System) expert. Analyze the following resume
 and evaluate each section for ATS compatibility.
 
 Resume Text:
@@ -147,16 +157,13 @@ Status guidelines:
 Return ONLY the JSON object."""
 
         try:
-            response = self.model.generate_content(prompt)
-            return self._parse_json_response(response.text)
+            return self._generate_json(prompt)
         except Exception as e:
-            print(f"Gemini API Error: {str(e)}")
+            print(f"Groq API Error: {str(e)}")
             raise
-    
+
     async def match_job(self, resume_text: str, job_description: str) -> Dict[str, Any]:
-        """Match resume with job description"""
-        
-        prompt = f"""You are an expert job matching AI. Compare the following resume with the job description 
+        prompt = f"""You are an expert job matching AI. Compare the following resume with the job description
 and provide a detailed match analysis.
 
 Resume:
@@ -177,22 +184,13 @@ Provide analysis in STRICT JSON format:
 Return ONLY the JSON object."""
 
         try:
-            response = self.model.generate_content(prompt)
-            return self._parse_json_response(response.text)
+            return self._generate_json(prompt)
         except Exception as e:
-            print(f"Gemini API Error: {str(e)}")
+            print(f"Groq API Error: {str(e)}")
             raise
-    
-    async def simulate_improvement(
-        self, 
-        resume_text: str, 
-        added_item: str, 
-        item_type: str,
-        job_description: str = ""
-    ) -> Dict[str, Any]:
-        """Simulate the impact of adding a skill/project to resume"""
-        
-        prompt = f"""You are a resume optimization expert. Analyze the impact of adding a new {item_type} 
+
+    async def simulate_improvement(self, resume_text: str, added_item: str, item_type: str, job_description: str = "") -> Dict[str, Any]:
+        prompt = f"""You are a resume optimization expert. Analyze the impact of adding a new {item_type}
 to the resume.
 
 Original Resume:
@@ -216,23 +214,15 @@ Provide analysis in STRICT JSON format:
 Return ONLY the JSON object."""
 
         try:
-            response = self.model.generate_content(prompt)
-            return self._parse_json_response(response.text)
+            return self._generate_json(prompt)
         except Exception as e:
-            print(f"Gemini API Error: {str(e)}")
+            print(f"Groq API Error: {str(e)}")
             raise
-    
-    async def generate_career_path(
-        self, 
-        current_role: str, 
-        target_role: str,
-        current_skills: list = None
-    ) -> Dict[str, Any]:
-        """Generate personalized career roadmap"""
-        
+
+    async def generate_career_path(self, current_role: str, target_role: str, current_skills: list = None) -> Dict[str, Any]:
         skills_text = f"Current Skills: {', '.join(current_skills)}" if current_skills else ""
-        
-        prompt = f"""You are a career development expert. Create a detailed learning roadmap for transitioning 
+
+        prompt = f"""You are a career development expert. Create a detailed learning roadmap for transitioning
 from {current_role} to {target_role}.
 
 {skills_text}
@@ -276,23 +266,15 @@ Provide 4 phases with specific, actionable skills and resources.
 Return ONLY the JSON object."""
 
         try:
-            response = self.model.generate_content(prompt)
-            return self._parse_json_response(response.text)
+            return self._generate_json(prompt)
         except Exception as e:
-            print(f"Gemini API Error: {str(e)}")
+            print(f"Groq API Error: {str(e)}")
             raise
-    
-    async def optimize_resume(
-        self,
-        resume_text: str,
-        job_description: str,
-        company_name: str = ""
-    ) -> Dict[str, Any]:
-        """Optimize resume content for specific job and company"""
-        
+
+    async def optimize_resume(self, resume_text: str, job_description: str, company_name: str = "") -> Dict[str, Any]:
         company_context = f" at {company_name}" if company_name else ""
-        
-        prompt = f"""You are an expert resume writer and ATS optimization specialist. 
+
+        prompt = f"""You are an expert resume writer and ATS optimization specialist.
 Rewrite the following resume to perfectly match the job description{company_context}.
 
 CRITICAL RULES:
@@ -326,25 +308,17 @@ Provide optimization in STRICT JSON format:
 Return ONLY the JSON object."""
 
         try:
-            response = self.model.generate_content(prompt)
-            return self._parse_json_response(response.text)
+            return self._generate_json(prompt)
         except Exception as e:
-            print(f"Gemini API Error: {str(e)}")
+            print(f"Groq API Error: {str(e)}")
             raise
-    
-    async def generate_interview_questions(
-        self,
-        resume_text: str,
-        job_description: str,
-        missing_skills: list = None
-    ) -> Dict[str, Any]:
-        """Generate role-specific interview questions"""
-        
+
+    async def generate_interview_questions(self, resume_text: str, job_description: str, missing_skills: list = None) -> Dict[str, Any]:
         missing_context = ""
         if missing_skills:
             missing_context = f"\nMissing Skills to Focus On: {', '.join(missing_skills)}"
-        
-        prompt = f"""You are an expert technical interviewer. Generate comprehensive interview questions 
+
+        prompt = f"""You are an expert technical interviewer. Generate comprehensive interview questions
 based on the candidate's resume and the job requirements.
 
 Resume:
@@ -384,23 +358,13 @@ Generate questions in STRICT JSON format:
 Generate 5 questions per category. Return ONLY the JSON object."""
 
         try:
-            response = self.model.generate_content(prompt)
-            return self._parse_json_response(response.text)
+            return self._generate_json(prompt)
         except Exception as e:
-            print(f"Gemini API Error: {str(e)}")
+            print(f"Groq API Error: {str(e)}")
             raise
-    
-    async def explain_score(
-        self,
-        resume_text: str,
-        job_description: str,
-        ats_score: float,
-        matched_skills: list,
-        missing_skills: list
-    ) -> Dict[str, Any]:
-        """Provide explainable AI reasoning for scores"""
-        
-        prompt = f"""You are an AI explainability expert. Provide clear, actionable reasoning 
+
+    async def explain_score(self, resume_text: str, job_description: str, ats_score: float, matched_skills: list, missing_skills: list) -> Dict[str, Any]:
+        prompt = f"""You are an AI explainability expert. Provide clear, actionable reasoning
 for why this resume received its ATS score.
 
 Resume:
@@ -437,29 +401,23 @@ Provide explanation in STRICT JSON format:
             "priority": "high|medium|low"
         }}
     ],
-    "score_breakdown": {{
+    "score_breakdown": {
         "skills_match": <0-100>,
         "experience_relevance": <0-100>,
         "keyword_optimization": <0-100>,
         "formatting_quality": <0-100>
-    }}
+    }
 }}
 
 Return ONLY the JSON object."""
 
         try:
-            response = self.model.generate_content(prompt)
-            return self._parse_json_response(response.text)
+            return self._generate_json(prompt)
         except Exception as e:
-            print(f"Gemini API Error: {str(e)}")
+            print(f"Groq API Error: {str(e)}")
             raise
-    
-    async def check_resume_quality(
-        self,
-        resume_text: str
-    ) -> Dict[str, Any]:
-        """Analyze resume for confidence, authenticity, and quality issues"""
-        
+
+    async def check_resume_quality(self, resume_text: str) -> Dict[str, Any]:
         prompt = f"""You are a resume quality auditor. Analyze this resume for:
 1. Weak/passive language
 2. Buzzword overuse
@@ -498,22 +456,13 @@ Provide analysis in STRICT JSON format:
 Return ONLY the JSON object."""
 
         try:
-            response = self.model.generate_content(prompt)
-            return self._parse_json_response(response.text)
+            return self._generate_json(prompt)
         except Exception as e:
-            print(f"Gemini API Error: {str(e)}")
+            print(f"Groq API Error: {str(e)}")
             raise
-    
-    async def compare_resume_versions(
-        self,
-        version1_text: str,
-        version2_text: str,
-        version1_score: float,
-        version2_score: float
-    ) -> Dict[str, Any]:
-        """Compare two resume versions and explain improvements"""
-        
-        prompt = f"""You are a resume improvement analyst. Compare these two resume versions 
+
+    async def compare_resume_versions(self, version1_text: str, version2_text: str, version1_score: float, version2_score: float) -> Dict[str, Any]:
+        prompt = f"""You are a resume improvement analyst. Compare these two resume versions
 and explain what changed and why it improved (or worsened) the score.
 
 Version 1 (Score: {version1_score}%):
@@ -546,11 +495,10 @@ Provide comparison in STRICT JSON format:
 Return ONLY the JSON object."""
 
         try:
-            response = self.model.generate_content(prompt)
-            return self._parse_json_response(response.text)
+            return self._generate_json(prompt)
         except Exception as e:
-            print(f"Gemini API Error: {str(e)}")
+            print(f"Groq API Error: {str(e)}")
             raise
 
-# Create singleton instance
-gemini_service = GeminiService()
+
+ai_service = AIService()

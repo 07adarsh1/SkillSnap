@@ -2,9 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Bot, FileCheck, Search, Zap, ArrowRight, ShieldCheck, Cpu } from 'lucide-react';
 
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
-
-const LandingPage = ({ onStart, onDemo }) => {
+const LandingPage = ({ onStart, onDemo, isAuthenticated, userName, onLogout }) => {
     return (
         <div className="min-h-screen bg-transparent text-white selection:bg-primary/30 flex flex-col">
             {/* Navbar Placeholder */}
@@ -16,16 +14,24 @@ const LandingPage = ({ onStart, onDemo }) => {
                     <span>AI Resume Architect</span>
                 </div>
                 <div className="flex items-center gap-4">
-                    <SignedOut>
-                        <SignInButton mode="modal">
-                            <button className="px-5 py-2 rounded-full bg-slate-800/50 hover:bg-slate-700/50 text-white text-sm font-medium border border-slate-700 transition-all cursor-pointer backdrop-blur-sm">
-                                Sign In
+                    {isAuthenticated ? (
+                        <>
+                            <span className="text-sm text-slate-300 hidden sm:inline">{userName || 'Signed in'}</span>
+                            <button
+                                onClick={onLogout}
+                                className="px-5 py-2 rounded-full bg-slate-800/50 hover:bg-slate-700/50 text-white text-sm font-medium border border-slate-700 transition-all cursor-pointer backdrop-blur-sm"
+                            >
+                                Sign Out
                             </button>
-                        </SignInButton>
-                    </SignedOut>
-                    <SignedIn>
-                        <UserButton afterSignOutUrl="/" />
-                    </SignedIn>
+                        </>
+                    ) : (
+                        <button
+                            onClick={onStart}
+                            className="px-5 py-2 rounded-full bg-slate-800/50 hover:bg-slate-700/50 text-white text-sm font-medium border border-slate-700 transition-all cursor-pointer backdrop-blur-sm"
+                        >
+                            Sign In
+                        </button>
+                    )}
                 </div>
             </nav>
 
@@ -39,7 +45,7 @@ const LandingPage = ({ onStart, onDemo }) => {
                 >
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-800/50 border border-slate-700/50 mb-8 backdrop-blur-md shadow-xl">
                         <SparklesIcon className="w-4 h-4 text-yellow-400 animate-pulse" />
-                        <span className="text-sm text-slate-300">Powered by Advanced Google Gemini 1.5 Pro</span>
+                        <span className="text-sm text-slate-300">Powered by Groq Llama 3.3 70B</span>
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight">

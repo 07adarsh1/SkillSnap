@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import LandingPage from './components/LandingPage';
+import AuthPage from './components/AuthPage';
 import UserDashboard from './components/UserDashboard';
 import DashboardLayout from './components/layout/DashboardLayout';
-import { SignedIn, SignedOut, useClerk, useUser } from "@clerk/clerk-react";
 import ResultsDashboard from './components/ResultsDashboard';
 import JobMatcher from './components/dashboard/JobMatcher';
 import VersionControl from './components/dashboard/VersionControl';
 import CareerPathGenerator from './components/dashboard/CareerPathGenerator';
 import ResumeOptimizer from './components/dashboard/ResumeOptimizer';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, loginWithEmail, loginWithGoogle, logoutUser, signupWithEmail } from './services/firebase';
 
 function App() {
     const [demoMode, setDemoMode] = useState(false);
     const [demoResults, setDemoResults] = useState(null);
+    const [firebaseUser, setFirebaseUser] = useState(null);
+    const [authLoading, setAuthLoading] = useState(true);
+    const [showAuthPage, setShowAuthPage] = useState(false);
+    const [authActionLoading, setAuthActionLoading] = useState(false);
 
     // Initialize from localStorage
     const [showDashboard, setShowDashboard] = useState(() => {
@@ -24,8 +30,13 @@ function App() {
         localStorage.setItem("showDashboard", JSON.stringify(showDashboard));
     }, [showDashboard]);
 
-    const clerk = useClerk();
-    const { user } = useUser();
+    React.useEffect(() => {
+        const unsub = onAuthStateChanged(auth, (user) => {
+            setFirebaseUser(user);
+            setAuthLoading(false);
+        });
+        return () => unsub();
+    }, []);
 
     const handleDemo = () => {
         setDemoResults({
@@ -46,6 +57,60 @@ function App() {
         setDemoMode(false);
         setDemoResults(null);
     };
+
+    const handleSignIn = async () => {
+        setAuthActionLoading(true);
+        try {
+            await loginWithGoogle();
+            setShowDashboard(true);
+            setShowAuthPage(false);
+        } catch (error) {
+            console.error('Firebase sign-in failed', error);
+            throw error;
+        } finally {
+            setAuthActionLoading(false);
+        }
+    };
+
+    const handleEmailLogin = async (email, password) => {
+        setAuthActionLoading(true);
+        try {
+            await loginWithEmail(email, password);
+            setShowDashboard(true);
+            setShowAuthPage(false);
+        } finally {
+            setAuthActionLoading(false);
+        }
+    };
+
+    const handleEmailSignup = async (name, email, password) => {
+        setAuthActionLoading(true);
+        try {
+            await signupWithEmail(name, email, password);
+            setShowDashboard(true);
+            setShowAuthPage(false);
+        } finally {
+            setAuthActionLoading(false);
+        }
+    };
+
+    const handleSignOut = async () => {
+        try {
+            await logoutUser();
+        } catch (error) {
+            console.error('Firebase sign-out failed', error);
+        } finally {
+            setShowDashboard(false);
+        }
+    };
+
+    const user = firebaseUser
+        ? {
+            id: firebaseUser.uid,
+            fullName: firebaseUser.displayName || firebaseUser.email || 'User',
+            photoURL: firebaseUser.photoURL || '',
+        }
+        : null;
 
     // Shared Dashboard Wrapper for Demo
     // Shared Dashboard Wrapper for Demo
@@ -107,25 +172,36 @@ function App() {
             {/* Demo Mode Override */}
             {demoMode ? (
                 <DemoView />
+            ) : authLoading ? (
+                <div className="min-h-screen flex items-center justify-center text-slate-300">Loading authentication...</div>
             ) : (
                 <>
-                    <SignedOut>
-                        <LandingPage onStart={() => clerk.openSignIn()} onDemo={handleDemo} />
-                    </SignedOut>
-
-                    <SignedIn>
-                        {showDashboard ? (
-                            <UserDashboard
-                                user={user}
-                                onClose={() => {
-                                    setShowDashboard(false);
-                                    clerk.signOut();
-                                }}
+                    {!firebaseUser ? (
+                        showAuthPage ? (
+                            <AuthPage
+                                onBack={() => setShowAuthPage(false)}
+                                onGoogleSignIn={handleSignIn}
+                                onEmailLogin={handleEmailLogin}
+                                onEmailSignup={handleEmailSignup}
+                                isLoading={authActionLoading}
                             />
                         ) : (
-                            <LandingPage onStart={() => setShowDashboard(true)} onDemo={handleDemo} />
-                        )}
-                    </SignedIn>
+                            <LandingPage onStart={() => setShowAuthPage(true)} onDemo={handleDemo} />
+                        )
+                    ) : showDashboard ? (
+                        <UserDashboard
+                            user={user}
+                            onClose={handleSignOut}
+                        />
+                    ) : (
+                        <LandingPage
+                            onStart={() => setShowDashboard(true)}
+                            onDemo={handleDemo}
+                            isAuthenticated={true}
+                            userName={user?.fullName}
+                            onLogout={handleSignOut}
+                        />
+                    )}
                 </>
             )}
         </>

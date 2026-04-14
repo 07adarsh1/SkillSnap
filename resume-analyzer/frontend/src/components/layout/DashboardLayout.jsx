@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
-import { UserButton } from "@clerk/clerk-react";
-import { Bell, Moon, Sun, Search } from 'lucide-react';
+import { Bell, Search } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) => {
@@ -67,7 +66,17 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                                 <p className="text-xs text-primary/80 font-medium">Pro Plan</p>
                             </div>
                             <div className="ring-2 ring-white/10 rounded-full p-0.5 hover:ring-primary/50 transition-all hover:shadow-[0_0_15px_rgba(0,210,255,0.3)]">
-                                <UserButton afterSignOutUrl="/" />
+                                {user?.photoURL ? (
+                                    <img
+                                        src={user.photoURL}
+                                        alt="User"
+                                        className="w-9 h-9 rounded-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-9 h-9 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm font-bold">
+                                        {(user?.fullName || 'U').charAt(0).toUpperCase()}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

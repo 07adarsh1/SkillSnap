@@ -37,20 +37,20 @@ async def upload_resume(
 
 @router.post("/analyze-resume", response_model=AIAnalysisResult)
 async def analyze_resume(request: AnalysisRequest, db = Depends(get_database)):
-    from services.gemini_service import gemini_service
+    from services.ai_service import ai_service
     
     resume = await db["resumes"].find_one({"id": request.resume_id})
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
     
     try:
-        # Use Gemini AI for analysis
-        analysis = await gemini_service.analyze_resume(
+        # Use Groq AI for analysis
+        analysis = await ai_service.analyze_resume(
             resume["content_text"], 
             request.job_description or ""
         )
         
-        # Map Gemini response to our schema
+        # Map AI response to our schema
         result = AIAnalysisResult(
             ats_score=float(analysis.get("ats_score", 75)),
             matched_skills=analysis.get("skills", {}).get("matched", []),
@@ -59,13 +59,13 @@ async def analyze_resume(request: AnalysisRequest, db = Depends(get_database)):
             ai_suggestions=analysis.get("improvement_tips", [])
         )
         
-        # SAVE RESULT TO DB with additional Gemini data
+        # Save result with additional AI data
         await db["resumes"].update_one(
             {"id": request.resume_id},
             {"$set": {
                 "ats_score": result.ats_score,
                 "analysis_result": result.dict(),
-                "gemini_analysis": analysis,  # Store full Gemini response
+                "ai_analysis": analysis,
                 "last_analyzed_at": datetime.utcnow()
             }}
         )
@@ -73,8 +73,8 @@ async def analyze_resume(request: AnalysisRequest, db = Depends(get_database)):
         return result
         
     except Exception as e:
-        print(f"Gemini Analysis Error: {e}")
-        # Fallback to basic analysis if Gemini fails
+        print(f"AI Analysis Error: {e}")
+        # Fallback to basic analysis if AI provider fails
         resume_skills = nlp_engine.extract_skills(resume["content_text"])
         result = AIAnalysisResult(
             ats_score=75.0,

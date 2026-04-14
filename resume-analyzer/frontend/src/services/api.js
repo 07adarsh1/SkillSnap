@@ -38,7 +38,7 @@ export const deleteResume = async (resumeId) => {
     return response.data;
 };
 
-// Gemini-powered endpoints
+// Groq-powered endpoints
 export const getATSHeatmap = async (resumeId) => {
     const response = await api.post('/ats-heatmap', {
         resume_id: resumeId

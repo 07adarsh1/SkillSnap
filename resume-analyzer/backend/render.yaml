@@ -15,5 +15,5 @@ services:
         sync: false
       - key: FIREBASE_CREDENTIALS_JSON
         sync: false
-      - key: GEMINI_API_KEY
+      - key: GROQ_API_KEY
         sync: false

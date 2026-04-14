@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
-from services.gemini_service import gemini_service
+from services.ai_service import ai_service
 from db.firebase import get_database
 from datetime import datetime
 import uuid
@@ -40,7 +40,7 @@ class CompareVersionsRequest(BaseModel):
 @router.post("/optimize-resume")
 async def optimize_resume(request: OptimizeResumeRequest, db = Depends(get_database)):
     """
-    Optimize resume content for specific job and company using Gemini AI
+    Optimize resume content for specific job and company using Groq AI
     """
     try:
         # Get resume from database
@@ -48,8 +48,8 @@ async def optimize_resume(request: OptimizeResumeRequest, db = Depends(get_datab
         if not resume:
             raise HTTPException(status_code=404, detail="Resume not found")
         
-        # Call Gemini service
-        optimization_result = await gemini_service.optimize_resume(
+        # Call AI service
+        optimization_result = await ai_service.optimize_resume(
             resume["content_text"],
             request.job_description,
             request.company_name
@@ -106,7 +106,7 @@ async def generate_interview_questions(request: InterviewQuestionsRequest, db = 
         if resume.get("analysis_result"):
             missing_skills = resume["analysis_result"].get("missing_skills", [])
         
-        questions = await gemini_service.generate_interview_questions(
+        questions = await ai_service.generate_interview_questions(
             resume["content_text"],
             request.job_description,
             missing_skills
@@ -146,7 +146,7 @@ async def explain_score(request: ExplainScoreRequest, db = Depends(get_database)
         if not analysis:
             raise HTTPException(status_code=400, detail="Resume not analyzed yet. Please analyze first.")
         
-        explanation = await gemini_service.explain_score(
+        explanation = await ai_service.explain_score(
             resume["content_text"],
             request.job_description,
             analysis.get("ats_score", 0),
@@ -243,8 +243,8 @@ async def compare_versions(request: CompareVersionsRequest, db = Depends(get_dat
         if not v1 or not v2:
             raise HTTPException(status_code=404, detail="One or both versions not found")
         
-        # Compare using Gemini
-        comparison = await gemini_service.compare_resume_versions(
+        # Compare using AI provider
+        comparison = await ai_service.compare_resume_versions(
             v1["content_text"],
             v2["content_text"],
             v1.get("ats_score", 0),
@@ -283,7 +283,7 @@ async def check_resume_quality(request: QualityCheckRequest, db = Depends(get_da
         if not resume:
             raise HTTPException(status_code=404, detail="Resume not found")
         
-        quality_report = await gemini_service.check_resume_quality(
+        quality_report = await ai_service.check_resume_quality(
             resume["content_text"]
         )
         

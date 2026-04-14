@@ -264,7 +264,7 @@ const JobMatcher = () => {
                                 <p className="text-slate-400 leading-relaxed text-sm">
                                     {selectedJob.description}
                                     <br /><br />
-                                    (Full job description would be parsed here via Gemini...)
+                                    (Full job description would be parsed here via Groq...)
                                 </p>
                             </div>
                         </div>
