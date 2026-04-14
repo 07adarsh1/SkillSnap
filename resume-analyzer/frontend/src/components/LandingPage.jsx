@@ -8,10 +8,10 @@ const LandingPage = ({ onStart, onDemo, isAuthenticated, userName, onLogout }) =
             {/* Navbar Placeholder */}
             <nav className="relative z-10 container mx-auto px-6 py-6 flex justify-between items-center">
                 <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
-                    <div className="p-2 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-lg">
+                    <div className="p-2 bg-gradient-to-tr from-white to-slate-300 rounded-lg shadow-[0_0_18px_rgba(255,255,255,0.08)]">
                         <Bot className="text-white w-6 h-6" />
                     </div>
-                    <span>AI Resume Architect</span>
+                    <span>Streakify Resume</span>
                 </div>
                 <div className="flex items-center gap-4">
                     {isAuthenticated ? (
@@ -19,7 +19,7 @@ const LandingPage = ({ onStart, onDemo, isAuthenticated, userName, onLogout }) =
                             <span className="text-sm text-slate-300 hidden sm:inline">{userName || 'Signed in'}</span>
                             <button
                                 onClick={onLogout}
-                                className="px-5 py-2 rounded-full bg-slate-800/50 hover:bg-slate-700/50 text-white text-sm font-medium border border-slate-700 transition-all cursor-pointer backdrop-blur-sm"
+                                className="px-5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm font-medium border border-white/10 transition-all cursor-pointer backdrop-blur-sm"
                             >
                                 Sign Out
                             </button>
@@ -27,7 +27,7 @@ const LandingPage = ({ onStart, onDemo, isAuthenticated, userName, onLogout }) =
                     ) : (
                         <button
                             onClick={onStart}
-                            className="px-5 py-2 rounded-full bg-slate-800/50 hover:bg-slate-700/50 text-white text-sm font-medium border border-slate-700 transition-all cursor-pointer backdrop-blur-sm"
+                            className="px-5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm font-medium border border-white/10 transition-all cursor-pointer backdrop-blur-sm"
                         >
                             Sign In
                         </button>
@@ -43,12 +43,12 @@ const LandingPage = ({ onStart, onDemo, isAuthenticated, userName, onLogout }) =
                     transition={{ duration: 0.8 }}
                     className="max-w-4xl mx-auto"
                 >
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-800/50 border border-slate-700/50 mb-8 backdrop-blur-md shadow-xl">
-                        <SparklesIcon className="w-4 h-4 text-yellow-400 animate-pulse" />
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md shadow-xl">
+                        <SparklesIcon className="w-4 h-4 text-white animate-pulse" />
                         <span className="text-sm text-slate-300">Powered by Groq Llama 3.3 70B</span>
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight">
+                    <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight text-slate-100">
                         Craft the Perfect Resume <br />
                         <span className="text-gradient">
                             in Seconds
@@ -56,7 +56,7 @@ const LandingPage = ({ onStart, onDemo, isAuthenticated, userName, onLogout }) =
                     </h1>
 
                     <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
-                        Stop guessing what recruiters want. Our AI analyzes your resume against top industry standards to increase your interview chances by <span className="text-green-400 font-bold">3x</span>.
+                        Stop guessing what recruiters want. Our AI analyzes your resume against top industry standards to increase your interview chances by <span className="text-white font-bold">3x</span>.
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -72,7 +72,7 @@ const LandingPage = ({ onStart, onDemo, isAuthenticated, userName, onLogout }) =
 
                         <button
                             onClick={onDemo}
-                            className="px-8 py-3.5 bg-slate-800/40 hover:bg-slate-800/60 rounded-xl text-white font-medium text-lg border border-slate-700 transition-all backdrop-blur-sm"
+                            className="px-8 py-3.5 bg-white/5 hover:bg-white/10 rounded-xl text-white font-medium text-lg border border-white/10 transition-all backdrop-blur-sm"
                         >
                             View Demo
                         </button>
@@ -87,17 +87,17 @@ const LandingPage = ({ onStart, onDemo, isAuthenticated, userName, onLogout }) =
                     className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24 max-w-6xl mx-auto w-full px-4"
                 >
                     <FeatureCard
-                        icon={<FileCheck className="w-8 h-8 text-green-400" />}
+                        icon={<FileCheck className="w-8 h-8 text-white" />}
                         title="ATS Optimization"
                         desc="Ensure your resume parses correctly. We identify formatting errors that automatic systems hate."
                     />
                     <FeatureCard
-                        icon={<Search className="w-8 h-8 text-blue-400" />}
+                        icon={<Search className="w-8 h-8 text-white" />}
                         title="Skill Gap Analysis"
                         desc="Instantly see which key skills you are missing tailored to your target job role."
                     />
                     <FeatureCard
-                        icon={<Zap className="w-8 h-8 text-yellow-400" />}
+                        icon={<Zap className="w-8 h-8 text-white" />}
                         title="AI Actionable Feedback"
                         desc="Get specific, sentence-level suggestions to improve impact and readability."
                     />

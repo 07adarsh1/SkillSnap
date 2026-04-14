@@ -35,7 +35,7 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, collapsed, setCollapsed })
             <div className="p-4 border-b border-white/10 flex items-center justify-between">
                 {!collapsed && (
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
+                        <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center shadow-lg shadow-primary/30">
                             <Sparkles className="w-5 h-5 text-white" />
                         </div>
                         <h1 className="font-bold text-white text-lg tracking-tight">
@@ -44,7 +44,7 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, collapsed, setCollapsed })
                     </div>
                 )}
                 {collapsed && (
-                    <div className="mx-auto w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                    <div className="mx-auto w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center shadow-lg shadow-primary/30">
                         <span className="font-bold text-white">SS</span>
                     </div>
                 )}
@@ -73,7 +73,7 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, collapsed, setCollapsed })
                             className={cn(
                                 "w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all font-medium group relative",
                                 isActive
-                                    ? "bg-primary/20 text-primary shadow-[0_0_15px_rgba(0,210,255,0.15)] border border-primary/30"
+                                    ? "bg-primary/18 text-primary shadow-[0_0_18px_rgba(184,255,90,0.24)] border border-primary/35"
                                     : "text-slate-400 hover:bg-white/5 hover:text-white border border-transparent"
                             )}
                             title={collapsed ? item.label : undefined}

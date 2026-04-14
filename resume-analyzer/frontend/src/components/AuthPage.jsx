@@ -87,7 +87,7 @@ const AuthPage = ({ onBack, onGoogleSignIn, onEmailLogin, onEmailSignup, isLoadi
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-md rounded-3xl border border-white/10 bg-[#121318]/70 backdrop-blur-xl p-8 shadow-[0_20px_60px_rgba(0,0,0,0.45)]"
+                className="w-full max-w-md rounded-3xl border border-white/10 bg-[rgba(5,5,5,0.9)] backdrop-blur-xl p-8 shadow-[0_20px_60px_rgba(0,0,0,0.6)]"
             >
                 <button
                     onClick={onBack}
@@ -97,7 +97,7 @@ const AuthPage = ({ onBack, onGoogleSignIn, onEmailLogin, onEmailSignup, isLoadi
                 </button>
 
                 <div className="flex items-center gap-2 font-bold text-xl tracking-tight mb-6">
-                    <div className="p-2 bg-gradient-to-tr from-blue-500 to-cyan-500 rounded-lg">
+                    <div className="p-2 bg-gradient-to-tr from-white to-slate-300 rounded-lg shadow-[0_0_16px_rgba(255,255,255,0.08)]">
                         <Bot className="text-white w-5 h-5" />
                     </div>
                     <span>{mode === 'login' ? 'Welcome Back' : 'Create Account'}</span>
@@ -106,13 +106,13 @@ const AuthPage = ({ onBack, onGoogleSignIn, onEmailLogin, onEmailSignup, isLoadi
                 <div className="grid grid-cols-2 gap-2 p-1 bg-white/5 rounded-xl border border-white/10 mb-6">
                     <button
                         onClick={() => setMode('login')}
-                        className={`py-2 rounded-lg text-sm font-semibold transition ${mode === 'login' ? 'bg-primary text-slate-900' : 'text-slate-300 hover:bg-white/5'}`}
+                        className={`py-2 rounded-lg text-sm font-semibold transition ${mode === 'login' ? 'bg-white/12 text-white' : 'text-slate-300 hover:bg-white/5'}`}
                     >
                         Login
                     </button>
                     <button
                         onClick={() => setMode('signup')}
-                        className={`py-2 rounded-lg text-sm font-semibold transition ${mode === 'signup' ? 'bg-primary text-slate-900' : 'text-slate-300 hover:bg-white/5'}`}
+                        className={`py-2 rounded-lg text-sm font-semibold transition ${mode === 'signup' ? 'bg-white/12 text-white' : 'text-slate-300 hover:bg-white/5'}`}
                     >
                         Sign Up
                     </button>
@@ -127,7 +127,7 @@ const AuthPage = ({ onBack, onGoogleSignIn, onEmailLogin, onEmailSignup, isLoadi
                                 placeholder="Full name"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-white/5 border border-white/10 outline-none focus:border-primary/50"
+                                className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-black/40 border border-white/10 outline-none focus:border-white/30"
                             />
                         </div>
                     )}
@@ -139,7 +139,7 @@ const AuthPage = ({ onBack, onGoogleSignIn, onEmailLogin, onEmailSignup, isLoadi
                             placeholder="Email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-white/5 border border-white/10 outline-none focus:border-primary/50"
+                            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-black/40 border border-white/10 outline-none focus:border-white/30"
                         />
                     </div>
 
@@ -150,7 +150,7 @@ const AuthPage = ({ onBack, onGoogleSignIn, onEmailLogin, onEmailSignup, isLoadi
                             placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-white/5 border border-white/10 outline-none focus:border-primary/50"
+                            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-black/40 border border-white/10 outline-none focus:border-white/30"
                         />
                     </div>
 
@@ -162,7 +162,7 @@ const AuthPage = ({ onBack, onGoogleSignIn, onEmailLogin, onEmailSignup, isLoadi
                                 placeholder="Confirm password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-white/5 border border-white/10 outline-none focus:border-primary/50"
+                                className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-black/40 border border-white/10 outline-none focus:border-white/30"
                             />
                         </div>
                     )}
@@ -174,7 +174,7 @@ const AuthPage = ({ onBack, onGoogleSignIn, onEmailLogin, onEmailSignup, isLoadi
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full py-2.5 rounded-xl bg-primary text-slate-900 font-bold hover:bg-primary/90 disabled:opacity-60"
+                        className="w-full py-2.5 rounded-xl bg-white/12 text-white font-bold hover:bg-white/18 disabled:opacity-60"
                     >
                         {isLoading ? 'Please wait...' : mode === 'login' ? 'Login' : 'Create Account'}
                     </button>

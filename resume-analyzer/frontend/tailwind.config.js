@@ -8,18 +8,18 @@ export default {
     theme: {
         extend: {
             colors: {
-                primary: "#00D2FF",
-                secondary: "#FF007A",
-                tertiary: "#FF6B98",
-                dark: "#0B0C10",
+                primary: "#A7B2C7",
+                secondary: "#6E7C98",
+                tertiary: "#C7D2E3",
+                dark: "#06080D",
                 "dark-card": "#1A1A2E",
-                "brand-dark": "#0d0e12",
-                "brand-surface": "#121318",
-                "brand-surface-high": "#1e1f25",
-                "brand-surface-bright": "#2a2c32",
+                "brand-dark": "#06080D",
+                "brand-surface": "#0B0F16",
+                "brand-surface-high": "#121823",
+                "brand-surface-bright": "#1A2231",
             },
             fontFamily: {
-                sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                sans: ['"Manrope"', '"Plus Jakarta Sans"', 'sans-serif'],
             },
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-out',

@@ -105,8 +105,8 @@ const ResumeManager = ({ userId }) => {
     }
 
     return (
-        <div className="space-y-8">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[#121318]/60 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-lg gap-4">
+            <div className="space-y-8 text-white">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-black/45 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-lg gap-4">
                 <h2 className="text-2xl font-bold text-white tracking-tight">Resume Management</h2>
                 <button
                     onClick={() => setShowUploadPanel(!showUploadPanel)}
@@ -125,7 +125,7 @@ const ResumeManager = ({ userId }) => {
                         exit={{ opacity: 0, height: 0, scale: 0.95 }}
                         className="overflow-hidden"
                     >
-                        <div className="bg-[#121318]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 mb-8 shadow-[0_0_30px_rgba(0,0,0,0.5)] relative overflow-hidden">
+                        <div className="bg-black/45 backdrop-blur-xl border border-white/10 rounded-2xl p-6 mb-8 shadow-[0_0_30px_rgba(0,0,0,0.5)] relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
                             <UploadSection
                                 onUpload={async (file) => {

@@ -70,7 +70,7 @@ const HistoryPanel = ({ isOpen, onClose, userId, onLoadResult }) => {
                             <h2 className="text-xl font-bold text-white flex items-center gap-2">
                                 <FileText className="text-primary" /> Analysis History
                             </h2>
-                            <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-white">
+                            <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors text-slate-400 hover:text-white">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
@@ -94,7 +94,7 @@ const HistoryPanel = ({ isOpen, onClose, userId, onLoadResult }) => {
                                                 onClose();
                                             }
                                         }}
-                                        className="group p-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-primary/50 rounded-xl cursor-pointer transition-all relative"
+                                        className="group p-4 bg-black/40 hover:bg-black/55 border border-white/10 hover:border-white/20 rounded-xl cursor-pointer transition-all relative"
                                     >
                                         <div className="flex justify-between items-start mb-2">
                                             <h3 className="font-semibold text-white truncate pr-8">{item.filename}</h3>
@@ -151,7 +151,7 @@ const HistoryPanel = ({ isOpen, onClose, userId, onLoadResult }) => {
                         <div className="flex justify-end gap-3 mt-auto">
                             <button
                                 onClick={() => setDeleteConfirmId(null)}
-                                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors border border-slate-700"
+                                className="px-4 py-2 bg-black/45 hover:bg-black/60 text-slate-300 rounded-lg transition-colors border border-white/10"
                             >
                                 Cancel
                             </button>

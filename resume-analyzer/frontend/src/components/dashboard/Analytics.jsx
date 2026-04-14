@@ -29,7 +29,7 @@ const Analytics = ({ userId }) => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Score Trend */}
-                <div className="bg-slate-800/50 border border-slate-700/50 p-6 rounded-2xl">
+                <div className="bg-black/45 border border-white/10 p-6 rounded-2xl">
                     <h3 className="text-lg font-bold text-white mb-6">ATS Score Trend</h3>
                     <div className="h-72 w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -49,7 +49,7 @@ const Analytics = ({ userId }) => {
                 </div>
 
                 {/* Skill Radar */}
-                <div className="bg-slate-800/50 border border-slate-700/50 p-6 rounded-2xl">
+                <div className="bg-black/45 border border-white/10 p-6 rounded-2xl">
                     <h3 className="text-lg font-bold text-white mb-6">Skill Profile vs Market Demand</h3>
                     <div className="h-72 w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -67,20 +67,20 @@ const Analytics = ({ userId }) => {
             </div>
 
             {/* Recommendations */}
-            <div className="bg-slate-800/50 border border-slate-700/50 p-6 rounded-2xl">
+                <div className="bg-black/45 border border-white/10 p-6 rounded-2xl">
                 <h3 className="text-lg font-bold text-white mb-4">Improvement Plan</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 bg-slate-800 rounded-xl border border-slate-700">
-                        <h4 className="font-bold text-yellow-400 mb-2">Focus Area: DevOps</h4>
+                    <div className="p-4 bg-black/50 rounded-xl border border-white/10">
+                        <h4 className="font-bold text-white mb-2">Focus Area: DevOps</h4>
                         <p className="text-sm text-slate-400">Your DevOps score is 20% below market average for Senior roles.</p>
-                        <button className="mt-3 text-sm text-primary hover:underline">View Courses</button>
+                        <button className="mt-3 text-sm text-white/80 hover:underline">View Courses</button>
                     </div>
-                    <div className="p-4 bg-slate-800 rounded-xl border border-slate-700">
-                        <h4 className="font-bold text-blue-400 mb-2">Keyword Optimization</h4>
+                    <div className="p-4 bg-black/50 rounded-xl border border-white/10">
+                        <h4 className="font-bold text-white mb-2">Keyword Optimization</h4>
                         <p className="text-sm text-slate-400">Add detailed metrics to "Project Management" sections to boost ATS score.</p>
                     </div>
-                    <div className="p-4 bg-slate-800 rounded-xl border border-slate-700">
-                        <h4 className="font-bold text-green-400 mb-2">Strength: React</h4>
+                    <div className="p-4 bg-black/50 rounded-xl border border-white/10">
+                        <h4 className="font-bold text-white mb-2">Strength: React</h4>
                         <p className="text-sm text-slate-400">You are in the top 10% for React development skills. Leverage this!</p>
                     </div>
                 </div>

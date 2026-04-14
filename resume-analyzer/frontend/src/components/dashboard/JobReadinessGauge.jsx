@@ -10,9 +10,9 @@ const JobReadinessGauge = ({ score = 75 }) => {
     ];
 
     const getColor = (score) => {
-        if (score >= 80) return '#00d2ff'; // Primary cyan
-        if (score >= 60) return '#fbbf24'; // Amber
-        return '#f87171'; // Red
+        if (score >= 80) return '#ffffff';
+        if (score >= 60) return '#cbd5e1';
+        return '#9ca3af';
     };
 
     const getLabel = (score) => {
@@ -26,13 +26,13 @@ const JobReadinessGauge = ({ score = 75 }) => {
     return (
         <div className="w-full py-2">
             <div className="flex flex-col items-center">
-                <div className="relative w-48 h-48 drop-shadow-[0_0_15px_rgba(0,210,255,0.2)]">
+                <div className="relative w-48 h-48 drop-shadow-[0_0_15px_rgba(255,255,255,0.08)]">
                     <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                             <defs>
                                 <linearGradient id="scoreGradient" x1="0" y1="0" x2="1" y2="1">
                                     <stop offset="0%" stopColor={scoreColor} stopOpacity={1} />
-                                    <stop offset="100%" stopColor={scoreColor === '#00d2ff' ? '#3a7bd5' : scoreColor === '#fbbf24' ? '#d97706' : '#dc2626'} stopOpacity={1} />
+                                    <stop offset="100%" stopColor={scoreColor === '#ffffff' ? '#d1d5db' : scoreColor === '#cbd5e1' ? '#9ca3af' : '#6b7280'} stopOpacity={1} />
                                 </linearGradient>
                             </defs>
                             <Pie
@@ -55,7 +55,7 @@ const JobReadinessGauge = ({ score = 75 }) => {
                     </ResponsiveContainer>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                         <span className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-white to-slate-400 drop-shadow-sm">{score}</span>
-                        <span className="text-sm font-medium text-primary mt-1 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">{getLabel(score)}</span>
+                        <span className="text-sm font-medium text-white mt-1 px-3 py-1 bg-white/10 rounded-full border border-white/10">{getLabel(score)}</span>
                     </div>
                 </div>
 
@@ -70,7 +70,7 @@ const JobReadinessGauge = ({ score = 75 }) => {
                                 initial={{ width: 0 }}
                                 animate={{ width: '85%' }}
                                 transition={{ duration: 1, ease: 'easeOut' }}
-                                className="h-full rounded-full bg-gradient-to-r from-blue-400 to-blue-600 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
+                                className="h-full rounded-full bg-gradient-to-r from-white to-slate-400 shadow-[0_0_10px_rgba(255,255,255,0.15)]" 
                             />
                         </div>
                     </div>
@@ -85,7 +85,7 @@ const JobReadinessGauge = ({ score = 75 }) => {
                                 initial={{ width: 0 }}
                                 animate={{ width: '70%' }}
                                 transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
-                                className="h-full rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 shadow-[0_0_10px_rgba(250,204,21,0.5)]" 
+                                className="h-full rounded-full bg-gradient-to-r from-slate-300 to-slate-500 shadow-[0_0_10px_rgba(255,255,255,0.12)]" 
                             />
                         </div>
                     </div>
@@ -100,7 +100,7 @@ const JobReadinessGauge = ({ score = 75 }) => {
                                 initial={{ width: 0 }}
                                 animate={{ width: '90%' }}
                                 transition={{ duration: 1, ease: 'easeOut', delay: 0.4 }}
-                                className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-500 shadow-[0_0_10px_rgba(74,222,128,0.5)]" 
+                                className="h-full rounded-full bg-gradient-to-r from-slate-200 to-slate-400 shadow-[0_0_10px_rgba(255,255,255,0.12)]" 
                             />
                         </div>
                     </div>

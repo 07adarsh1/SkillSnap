@@ -42,9 +42,9 @@ const CareerPathGenerator = () => {
 
     return (
         <div className="space-y-6">
-            <div className="bg-slate-800/50 border border-slate-700/50 p-6 rounded-2xl">
+            <div className="bg-black/45 border border-white/10 p-6 rounded-2xl">
                 <div className="flex items-center gap-2 mb-6">
-                    <Target className="w-5 h-5 text-primary" />
+                    <Target className="w-5 h-5 text-white" />
                     <h3 className="text-lg font-bold text-white">AI Career Path Generator</h3>
                 </div>
 
@@ -53,7 +53,7 @@ const CareerPathGenerator = () => {
                 </p>
 
                 {error && (
-                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-sm">
+                    <div className="mb-6 p-4 bg-white/5 border border-white/10 text-slate-200 rounded-lg text-sm">
                         {error}
                     </div>
                 )}
@@ -69,7 +69,7 @@ const CareerPathGenerator = () => {
                             value={currentRole}
                             onChange={(e) => setCurrentRole(e.target.value)}
                             placeholder="e.g., Frontend Developer"
-                            className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-4 py-2 bg-black/60 border border-white/10 rounded-lg text-white placeholder:text-slate-500 focus:ring-2 focus:ring-white/20 focus:border-transparent"
                         />
                     </div>
 
@@ -82,7 +82,7 @@ const CareerPathGenerator = () => {
                             value={targetRole}
                             onChange={(e) => setTargetRole(e.target.value)}
                             placeholder="e.g., Full Stack Developer"
-                            className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-4 py-2 bg-black/60 border border-white/10 rounded-lg text-white placeholder:text-slate-500 focus:ring-2 focus:ring-white/20 focus:border-transparent"
                         />
                     </div>
                 </div>
@@ -90,7 +90,7 @@ const CareerPathGenerator = () => {
                 <button
                     onClick={generateRoadmap}
                     disabled={!currentRole || !targetRole || loading}
-                    className="w-full px-6 py-3 bg-primary hover:bg-primary/90 disabled:bg-slate-700 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
+                    className="w-full px-6 py-3 bg-white/10 hover:bg-white/15 disabled:bg-black/60 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2 border border-white/10"
                 >
                     {loading ? (
                         <>
@@ -107,13 +107,13 @@ const CareerPathGenerator = () => {
             </div>
 
             {/* Popular Career Transitions */}
-            <div className="bg-slate-800/50 border border-slate-700/50 p-6 rounded-2xl">
+            <div className="bg-black/45 border border-white/10 p-6 rounded-2xl">
                 <h4 className="text-md font-bold text-white mb-4">Popular Career Transitions</h4>
                 <div className="space-y-3">
                     {popularTransitions.map((transition, index) => (
                         <div
                             key={index}
-                            className="flex items-center justify-between p-3 bg-slate-900/50 rounded-lg hover:bg-slate-900 transition-colors cursor-pointer group"
+                            className="flex items-center justify-between p-3 bg-black/50 rounded-lg hover:bg-black/65 transition-colors cursor-pointer group border border-white/5"
                             onClick={() => {
                                 setCurrentRole(transition.from);
                                 setTargetRole(transition.to);
@@ -125,8 +125,8 @@ const CareerPathGenerator = () => {
                                 <span className="text-white font-medium">{transition.to}</span>
                             </div>
                             <span className={`text-xs px-2 py-1 rounded-full ${transition.demand === 'Very High'
-                                ? 'bg-green-500/10 text-green-400'
-                                : 'bg-blue-500/10 text-blue-400'
+                                ? 'bg-white/10 text-white'
+                                : 'bg-white/5 text-slate-200'
                                 }`}>
                                 {transition.demand} Demand
                             </span>
@@ -140,7 +140,7 @@ const CareerPathGenerator = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-slate-800/50 border border-slate-700/50 p-6 rounded-2xl"
+                    className="bg-black/45 border border-white/10 p-6 rounded-2xl"
                 >
                     <div className="flex items-center justify-between mb-6">
                         <h4 className="text-lg font-bold text-white">
@@ -159,15 +159,15 @@ const CareerPathGenerator = () => {
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="relative pl-8 pb-6 border-l-2 border-primary/30 last:border-l-0 last:pb-0"
+                                className="relative pl-8 pb-6 border-l-2 border-white/10 last:border-l-0 last:pb-0"
                             >
                                 {/* Timeline dot */}
-                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-primary border-4 border-slate-800" />
+                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white border-4 border-black" />
 
-                                <div className="bg-slate-900/50 rounded-xl p-5 border border-slate-700/50">
+                                <div className="bg-black/55 rounded-xl p-5 border border-white/10">
                                     <div className="flex items-center justify-between mb-3">
                                         <h5 className="text-lg font-bold text-white">{step.phase}</h5>
-                                        <span className="text-sm text-primary font-medium flex items-center gap-1">
+                                        <span className="text-sm text-white font-medium flex items-center gap-1">
                                             <Clock className="w-3 h-3" />
                                             {step.duration}
                                         </span>
@@ -176,14 +176,14 @@ const CareerPathGenerator = () => {
                                     {/* Skills to Learn */}
                                     <div className="mb-4">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <BookOpen className="w-4 h-4 text-blue-400" />
-                                            <span className="text-sm font-semibold text-blue-400">Skills to Learn</span>
+                                            <BookOpen className="w-4 h-4 text-white" />
+                                            <span className="text-sm font-semibold text-white">Skills to Learn</span>
                                         </div>
                                         <div className="flex flex-wrap gap-2">
                                             {step.skills.map((skill, i) => (
                                                 <span
                                                     key={i}
-                                                    className="px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full text-sm border border-blue-500/20"
+                                                    className="px-3 py-1 bg-white/5 text-slate-200 rounded-full text-sm border border-white/10"
                                                 >
                                                     {skill}
                                                 </span>
@@ -194,8 +194,8 @@ const CareerPathGenerator = () => {
                                     {/* Resources */}
                                     <div className="mb-4">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <BookOpen className="w-4 h-4 text-purple-400" />
-                                            <span className="text-sm font-semibold text-purple-400">Recommended Resources</span>
+                                            <BookOpen className="w-4 h-4 text-white" />
+                                            <span className="text-sm font-semibold text-white">Recommended Resources</span>
                                         </div>
                                         <ul className="space-y-1">
                                             {step.resources.map((resource, i) => (
@@ -208,10 +208,10 @@ const CareerPathGenerator = () => {
                                     </div>
 
                                     {/* Milestone */}
-                                    <div className="flex items-start gap-2 p-3 bg-green-500/5 border border-green-500/20 rounded-lg">
-                                        <Award className="w-4 h-4 text-green-400 mt-0.5" />
+                                    <div className="flex items-start gap-2 p-3 bg-white/5 border border-white/10 rounded-lg">
+                                        <Award className="w-4 h-4 text-white mt-0.5" />
                                         <div>
-                                            <span className="text-xs font-semibold text-green-400 uppercase">Milestone</span>
+                                            <span className="text-xs font-semibold text-white uppercase">Milestone</span>
                                             <p className="text-sm text-slate-300 mt-1">{step.milestone}</p>
                                         </div>
                                     </div>
