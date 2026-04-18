@@ -116,7 +116,7 @@ const HistoryPanel = ({ isOpen, onClose, userId, onLoadResult }) => {
                                                 <span className={`px-2 py-0.5 rounded text-xs font-medium ${item.ats_score >= 70 ? 'bg-green-500/10 text-green-400' :
                                                         item.ats_score >= 50 ? 'bg-yellow-500/10 text-yellow-400' : 'bg-red-500/10 text-red-400'
                                                     }`}>
-                                                    Score: {item.ats_score}%
+                                                    Score: {Math.round(item.ats_score)}/100
                                                 </span>
                                             )}
                                         </div>

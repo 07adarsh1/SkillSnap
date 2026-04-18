@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import Dict, List, Optional
 from datetime import datetime
 
 class AnalysisRequest(BaseModel):
@@ -12,3 +12,4 @@ class AIAnalysisResult(BaseModel):
     missing_skills: List[str]
     experience_match: str
     ai_suggestions: List[str]
+    score_breakdown: Optional[Dict[str, Dict[str, float]]] = None

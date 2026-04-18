@@ -7,6 +7,7 @@ import Analytics from './dashboard/Analytics';
 import CareerPathGenerator from './dashboard/CareerPathGenerator';
 import ResumeOptimizer from './dashboard/ResumeOptimizer';
 import VersionControl from './dashboard/VersionControl';
+import HistoryView from './dashboard/HistoryView';
 
 const UserDashboard = ({ user, onClose }) => {
     const [activeTab, setActiveTab] = useState('overview');
@@ -14,7 +15,13 @@ const UserDashboard = ({ user, onClose }) => {
     const renderContent = () => {
         switch (activeTab) {
             case 'overview':
-                return <Overview onUploadClick={() => setActiveTab('resumes')} />;
+                return (
+                    <Overview
+                        userId={user?.id}
+                        onUploadClick={() => setActiveTab('resumes')}
+                        onViewHistory={() => setActiveTab('history')}
+                    />
+                );
             case 'resumes':
                 return <ResumeManager userId={user?.id} />;
             case 'jobs':
@@ -29,9 +36,15 @@ const UserDashboard = ({ user, onClose }) => {
                 // Let's render the component. It might need props.
                 return <div className="text-center text-slate-400 mt-20">Select a resume from "My Resumes" to optimize.</div>;
             case 'history':
-                return <div className="text-center text-slate-400 mt-20">Select a resume from "My Resumes" to view history.</div>;
+                return <HistoryView userId={user?.id} onOpenResumes={() => setActiveTab('resumes')} />;
             default:
-                return <Overview />;
+                return (
+                    <Overview
+                        userId={user?.id}
+                        onUploadClick={() => setActiveTab('resumes')}
+                        onViewHistory={() => setActiveTab('history')}
+                    />
+                );
         }
     };
 

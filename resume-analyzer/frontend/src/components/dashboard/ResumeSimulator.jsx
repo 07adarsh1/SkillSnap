@@ -83,10 +83,10 @@ const ResumeSimulator = () => {
                         onChange={(e) => setItemType(e.target.value)}
                         className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-primary focus:border-transparent"
                     >
-                        <option value="skill">Skill</option>
-                        <option value="project">Project</option>
-                        <option value="certification">Certification</option>
-                        <option value="experience">Experience</option>
+                        <option value="skill" className="text-slate-900 bg-white">Skill</option>
+                        <option value="project" className="text-slate-900 bg-white">Project</option>
+                        <option value="certification" className="text-slate-900 bg-white">Certification</option>
+                        <option value="experience" className="text-slate-900 bg-white">Experience</option>
                     </select>
 
                     <input

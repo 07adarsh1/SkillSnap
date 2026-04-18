@@ -110,7 +110,7 @@ const ResumeManager = ({ userId }) => {
                 <h2 className="text-2xl font-bold text-white tracking-tight">Resume Management</h2>
                 <button
                     onClick={() => setShowUploadPanel(!showUploadPanel)}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary/90 text-slate-900 rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(0,210,255,0.3)] hover:shadow-[0_0_25px_rgba(0,210,255,0.5)] hover:-translate-y-0.5"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-primary/15 text-slate-100 rounded-xl font-semibold border border-white/15 hover:border-primary/40 transition-all shadow-[0_0_12px_rgba(0,210,255,0.15)] hover:shadow-[0_0_22px_rgba(0,210,255,0.3)] hover:-translate-y-0.5"
                 >
                     <Upload className="w-5 h-5" />
                     {showUploadPanel ? "Cancel Upload" : "Upload New Resume"}
@@ -219,7 +219,7 @@ const ResumeManager = ({ userId }) => {
                                             <span className="text-slate-300">ATS Score</span>
                                             <span className={`text-lg font-bold drop-shadow-md ${resume.ats_score > 70 ? 'text-green-400' :
                                                 resume.ats_score > 50 ? 'text-yellow-400' : 'text-red-400'
-                                                }`}>{Math.round(resume.ats_score)}%</span>
+                                                }`}>{Math.round(resume.ats_score)}/100</span>
                                         </div>
                                         <div className="w-full bg-slate-900 rounded-full h-2 overflow-hidden shadow-inner">
                                             <div

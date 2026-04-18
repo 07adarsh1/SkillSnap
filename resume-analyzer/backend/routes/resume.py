@@ -43,60 +43,36 @@ async def analyze_resume(request: AnalysisRequest, db = Depends(get_database)):
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
     
+    # Primary score uses deterministic ATS rubric for stable, strict scoring.
+    result = nlp_engine.analyze_resume_vs_job(
+        resume["content_text"],
+        request.job_description or "",
+    )
+
+    ai_analysis = None
     try:
-        # Use Groq AI for analysis
-        analysis = await ai_service.analyze_resume(
-            resume["content_text"], 
-            request.job_description or ""
+        ai_analysis = await ai_service.analyze_resume(
+            resume["content_text"],
+            request.job_description or "",
         )
-        
-        # Map AI response to our schema
-        result = AIAnalysisResult(
-            ats_score=float(analysis.get("ats_score", 75)),
-            matched_skills=analysis.get("skills", {}).get("matched", []),
-            missing_skills=analysis.get("skills", {}).get("missing", []),
-            experience_match=analysis.get("experience_match", "Moderate"),
-            ai_suggestions=analysis.get("improvement_tips", [])
-        )
-        
-        # Save result with additional AI data
-        await db["resumes"].update_one(
-            {"id": request.resume_id},
-            {"$set": {
-                "ats_score": result.ats_score,
-                "analysis_result": result.dict(),
-                "ai_analysis": analysis,
-                "last_analyzed_at": datetime.utcnow()
-            }}
-        )
-        
-        return result
-        
+        ai_tips = ai_analysis.get("improvement_tips", [])
+        if ai_tips:
+            merged_tips = result.ai_suggestions + [tip for tip in ai_tips if tip not in result.ai_suggestions]
+            result.ai_suggestions = merged_tips[:6]
     except Exception as e:
-        print(f"AI Analysis Error: {e}")
-        # Fallback to basic analysis if AI provider fails
-        resume_skills = nlp_engine.extract_skills(resume["content_text"])
-        result = AIAnalysisResult(
-            ats_score=75.0,
-            matched_skills=resume_skills,
-            missing_skills=[],
-            experience_match="Moderate",
-            ai_suggestions=["Analysis service temporarily unavailable. Please try again."]
-        )
+        print(f"AI Analysis Error (supplemental only): {e}")
 
-        # Persist fallback result so UI exits "Processing Analysis" state.
-        await db["resumes"].update_one(
-            {"id": request.resume_id},
-            {"$set": {
-                "ats_score": result.ats_score,
-                "analysis_result": result.dict(),
-                "analysis_fallback": True,
-                "analysis_error": str(e),
-                "last_analyzed_at": datetime.utcnow()
-            }}
-        )
+    await db["resumes"].update_one(
+        {"id": request.resume_id},
+        {"$set": {
+            "ats_score": result.ats_score,
+            "analysis_result": result.dict(),
+            "ai_analysis": ai_analysis,
+            "last_analyzed_at": datetime.utcnow(),
+        }}
+    )
 
-        return result
+    return result
 
 @router.get("/resumes/{user_id}")
 async def get_user_resumes(user_id: str, db = Depends(get_database)):

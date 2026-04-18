@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { CheckCircle, XCircle, AlertTriangle, Award, Sparkles, MessageSquare, HelpCircle, History, ShieldCheck } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, Award, Sparkles, MessageSquare, HelpCircle, History, ShieldCheck, BarChart3 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
 import { Badge } from './ui/Badge';
 
@@ -20,7 +20,7 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
 
     if (!data) return null;
 
-    const { ats_score, matched_skills, missing_skills, experience_match, ai_suggestions } = data;
+    const { ats_score, matched_skills, missing_skills, experience_match, ai_suggestions, score_breakdown } = data;
 
     const scoreData = [
         { name: 'Score', value: ats_score },
@@ -33,7 +33,28 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
         return '#ef4444'; // Red
     };
 
+    const getMatchLabel = (score) => {
+        if (score >= 80) return 'Strong Match';
+        if (score >= 60) return 'Moderate Match';
+        return 'Weak Match';
+    };
+
     const scoreColor = getColor(ats_score);
+    const matchLabel = getMatchLabel(ats_score);
+    const matchVariant = ats_score >= 80 ? 'success' : ats_score >= 60 ? 'warning' : 'danger';
+
+    const breakdownLabels = {
+        skills_alignment: 'Skills Alignment',
+        semantic_relevance: 'Semantic Relevance',
+        section_coverage: 'Section Coverage',
+        impact_evidence: 'Impact Evidence',
+        formatting_quality: 'Formatting Quality',
+        strictness_deductions: 'Strictness Deductions',
+    };
+
+    const breakdownEntries = score_breakdown
+        ? Object.entries(score_breakdown).filter(([key]) => key !== 'total')
+        : [];
 
     const FeatureButton = ({ icon: Icon, title, desc, onClick, color }) => (
         <Card
@@ -70,15 +91,15 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
                         <CardTitle className="text-slate-200 tracking-wide">ATS Match Score</CardTitle>
                     </CardHeader>
                     <CardContent className="w-full flex justify-center pb-8 z-10 relative">
-                        <div className="relative w-48 h-48 drop-shadow-[0_0_20px_rgba(0,210,255,0.3)]">
+                        <div className="relative w-52 h-52 drop-shadow-[0_0_20px_rgba(0,210,255,0.3)]">
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie
                                         data={scoreData}
                                         cx="50%"
                                         cy="50%"
-                                        innerRadius={65}
-                                        outerRadius={85}
+                                        innerRadius={72}
+                                        outerRadius={94}
                                         startAngle={90}
                                         endAngle={-270}
                                         dataKey="value"
@@ -89,10 +110,15 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
                                     </Pie>
                                 </PieChart>
                             </ResponsiveContainer>
-                            <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                <span className="text-5xl font-bold font-mono tracking-tighter" style={{ color: scoreColor, textShadow: `0 0 25px ${scoreColor}` }}>{ats_score}%</span>
-                                <Badge variant={experience_match === 'Strong' ? 'success' : 'warning'} className="mt-3 backdrop-blur-md px-3 font-semibold">
-                                    {experience_match} Match
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                                <span
+                                    className="text-[2.6rem] leading-none font-bold font-mono tracking-tight"
+                                    style={{ color: scoreColor, textShadow: `0 0 22px ${scoreColor}` }}
+                                >
+                                    {Math.round(ats_score)}/100
+                                </span>
+                                <Badge variant={matchVariant} className="backdrop-blur-md px-3.5 py-1 font-semibold border border-white/15">
+                                    {matchLabel}
                                 </Badge>
                             </div>
                         </div>
@@ -143,6 +169,49 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
                 </Card>
             </motion.div>
 
+            {breakdownEntries.length > 0 && (
+                <Card className="relative overflow-hidden border-white/10 bg-gradient-to-br from-[#121318]/75 to-[#0b1220]/70">
+                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-cyan-500/50 via-primary/80 to-indigo-500/50 shadow-[0_0_20px_rgba(0,210,255,0.45)]" />
+                    <CardHeader>
+                        <CardTitle className="text-slate-100 flex items-center gap-2 tracking-wide">
+                            <BarChart3 className="w-5 h-5 text-primary drop-shadow-[0_0_6px_rgba(0,210,255,0.7)]" />
+                            Scoring Breakdown
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {breakdownEntries.map(([key, value]) => {
+                            const score = Number(value?.score || 0);
+                            const max = Number(value?.max || 1);
+                            const percentage = Math.max(0, Math.min(100, (score / max) * 100));
+                            const isDeduction = key === 'strictness_deductions';
+
+                            return (
+                                <div key={key} className="space-y-1.5 bg-white/[0.03] border border-white/10 rounded-xl px-3 py-3">
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-slate-200 font-medium tracking-wide">{breakdownLabels[key] || key}</span>
+                                        <span className="text-slate-100 font-semibold px-2 py-0.5 rounded-md bg-white/10 border border-white/15">{score.toFixed(1)} / {max.toFixed(0)}</span>
+                                    </div>
+                                    <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden border border-white/10">
+                                        <div
+                                            className={`h-full rounded-full transition-all duration-700 ${isDeduction ? 'bg-gradient-to-r from-red-500/70 via-red-400/80 to-orange-400/70' : 'bg-gradient-to-r from-cyan-400/80 via-primary/80 to-indigo-400/80'}`}
+                                            style={{ width: `${percentage}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        {score_breakdown?.total && (
+                            <div className="mt-2 flex items-center justify-between rounded-xl border border-primary/30 bg-primary/10 px-4 py-3">
+                                <span className="text-sm uppercase tracking-widest text-primary font-semibold">Overall ATS Score</span>
+                                <span className="text-xl font-bold text-white drop-shadow-[0_0_10px_rgba(0,210,255,0.5)]">
+                                    {Number(score_breakdown.total.score).toFixed(1)} / {Number(score_breakdown.total.max).toFixed(0)}
+                                </span>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            )}
+
             {/* AI Insights */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="border-l-4 border-l-green-500 border-y-white/10 border-r-white/10 bg-gradient-to-br from-[#121318]/60 to-green-900/10">
@@ -163,7 +232,7 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
                         {ats_score > 70 && (
                             <div className="flex items-start gap-3">
                                 <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0 drop-shadow-[0_0_5px_rgba(34,197,94,0.5)]" />
-                                <p className="text-slate-300 font-light">Strong ATS compatibility score ({ats_score}%).</p>
+                                <p className="text-slate-300 font-light">Strong ATS compatibility score ({Math.round(ats_score)}/100).</p>
                             </div>
                         )}
                         <div className="flex items-start gap-3">
