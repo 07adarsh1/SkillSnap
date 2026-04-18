@@ -111,3 +111,45 @@ VITE_FIREBASE_APP_ID=1:290679156507:web:8ed6e44a15e47f252c2dbe
 2. **Job Description**: Paste the JD of the role you are applying for.
 3. **Analyze**: Click "Analyze Match".
 4. **View Results**: See your ATS Score, matched skills, missing skills, and detailed AI feedback.
+
+## ☁️ Deploy On Render
+
+This repo now includes a top-level [render.yaml](render.yaml) blueprint to deploy both backend and frontend.
+
+### 1. Push repository to GitHub
+
+Render blueprints are pulled from your Git repository, so make sure latest changes are pushed.
+
+### 2. Create Blueprint in Render
+
+1. Open Render Dashboard.
+2. Click **New** → **Blueprint**.
+3. Connect your GitHub repo and select this project.
+4. Render will detect [render.yaml](render.yaml) and propose two services:
+	- `resume-analyzer-api` (FastAPI backend)
+	- `resume-analyzer-frontend` (static Vite frontend)
+
+### 3. Set required environment variables
+
+Set these in the Render dashboard for the backend service:
+
+- `FIREBASE_PROJECT_ID`
+- `FIREBASE_CREDENTIALS_JSON` (recommended for cloud deploy)
+- `GROQ_API_KEY` (required for AI-powered Groq routes)
+
+Optional:
+
+- `GROQ_MODEL`
+
+### 4. Update frontend API URL after first backend deploy
+
+By default, [render.yaml](render.yaml) points `VITE_API_URL` to:
+
+`https://resume-analyzer-api.onrender.com/api`
+
+If your backend gets a different Render URL, update `VITE_API_URL` in the frontend service env vars and redeploy frontend.
+
+### 5. Notes
+
+- Backend now starts even without `GROQ_API_KEY`; only Groq AI endpoints will return an error until the key is set.
+- If Firebase credentials are missing, the app falls back to in-memory mock mode.

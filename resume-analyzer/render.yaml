@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: resume-analyzer-api
+    env: python
+    rootDir: backend
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: FIREBASE_PROJECT_ID
+        value: ai-resume-400b1
+      - key: FIREBASE_CREDENTIALS_JSON
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+
+  - type: web
+    name: resume-analyzer-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://resume-analyzer-api.onrender.com/api
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

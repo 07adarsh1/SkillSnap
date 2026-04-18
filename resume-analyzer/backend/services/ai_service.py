@@ -10,10 +10,7 @@ load_dotenv()
 class AIService:
     def __init__(self):
         api_key = os.getenv("GROQ_API_KEY")
-        if not api_key:
-            raise ValueError("GROQ_API_KEY not found in environment variables")
-
-        self.client = Groq(api_key=api_key)
+        self.client = Groq(api_key=api_key) if api_key else None
         self.model_name = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
     def _parse_json_response(self, response_text: str) -> Dict[str, Any]:
@@ -34,6 +31,11 @@ class AIService:
 
     def _generate_json(self, prompt: str) -> Dict[str, Any]:
         """Call Groq chat completion and return a parsed JSON payload."""
+        if self.client is None:
+            raise ValueError(
+                "GROQ_API_KEY is not configured. Set GROQ_API_KEY to enable AI endpoints."
+            )
+
         response = self.client.chat.completions.create(
             model=self.model_name,
             messages=[
