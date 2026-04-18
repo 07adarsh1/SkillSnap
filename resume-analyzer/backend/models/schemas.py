@@ -8,6 +8,7 @@ class AnalysisRequest(BaseModel):
 
 class AIAnalysisResult(BaseModel):
     ats_score: float
+    resume_skills: Optional[List[str]] = None
     matched_skills: List[str]
     missing_skills: List[str]
     experience_match: str

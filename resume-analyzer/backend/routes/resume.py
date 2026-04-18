@@ -34,6 +34,34 @@ def _normalize_points(items, limit=4):
 
     return normalized
 
+
+def _build_fallback_strengths(result, resume_skills, job_description):
+    strengths = []
+
+    if resume_skills:
+        top_skills = ", ".join(resume_skills[:3])
+        strengths.append(f"Resume highlights relevant skills: {top_skills}.")
+
+    if result.matched_skills:
+        strengths.append(f"Matched {len(result.matched_skills)} role-aligned skills from the JD.")
+
+    if result.score_breakdown:
+        section_score = result.score_breakdown.get("section_coverage", {}).get("score", 0)
+        if section_score >= 10:
+            strengths.append("Resume structure includes multiple ATS-friendly sections.")
+
+    if not job_description.strip():
+        strengths.append("Resume is indexed and ready for JD comparison once a job description is added.")
+
+    if result.ats_score >= 80:
+        strengths.append("Strong overall ATS readiness based on strict rubric scoring.")
+    elif result.ats_score >= 65:
+        strengths.append("Moderate ATS readiness with clear room for targeted improvement.")
+    else:
+        strengths.append("Resume needs tighter alignment before it will pass stricter ATS filtering.")
+
+    return _normalize_points(strengths, limit=4)
+
 @router.post("/upload-resume")
 async def upload_resume(
     file: UploadFile = File(...), 
@@ -67,6 +95,8 @@ async def analyze_resume(request: AnalysisRequest, db = Depends(get_database)):
     resume = await db["resumes"].find_one({"id": request.resume_id})
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
+
+    resume_skills = nlp_engine.extract_skills(resume["content_text"])
     
     # Primary score uses deterministic ATS rubric for stable, strict scoring.
     result = nlp_engine.analyze_resume_vs_job(
@@ -92,25 +122,18 @@ async def analyze_resume(request: AnalysisRequest, db = Depends(get_database)):
         if ai_strengths:
             result.strengths = ai_strengths
         elif not result.strengths:
-            result.strengths = _normalize_points([
-                "Resume structure is ATS-parseable.",
-                "Core sections are present and readable.",
-                "Formatting supports recruiter scanability.",
-            ], limit=3)
+            result.strengths = _build_fallback_strengths(result, resume_skills, request.job_description or "")
     except Exception as e:
         print(f"AI Analysis Error (supplemental only): {e}")
         result.ai_suggestions = _normalize_points(result.ai_suggestions, limit=4)
         if not result.strengths:
-            result.strengths = _normalize_points([
-                "Resume structure is ATS-parseable.",
-                "Core sections are present and readable.",
-                "Formatting supports recruiter scanability.",
-            ], limit=3)
+            result.strengths = _build_fallback_strengths(result, resume_skills, request.job_description or "")
 
     await db["resumes"].update_one(
         {"id": request.resume_id},
         {"$set": {
             "ats_score": result.ats_score,
+            "resume_skills": resume_skills,
             "analysis_result": result.dict(),
             "ai_analysis": ai_analysis,
             "last_analyzed_at": datetime.utcnow(),

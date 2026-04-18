@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Target, TrendingUp, BookOpen, Award, Clock, ChevronRight } from 'lucide-react';
+import { generateCareerPath } from '../../services/api';
 
 const CareerPathGenerator = () => {
     const [currentRole, setCurrentRole] = useState('');
@@ -17,7 +18,6 @@ const CareerPathGenerator = () => {
         setShowRoadmap(false);
 
         try {
-            const { generateCareerPath } = await import('../../services/api');
             const data = await generateCareerPath(currentRole, targetRole, []); // Pass empty array for currentSkills for now
             setRoadmapData(data);
             setShowRoadmap(true);

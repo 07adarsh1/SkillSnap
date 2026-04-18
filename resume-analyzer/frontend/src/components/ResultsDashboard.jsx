@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { CheckCircle, XCircle, AlertTriangle, Award, Sparkles, MessageSquare, HelpCircle, History, ShieldCheck, BarChart3 } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, Award, Sparkles, MessageSquare, HelpCircle, History, ShieldCheck, BarChart3, ChevronDown } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
 import { Badge } from './ui/Badge';
 
@@ -17,10 +17,13 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
     const [showExplainer, setShowExplainer] = useState(false);
     const [showVersions, setShowVersions] = useState(false);
     const [showQualityCheck, setShowQualityCheck] = useState(false);
+    const [showBreakdown, setShowBreakdown] = useState(false);
 
     if (!data) return null;
 
-    const { ats_score, matched_skills, missing_skills, experience_match, strengths, ai_suggestions, score_breakdown } = data;
+    const { ats_score, resume_skills = [], matched_skills, missing_skills, experience_match, strengths, ai_suggestions, score_breakdown } = data;
+    const hasJobDescription = Boolean(String(jobDescription || '').trim());
+    const matchedSkills = hasJobDescription ? matched_skills : resume_skills;
 
     const scoreData = [
         { name: 'Score', value: ats_score },
@@ -97,13 +100,13 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
                 className="grid grid-cols-1 md:grid-cols-3 gap-6"
             >
                 {/* Score Card */}
-                <Card className="col-span-1 flex flex-col items-center justify-center relative overflow-hidden text-white border-white/10">
-                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-secondary shadow-[0_0_20px_rgba(0,210,255,0.5)]" />
+                <Card className="col-span-1 flex flex-col items-center justify-center relative overflow-hidden text-white border-white/10 bg-gradient-to-br from-[#111318] via-[#0c1118] to-[#0a0f16]">
+                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-cyan-400/60 via-white/20 to-indigo-400/60" />
                     <CardHeader className="text-center pb-2 z-10">
-                        <CardTitle className="text-slate-200 tracking-wide">ATS Match Score</CardTitle>
+                        <CardTitle className="text-slate-100 tracking-wide">ATS Match Score</CardTitle>
                     </CardHeader>
                     <CardContent className="w-full flex justify-center pb-8 z-10 relative">
-                        <div className="relative w-52 h-52 drop-shadow-[0_0_20px_rgba(0,210,255,0.3)]">
+                        <div className="relative w-48 h-48">
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie
@@ -117,19 +120,19 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
                                         dataKey="value"
                                         stroke="none"
                                     >
-                                        <Cell key="score" fill={scoreColor} style={{ filter: `drop-shadow(0px 0px 5px ${scoreColor})` }} />
-                                        <Cell key="remaining" fill="rgba(255,255,255,0.05)" />
+                                        <Cell key="score" fill={scoreColor} />
+                                        <Cell key="remaining" fill="rgba(255,255,255,0.06)" />
                                     </Pie>
                                 </PieChart>
                             </ResponsiveContainer>
                             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
                                 <span
-                                    className="text-[2.6rem] leading-none font-bold font-mono tracking-tight"
-                                    style={{ color: scoreColor, textShadow: `0 0 22px ${scoreColor}` }}
+                                    className="text-[2.4rem] leading-none font-bold font-mono tracking-tight"
+                                    style={{ color: scoreColor }}
                                 >
                                     {Math.round(ats_score)}/100
                                 </span>
-                                <Badge variant={matchVariant} className="backdrop-blur-md px-3.5 py-1 font-semibold border border-white/15">
+                                <Badge variant={matchVariant} className="px-3.5 py-1 font-semibold border border-white/10 bg-white/5 text-slate-100">
                                     {matchLabel}
                                 </Badge>
                             </div>
@@ -142,46 +145,69 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Award className="w-5 h-5 text-indigo-500" />
-                            Skills Analysis
+                            {hasJobDescription ? 'Skills Analysis' : 'Extracted Resume Skills'}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div>
-                                <h4 className="text-sm uppercase tracking-wider text-green-400 font-semibold mb-3 flex items-center gap-2 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">
-                                    <CheckCircle className="w-4 h-4" /> Matched Skills
-                                </h4>
+                        {!hasJobDescription ? (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+                                    <div>
+                                        <p className="text-sm font-semibold text-slate-100 tracking-wide">Resume skills extracted from the uploaded file</p>
+                                        <p className="text-xs text-slate-500 mt-1">Add a job description to switch into match and gap analysis.</p>
+                                    </div>
+                                    <Badge variant="success" className="shrink-0">{resume_skills.length} Found</Badge>
+                                </div>
+
                                 <div className="flex flex-wrap gap-2">
-                                    {matched_skills.map((skill, i) => (
+                                    {matchedSkills.map((skill, i) => (
                                         <Badge key={i} variant="success" className="shadow-[0_0_10px_rgba(34,197,94,0.1)]">
                                             {skill}
                                         </Badge>
                                     ))}
-                                    {matched_skills.length === 0 && <span className="text-slate-500 text-sm italic font-light">No specific skills matched.</span>}
+                                    {matchedSkills.length === 0 && (
+                                        <span className="text-slate-500 text-sm italic font-light">No resume skills extracted yet.</span>
+                                    )}
                                 </div>
                             </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                    <h4 className="text-sm uppercase tracking-wider text-green-400 font-semibold mb-3 flex items-center gap-2 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">
+                                        <CheckCircle className="w-4 h-4" /> Matched Skills
+                                    </h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {matchedSkills.map((skill, i) => (
+                                            <Badge key={i} variant="success" className="shadow-[0_0_10px_rgba(34,197,94,0.1)]">
+                                                {skill}
+                                            </Badge>
+                                        ))}
+                                        {matchedSkills.length === 0 && <span className="text-slate-500 text-sm italic font-light">No specific skills matched.</span>}
+                                    </div>
+                                </div>
 
-                            <div>
-                                <h4 className="text-sm uppercase tracking-wider text-red-500 font-semibold mb-3 flex items-center gap-2 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">
-                                    <XCircle className="w-4 h-4" /> Missing Skills
-                                </h4>
-                                <div className="flex flex-wrap gap-2">
-                                    {missing_skills.map((skill, i) => (
-                                        <Badge key={i} variant="danger" className="shadow-[0_0_10px_rgba(239,68,68,0.1)]">
-                                            {skill}
-                                        </Badge>
-                                    ))}
-                                    {missing_skills.length === 0 && matched_skills.length > 0 && (
-                                        <span className="text-slate-500 text-sm italic font-light">Great job! No key skills missing.</span>
-                                    )}
-                                    {missing_skills.length === 0 && matched_skills.length === 0 && (
-                                        <span className="text-slate-500 text-sm italic font-light">
-                                            Add a detailed job description to enable skill-gap detection.
-                                        </span>
-                                    )}
+                                <div>
+                                    <h4 className="text-sm uppercase tracking-wider text-red-500 font-semibold mb-3 flex items-center gap-2 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">
+                                        <XCircle className="w-4 h-4" /> Missing Skills
+                                    </h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {missing_skills.map((skill, i) => (
+                                            <Badge key={i} variant="danger" className="shadow-[0_0_10px_rgba(239,68,68,0.1)]">
+                                                {skill}
+                                            </Badge>
+                                        ))}
+                                        {missing_skills.length === 0 && matched_skills.length > 0 && (
+                                            <span className="text-slate-500 text-sm italic font-light">Great job! No key skills missing.</span>
+                                        )}
+                                        {missing_skills.length === 0 && matched_skills.length === 0 && (
+                                            <span className="text-slate-500 text-sm italic font-light">
+                                                Add a detailed job description to enable skill-gap detection.
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </CardContent>
                 </Card>
             </motion.div>
@@ -190,39 +216,54 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
                 <Card className="relative overflow-hidden border-white/10 bg-gradient-to-br from-[#121318]/75 to-[#0b1220]/70">
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-cyan-500/50 via-primary/80 to-indigo-500/50 shadow-[0_0_20px_rgba(0,210,255,0.45)]" />
                     <CardHeader>
-                        <CardTitle className="text-slate-100 flex items-center gap-2 tracking-wide">
-                            <BarChart3 className="w-5 h-5 text-primary drop-shadow-[0_0_6px_rgba(0,210,255,0.7)]" />
-                            Scoring Breakdown
-                        </CardTitle>
+                        <button
+                            type="button"
+                            onClick={() => setShowBreakdown((value) => !value)}
+                            className="w-full flex items-center justify-between gap-3 text-left"
+                        >
+                            <CardTitle className="text-slate-100 flex items-center gap-2 tracking-wide">
+                                <BarChart3 className="w-5 h-5 text-primary drop-shadow-[0_0_6px_rgba(0,210,255,0.7)]" />
+                                Scoring Breakdown
+                            </CardTitle>
+                            <div className="flex items-center gap-2 text-sm text-slate-400">
+                                <span>{showBreakdown ? 'Hide details' : 'Show details'}</span>
+                                <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showBreakdown ? 'rotate-180' : 'rotate-0'}`} />
+                            </div>
+                        </button>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        {breakdownEntries.map(([key, value]) => {
-                            const score = Number(value?.score || 0);
-                            const max = Number(value?.max || 1);
-                            const percentage = Math.max(0, Math.min(100, (score / max) * 100));
-                            const isDeduction = key === 'strictness_deductions';
-
-                            return (
-                                <div key={key} className="space-y-1.5 bg-white/[0.03] border border-white/10 rounded-xl px-3 py-3">
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-slate-200 font-medium tracking-wide">{breakdownLabels[key] || key}</span>
-                                        <span className="text-slate-100 font-semibold px-2 py-0.5 rounded-md bg-white/10 border border-white/15">{score.toFixed(1)} / {max.toFixed(0)}</span>
-                                    </div>
-                                    <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden border border-white/10">
-                                        <div
-                                            className={`h-full rounded-full transition-all duration-700 ${isDeduction ? 'bg-gradient-to-r from-red-500/70 via-red-400/80 to-orange-400/70' : 'bg-gradient-to-r from-cyan-400/80 via-primary/80 to-indigo-400/80'}`}
-                                            style={{ width: `${percentage}%` }}
-                                        />
-                                    </div>
-                                </div>
-                            );
-                        })}
+                    <CardContent className="space-y-4 pt-0">
                         {score_breakdown?.total && (
-                            <div className="mt-2 flex items-center justify-between rounded-xl border border-primary/30 bg-primary/10 px-4 py-3">
+                            <div className="flex items-center justify-between rounded-xl border border-primary/30 bg-primary/10 px-4 py-3">
                                 <span className="text-sm uppercase tracking-widest text-primary font-semibold">Overall ATS Score</span>
                                 <span className="text-xl font-bold text-white drop-shadow-[0_0_10px_rgba(0,210,255,0.5)]">
                                     {Number(score_breakdown.total.score).toFixed(1)} / {Number(score_breakdown.total.max).toFixed(0)}
                                 </span>
+                            </div>
+                        )}
+
+                        {showBreakdown && (
+                            <div className="space-y-4">
+                                {breakdownEntries.map(([key, value]) => {
+                                    const score = Number(value?.score || 0);
+                                    const max = Number(value?.max || 1);
+                                    const percentage = Math.max(0, Math.min(100, (score / max) * 100));
+                                    const isDeduction = key === 'strictness_deductions';
+
+                                    return (
+                                        <div key={key} className="space-y-1.5 bg-white/[0.03] border border-white/10 rounded-xl px-3 py-3">
+                                            <div className="flex justify-between items-center text-sm">
+                                                <span className="text-slate-200 font-medium tracking-wide">{breakdownLabels[key] || key}</span>
+                                                <span className="text-slate-100 font-semibold px-2 py-0.5 rounded-md bg-white/10 border border-white/15">{score.toFixed(1)} / {max.toFixed(0)}</span>
+                                            </div>
+                                            <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden border border-white/10">
+                                                <div
+                                                    className={`h-full rounded-full transition-all duration-700 ${isDeduction ? 'bg-gradient-to-r from-red-500/70 via-red-400/80 to-orange-400/70' : 'bg-gradient-to-r from-cyan-400/80 via-primary/80 to-indigo-400/80'}`}
+                                                    style={{ width: `${percentage}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         )}
                     </CardContent>
