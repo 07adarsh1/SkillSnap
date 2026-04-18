@@ -1,54 +1,41 @@
-import spacy
-from sentence_transformers import SentenceTransformer, util
-from utils.skills_db import COMMON_SKILLS
-from core.config import get_settings
-from models.schemas import AIAnalysisResult
 import re
+from difflib import SequenceMatcher
 
-settings = get_settings()
+from utils.skills_db import COMMON_SKILLS
+from models.schemas import AIAnalysisResult
 
 class NLPService:
     def __init__(self):
-        self._nlp = None
-        self._model = None
+        # Precompute lowercase skills once for faster matching.
+        self._skills = [skill.strip().lower() for skill in COMMON_SKILLS if skill.strip()]
 
-    @property
-    def nlp(self):
-        if self._nlp is None:
-            print("Loading spaCy Model...")
-            try:
-                self._nlp = spacy.load(settings.SPACY_MODEL)
-            except OSError:
-                print(f"Downloading {settings.SPACY_MODEL}...")
-                from spacy.cli import download
-                download(settings.SPACY_MODEL)
-                self._nlp = spacy.load(settings.SPACY_MODEL)
-        return self._nlp
-
-    @property
-    def model(self):
-        if self._model is None:
-            print("Loading SentenceTransformer Model...")
-            self._model = SentenceTransformer(settings.TRANSFORMER_MODEL)
-        return self._model
+    def _tokenize(self, text: str) -> set[str]:
+        return set(re.findall(r"[a-zA-Z0-9+#.-]+", text.lower()))
 
     def extract_skills(self, text: str) -> list[str]:
-        doc = self.nlp(text.lower())
+        text_lower = text.lower()
+        tokens = self._tokenize(text)
         skills = set()
-        tokens = [token.text for token in doc]
-        for skill in COMMON_SKILLS:
+
+        for skill in self._skills:
             if " " in skill:
-                if skill in text.lower():
+                if skill in text_lower:
                     skills.add(skill)
             elif skill in tokens:
                 skills.add(skill)
-        return list(skills)
+
+        return sorted(skills)
 
     def calculate_similarity_score(self, resume_text: str, job_desc: str) -> float:
-        embeddings1 = self.model.encode(resume_text, convert_to_tensor=True)
-        embeddings2 = self.model.encode(job_desc, convert_to_tensor=True)
-        cosine_scores = util.cos_sim(embeddings1, embeddings2)
-        return float(cosine_scores[0][0]) * 100
+        resume_text = (resume_text or "").strip().lower()
+        job_desc = (job_desc or "").strip().lower()
+
+        if not resume_text or not job_desc:
+            return 0.0
+
+        # Lightweight fuzzy text similarity as a semantic approximation.
+        ratio = SequenceMatcher(None, resume_text, job_desc).ratio()
+        return ratio * 100
 
     def analyze_resume_vs_job(self, resume_text: str, job_desc: str) -> AIAnalysisResult:
         resume_skills = set(self.extract_skills(resume_text))
