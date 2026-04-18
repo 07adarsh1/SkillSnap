@@ -75,10 +75,16 @@ Provide your analysis in STRICT JSON format with the following structure:
         "projects": <number 0-100>,
         "skills": <number 0-100>
     }},
+    "strengths": [<list of 3-4 specific resume strengths>],
     "resume_category": "<Fresher or Experienced>",
-    "improvement_tips": [<list of 4-6 specific actionable tips>],
+    "improvement_tips": [<list of 3-4 specific actionable tips>],
     "experience_match": "<Strong or Moderate or Weak>"
 }}
+
+Rules for strengths and improvement_tips:
+- Keep each point concise (max 18 words).
+- Avoid generic filler text.
+- Focus on resume content and JD relevance.
 
 IMPORTANT: Return ONLY the JSON object, no additional text or explanation."""
 

@@ -9,6 +9,31 @@ from datetime import datetime
 
 router = APIRouter()
 
+
+def _normalize_points(items, limit=4):
+    normalized = []
+    seen = set()
+
+    for raw in items or []:
+        text = str(raw or "").strip()
+        if not text:
+            continue
+
+        # Keep suggestions concise for dashboard readability.
+        if len(text) > 140:
+            text = f"{text[:137].rstrip()}..."
+
+        key = text.lower()
+        if key in seen:
+            continue
+
+        seen.add(key)
+        normalized.append(text)
+        if len(normalized) >= limit:
+            break
+
+    return normalized
+
 @router.post("/upload-resume")
 async def upload_resume(
     file: UploadFile = File(...), 
@@ -55,12 +80,32 @@ async def analyze_resume(request: AnalysisRequest, db = Depends(get_database)):
             resume["content_text"],
             request.job_description or "",
         )
-        ai_tips = ai_analysis.get("improvement_tips", [])
+        ai_tips = _normalize_points(ai_analysis.get("improvement_tips", []), limit=4)
+        ai_strengths = _normalize_points(ai_analysis.get("strengths", []), limit=4)
+
+        # Prefer Groq feedback text when available; keep deterministic fallback otherwise.
         if ai_tips:
-            merged_tips = result.ai_suggestions + [tip for tip in ai_tips if tip not in result.ai_suggestions]
-            result.ai_suggestions = merged_tips[:6]
+            result.ai_suggestions = ai_tips
+        else:
+            result.ai_suggestions = _normalize_points(result.ai_suggestions, limit=4)
+
+        if ai_strengths:
+            result.strengths = ai_strengths
+        elif not result.strengths:
+            result.strengths = _normalize_points([
+                "Resume structure is ATS-parseable.",
+                "Core sections are present and readable.",
+                "Formatting supports recruiter scanability.",
+            ], limit=3)
     except Exception as e:
         print(f"AI Analysis Error (supplemental only): {e}")
+        result.ai_suggestions = _normalize_points(result.ai_suggestions, limit=4)
+        if not result.strengths:
+            result.strengths = _normalize_points([
+                "Resume structure is ATS-parseable.",
+                "Core sections are present and readable.",
+                "Formatting supports recruiter scanability.",
+            ], limit=3)
 
     await db["resumes"].update_one(
         {"id": request.resume_id},

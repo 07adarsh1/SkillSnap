@@ -20,7 +20,7 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
 
     if (!data) return null;
 
-    const { ats_score, matched_skills, missing_skills, experience_match, ai_suggestions, score_breakdown } = data;
+    const { ats_score, matched_skills, missing_skills, experience_match, strengths, ai_suggestions, score_breakdown } = data;
 
     const scoreData = [
         { name: 'Score', value: ats_score },
@@ -55,6 +55,18 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
     const breakdownEntries = score_breakdown
         ? Object.entries(score_breakdown).filter(([key]) => key !== 'total')
         : [];
+
+    const normalizedSuggestions = Array.from(
+        new Set((ai_suggestions || []).map((item) => String(item || '').trim()).filter(Boolean))
+    )
+        .map((item) => (item.length > 120 ? `${item.slice(0, 117)}...` : item))
+        .slice(0, 4);
+
+    const normalizedStrengths = Array.from(
+        new Set((strengths || []).map((item) => String(item || '').trim()).filter(Boolean))
+    )
+        .map((item) => (item.length > 120 ? `${item.slice(0, 117)}...` : item))
+        .slice(0, 4);
 
     const FeatureButton = ({ icon: Icon, title, desc, onClick, color }) => (
         <Card
@@ -162,6 +174,11 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
                                     {missing_skills.length === 0 && matched_skills.length > 0 && (
                                         <span className="text-slate-500 text-sm italic font-light">Great job! No key skills missing.</span>
                                     )}
+                                    {missing_skills.length === 0 && matched_skills.length === 0 && (
+                                        <span className="text-slate-500 text-sm italic font-light">
+                                            Add a detailed job description to enable skill-gap detection.
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -220,25 +237,20 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
                             <CheckCircle className="w-5 h-5" /> Strengths
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex items-start gap-3">
-                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0 drop-shadow-[0_0_5px_rgba(34,197,94,0.5)]" />
-                            <p className="text-slate-300 font-light">
-                                {matched_skills.length > 0
-                                    ? `Identified ${matched_skills.length} key technical skills relevant to the role.`
-                                    : "Resume format is parsable and clear."}
-                            </p>
-                        </div>
-                        {ats_score > 70 && (
+                    <CardContent className="space-y-4 min-h-[250px]">
+                        {normalizedStrengths.length > 0 ? (
+                            normalizedStrengths.map((point, index) => (
+                                <div key={index} className="flex items-start gap-3">
+                                    <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0 drop-shadow-[0_0_5px_rgba(34,197,94,0.5)]" />
+                                    <p className="text-slate-300 font-light leading-relaxed">{point}</p>
+                                </div>
+                            ))
+                        ) : (
                             <div className="flex items-start gap-3">
                                 <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0 drop-shadow-[0_0_5px_rgba(34,197,94,0.5)]" />
-                                <p className="text-slate-300 font-light">Strong ATS compatibility score ({Math.round(ats_score)}/100).</p>
+                                <p className="text-slate-300 font-light">No strengths generated yet. Re-run analysis with a job description.</p>
                             </div>
                         )}
-                        <div className="flex items-start gap-3">
-                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0 drop-shadow-[0_0_5px_rgba(34,197,94,0.5)]" />
-                            <p className="text-slate-300 font-light">Used active language in key sections.</p>
-                        </div>
                     </CardContent>
                 </Card>
 
@@ -248,14 +260,14 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
                             <AlertTriangle className="w-5 h-5" /> Improvements Needed
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        {ai_suggestions.map((suggestion, index) => (
+                    <CardContent className="space-y-4 min-h-[250px]">
+                        {normalizedSuggestions.map((suggestion, index) => (
                             <div key={index} className="flex items-start gap-3">
                                 <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5 shrink-0 drop-shadow-[0_0_5px_rgba(239,68,68,0.5)]" />
                                 <p className="text-slate-300 font-light leading-relaxed">{suggestion}</p>
                             </div>
                         ))}
-                        {ai_suggestions.length === 0 && (
+                        {normalizedSuggestions.length === 0 && (
                             <p className="text-slate-500 font-light italic">No critical issues found.</p>
                         )}
                     </CardContent>

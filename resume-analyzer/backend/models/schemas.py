@@ -11,5 +11,6 @@ class AIAnalysisResult(BaseModel):
     matched_skills: List[str]
     missing_skills: List[str]
     experience_match: str
+    strengths: Optional[List[str]] = None
     ai_suggestions: List[str]
     score_breakdown: Optional[Dict[str, Dict[str, float]]] = None

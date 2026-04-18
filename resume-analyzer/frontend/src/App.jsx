@@ -44,6 +44,11 @@ function App() {
             matched_skills: ["Python", "React", "AWS", "Machine Learning", "Docker", "FastAPI"],
             missing_skills: ["Kubernetes", "GraphQL"],
             experience_match: "Strong",
+            strengths: [
+                "Strong alignment with core backend and frontend technologies in the target role.",
+                "Clear project-to-skill mapping with relevant cloud and API experience.",
+                "Good ATS readability through structured sections and concise bullet points.",
+            ],
             ai_suggestions: [
                 "Quantify the impact of your 'AI Resume Architect' project with user growth metrics.",
                 "Mention the specific AWS services used (e.g., Lambda, S3) in your cloud project.",
