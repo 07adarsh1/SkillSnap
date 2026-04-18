@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Bell, Search } from 'lucide-react';
 import { getUserAnalysisHistory } from '../../services/api';
 
@@ -11,6 +11,7 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
     const [unreadCount, setUnreadCount] = useState(0);
     const [lastReadAt, setLastReadAt] = useState(0);
     const [dismissedNotificationIds, setDismissedNotificationIds] = useState([]);
+    const notificationRef = useRef(null);
 
     const navItems = [
         { id: 'overview', label: 'Dashboard' },
@@ -180,6 +181,23 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
 
     const hasUnread = unreadCount > 0;
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (!isNotifOpen) return;
+            if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+                setIsNotifOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchstart', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchstart', handleClickOutside);
+        };
+    }, [isNotifOpen]);
+
     return (
         <div className="min-h-screen text-white font-sans relative z-10 px-4 md:px-8 py-6">
             <header className="relative z-40 max-w-7xl mx-auto mb-8 rounded-2xl border border-white/10 bg-[rgba(5,5,5,0.92)] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.55)]">
@@ -230,7 +248,7 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                                 className="w-full bg-transparent text-slate-100 placeholder:text-slate-500 outline-none"
                             />
                         </div>
-                        <div className="relative">
+                        <div ref={notificationRef} className="relative">
                         <button
                             onClick={handleBellClick}
                             className="p-2.5 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl relative transition-all border border-transparent hover:border-white/10"
@@ -260,7 +278,7 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                                     ) : notifications.length === 0 ? (
                                         <div className="text-sm text-slate-400 py-3">No notifications yet.</div>
                                     ) : (
-                                        <div className="space-y-2 max-h-72 overflow-auto">
+                                        <div className="space-y-2 max-h-72 overflow-auto custom-scrollbar pr-1">
                                             {notifications.map((item) => (
                                                 <button
                                                     key={item.id}
