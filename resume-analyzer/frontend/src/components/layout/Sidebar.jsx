@@ -34,19 +34,28 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, collapsed, setCollapsed })
             {/* Header */}
             <div className="p-4 border-b border-white/10 flex items-center justify-between">
                 {!collapsed && (
-                    <div className="flex items-center gap-3">
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab('overview')}
+                        className="flex items-center gap-3 rounded-lg px-1 py-0.5 hover:bg-white/5 transition-colors"
+                    >
                         <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center shadow-lg shadow-primary/30">
                             <Sparkles className="w-5 h-5 text-white" />
                         </div>
                         <h1 className="font-bold text-white text-lg tracking-tight">
                             SkillSnap
                         </h1>
-                    </div>
+                    </button>
                 )}
                 {collapsed && (
-                    <div className="mx-auto w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center shadow-lg shadow-primary/30">
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab('overview')}
+                        className="mx-auto w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center shadow-lg shadow-primary/30"
+                        title="Go to Dashboard"
+                    >
                         <span className="font-bold text-white">SS</span>
-                    </div>
+                    </button>
                 )}
 
                 <button

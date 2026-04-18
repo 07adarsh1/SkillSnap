@@ -184,7 +184,13 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
         <div className="min-h-screen text-white font-sans relative z-10 px-4 md:px-8 py-6">
             <header className="relative z-40 max-w-7xl mx-auto mb-8 rounded-2xl border border-white/10 bg-[rgba(5,5,5,0.92)] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.55)]">
                 <div className="h-16 px-5 md:px-6 flex items-center justify-between gap-4">
-                    <div className="font-bold text-xl tracking-tight text-white">SkillSnap</div>
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab('overview')}
+                        className="font-bold text-xl tracking-tight text-white hover:text-slate-100 transition-colors"
+                    >
+                        SkillSnap
+                    </button>
 
                     <nav className="hidden md:flex items-center gap-2">
                         {navItems.map((item) => {
