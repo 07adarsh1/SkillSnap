@@ -21,13 +21,26 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
 
     if (!data) return null;
 
-    const { ats_score, resume_skills = [], matched_skills, missing_skills, experience_match, strengths, ai_suggestions, score_breakdown } = data;
+    const {
+        ats_score,
+        resume_skills = [],
+        matched_skills,
+        missing_skills,
+        experience_match,
+        strengths,
+        ai_suggestions,
+        score_breakdown,
+    } = data;
+    const safeScore = Number.isFinite(Number(ats_score)) ? Number(ats_score) : 0;
+    const safeResumeSkills = Array.isArray(resume_skills) ? resume_skills : [];
+    const safeMatchedSkills = Array.isArray(matched_skills) ? matched_skills : [];
+    const safeMissingSkills = Array.isArray(missing_skills) ? missing_skills : [];
     const hasJobDescription = Boolean(String(jobDescription || '').trim());
-    const matchedSkills = hasJobDescription ? matched_skills : resume_skills;
+    const matchedSkills = hasJobDescription ? safeMatchedSkills : safeResumeSkills;
 
     const scoreData = [
-        { name: 'Score', value: ats_score },
-        { name: 'Remaining', value: 100 - ats_score }
+        { name: 'Score', value: safeScore },
+        { name: 'Remaining', value: Math.max(0, 100 - safeScore) }
     ];
 
     const getColor = (score) => {
@@ -42,9 +55,9 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
         return 'Weak Match';
     };
 
-    const scoreColor = getColor(ats_score);
-    const matchLabel = getMatchLabel(ats_score);
-    const matchVariant = ats_score >= 80 ? 'success' : ats_score >= 60 ? 'warning' : 'danger';
+    const scoreColor = getColor(safeScore);
+    const matchLabel = getMatchLabel(safeScore);
+    const matchVariant = safeScore >= 80 ? 'success' : safeScore >= 60 ? 'warning' : 'danger';
 
     const breakdownLabels = {
         skills_alignment: 'Skills Alignment',
@@ -130,7 +143,7 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
                                     className="text-[2.4rem] leading-none font-bold font-mono tracking-tight"
                                     style={{ color: scoreColor }}
                                 >
-                                    {Math.round(ats_score)}/100
+                                    {Math.round(safeScore)}/100
                                 </span>
                                 <Badge variant={matchVariant} className="px-3.5 py-1 font-semibold border border-white/10 bg-white/5 text-slate-100">
                                     {matchLabel}
@@ -156,7 +169,7 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
                                         <p className="text-sm font-semibold text-slate-100 tracking-wide">Resume skills extracted from the uploaded file</p>
                                         <p className="text-xs text-slate-500 mt-1">Add a job description to switch into match and gap analysis.</p>
                                     </div>
-                                    <Badge variant="success" className="shrink-0">{resume_skills.length} Found</Badge>
+                                    <Badge variant="success" className="shrink-0">{safeResumeSkills.length} Found</Badge>
                                 </div>
 
                                 <div className="flex flex-wrap gap-2">
@@ -191,15 +204,15 @@ const ResultsDashboard = ({ data, resumeId, jobDescription }) => {
                                         <XCircle className="w-4 h-4" /> Missing Skills
                                     </h4>
                                     <div className="flex flex-wrap gap-2">
-                                        {missing_skills.map((skill, i) => (
+                                        {safeMissingSkills.map((skill, i) => (
                                             <Badge key={i} variant="danger" className="shadow-[0_0_10px_rgba(239,68,68,0.1)]">
                                                 {skill}
                                             </Badge>
                                         ))}
-                                        {missing_skills.length === 0 && matched_skills.length > 0 && (
+                                        {safeMissingSkills.length === 0 && safeMatchedSkills.length > 0 && (
                                             <span className="text-slate-500 text-sm italic font-light">Great job! No key skills missing.</span>
                                         )}
-                                        {missing_skills.length === 0 && matched_skills.length === 0 && (
+                                        {safeMissingSkills.length === 0 && safeMatchedSkills.length === 0 && (
                                             <span className="text-slate-500 text-sm italic font-light">
                                                 Add a detailed job description to enable skill-gap detection.
                                             </span>

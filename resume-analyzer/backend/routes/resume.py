@@ -146,7 +146,25 @@ async def analyze_resume(request: AnalysisRequest, db = Depends(get_database)):
 async def get_user_resumes(user_id: str, db = Depends(get_database)):
     cursor = db["resumes"].find({"user_id": user_id}).sort("uploaded_at", -1)
     resumes = await cursor.to_list(length=100)
-    
+
+    def _enrich_analysis_result(record):
+        analysis = dict(record.get("analysis_result") or {})
+        if not analysis:
+            return None
+
+        fallback_skills = record.get("resume_skills") or record.get("skills") or []
+        if not fallback_skills:
+            fallback_skills = nlp_engine.extract_skills(record.get("content_text") or "")
+        if (not isinstance(analysis.get("resume_skills"), list)) or len(analysis.get("resume_skills") or []) == 0:
+            analysis["resume_skills"] = fallback_skills
+
+        # Keep response shape stable for older records.
+        analysis["matched_skills"] = analysis.get("matched_skills") or []
+        analysis["missing_skills"] = analysis.get("missing_skills") or []
+        analysis["strengths"] = analysis.get("strengths") or []
+        analysis["ai_suggestions"] = analysis.get("ai_suggestions") or []
+        return analysis
+
     # Map to simpler format for list view
     return [{
         "id": r["id"],
@@ -154,7 +172,7 @@ async def get_user_resumes(user_id: str, db = Depends(get_database)):
         "uploaded_at": r["uploaded_at"],
         "ats_score": r.get("ats_score"),
         # Return full result if present so we can load it instantly
-        "analysis_result": r.get("analysis_result")
+        "analysis_result": _enrich_analysis_result(r)
     } for r in resumes]
 
 @router.delete("/resumes/{resume_id}")
