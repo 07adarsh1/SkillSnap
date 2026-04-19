@@ -5,9 +5,9 @@ import { HeroGeometric } from '@/components/ui/shape-landing-hero';
 
 const LandingPage = ({ onStart, isAuthenticated, userName, onLogout }) => {
     return (
-        <div className="h-screen overflow-hidden bg-transparent text-white selection:bg-primary/30 flex flex-col">
+        <div className="min-h-screen overflow-x-hidden bg-transparent text-white selection:bg-primary/30 flex flex-col">
             {/* Navbar Placeholder */}
-            <nav className="absolute top-0 left-0 right-0 z-20 container mx-auto px-6 py-6 flex justify-between items-center">
+            <nav className="absolute top-0 left-0 right-0 z-20 container mx-auto px-4 sm:px-6 py-5 sm:py-6 flex justify-between items-center">
                 <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
                     <span>Skill Snap</span>
                 </div>

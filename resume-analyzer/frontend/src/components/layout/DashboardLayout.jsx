@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, Search } from 'lucide-react';
+import { Bell, Menu, Search, X } from 'lucide-react';
 import { getUserAnalysisHistory } from '../../services/api';
 
 const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) => {
@@ -11,6 +11,7 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
     const [unreadCount, setUnreadCount] = useState(0);
     const [lastReadAt, setLastReadAt] = useState(0);
     const [dismissedNotificationIds, setDismissedNotificationIds] = useState([]);
+    const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
     const notificationRef = useRef(null);
 
     const navItems = [
@@ -198,14 +199,18 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
         };
     }, [isNotifOpen]);
 
+    useEffect(() => {
+        setIsMobileNavOpen(false);
+    }, [activeTab]);
+
     return (
         <div className="min-h-screen text-white font-sans relative z-10 px-4 md:px-8 py-6">
             <header className="relative z-40 max-w-7xl mx-auto mb-8 rounded-2xl border border-white/10 bg-[rgba(5,5,5,0.92)] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.55)]">
-                <div className="h-16 px-5 md:px-6 flex items-center justify-between gap-4">
+                <div className="min-h-16 px-4 sm:px-5 md:px-6 py-2 flex items-center justify-between gap-3 sm:gap-4">
                     <button
                         type="button"
                         onClick={() => setActiveTab('overview')}
-                        className="font-bold text-xl tracking-tight text-white hover:text-slate-100 transition-colors"
+                        className="font-bold text-lg sm:text-xl tracking-tight text-white hover:text-slate-100 transition-colors"
                     >
                         SkillSnap
                     </button>
@@ -251,7 +256,7 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                         <div ref={notificationRef} className="relative">
                         <button
                             onClick={handleBellClick}
-                            className="p-2.5 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl relative transition-all border border-transparent hover:border-white/10"
+                            className="p-3 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl relative transition-all border border-transparent hover:border-white/10"
                         >
                             <Bell className="w-5 h-5" />
                             {hasUnread && (
@@ -261,13 +266,13 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                             )}
                         </button>
                             {isNotifOpen && (
-                                <div className="absolute right-0 mt-2 w-80 rounded-xl border border-white/10 bg-[#0e1118] p-3 shadow-2xl z-30">
+                                <div className="absolute right-0 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-xl border border-white/10 bg-[#0e1118] p-3 shadow-2xl z-30">
                                     <div className="flex items-center justify-between mb-2">
                                         <div className="text-sm font-semibold text-white">Notifications</div>
                                         {notifications.length > 0 && (
                                             <button
                                                 onClick={clearNotifications}
-                                                className="text-xs text-slate-400 hover:text-white"
+                                                className="text-xs sm:text-sm text-slate-400 hover:text-white min-h-9 px-2"
                                             >
                                                 Clear all
                                             </button>
@@ -286,7 +291,7 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                                                         setActiveTab('history');
                                                         setIsNotifOpen(false);
                                                     }}
-                                                    className="w-full text-left rounded-lg p-2 hover:bg-white/5 transition-colors"
+                                                    className="w-full text-left rounded-lg p-3 hover:bg-white/5 transition-colors"
                                                 >
                                                     <div className="text-sm text-white flex items-center justify-between gap-3">
                                                         <span>{item.title}</span>
@@ -304,12 +309,66 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                         </div>
                         <button
                             onClick={onLogout}
-                            className="px-4 py-2 rounded-xl border border-white/15 text-slate-200 hover:bg-white/10"
+                            className="hidden sm:inline-flex min-h-11 px-4 py-2 rounded-xl border border-white/15 text-slate-200 hover:bg-white/10"
                         >
                             Logout
                         </button>
+                        <button
+                            onClick={onLogout}
+                            className="sm:hidden inline-flex min-h-11 px-3 py-2 rounded-xl border border-white/15 text-slate-200 hover:bg-white/10 text-sm"
+                        >
+                            Exit
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setIsMobileNavOpen((prev) => !prev)}
+                            className="md:hidden p-3 text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl border border-white/10"
+                            aria-label="Toggle navigation"
+                        >
+                            {isMobileNavOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                        </button>
                     </div>
                 </div>
+                {isMobileNavOpen && (
+                    <div className="md:hidden px-5 pb-4 space-y-3 border-t border-white/10">
+                        <div className="grid grid-cols-2 gap-2 pt-3">
+                            {navItems.map((item) => {
+                                const isActive = item.id === activeTab;
+                                return (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => setActiveTab(item.id)}
+                                        className={`px-3 py-2.5 rounded-lg text-sm text-left transition-all ${isActive
+                                            ? 'bg-white/12 text-white border border-white/20'
+                                            : 'text-slate-300 bg-white/5 border border-white/10 hover:bg-white/10'}`}
+                                    >
+                                        {item.label}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="flex items-center px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-sm focus-within:border-primary/50 transition-all">
+                            <Search className="w-4 h-4 text-slate-400 mr-2" />
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(event) => {
+                                    setSearchQuery(event.target.value);
+                                    if (searchError) {
+                                        setSearchError('');
+                                    }
+                                }}
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Enter') {
+                                        handleSearchSubmit();
+                                    }
+                                }}
+                                placeholder="Search sections..."
+                                className="w-full bg-transparent text-slate-100 placeholder:text-slate-500 outline-none"
+                            />
+                        </div>
+                    </div>
+                )}
                 {searchError && (
                     <div className="px-5 md:px-6 pb-3 text-xs text-yellow-400">{searchError}</div>
                 )}

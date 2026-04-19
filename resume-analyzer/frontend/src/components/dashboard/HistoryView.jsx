@@ -35,29 +35,29 @@ const HistoryView = ({ userId, onOpenResumes }) => {
 
     return (
         <div className="space-y-6">
-            <div className="bg-black/45 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-lg">
+            <div className="bg-black/45 backdrop-blur-xl border border-white/10 p-4 sm:p-6 rounded-2xl shadow-lg">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                     <div>
-                        <h2 className="text-2xl font-bold text-white tracking-tight">Analysis History</h2>
+                        <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Analysis History</h2>
                         <p className="text-slate-400 text-sm mt-1">Review your previously uploaded resumes and ATS results.</p>
                     </div>
                     <button
                         onClick={onOpenResumes}
-                        className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-200 hover:bg-white/10"
+                        className="w-full sm:w-auto min-h-11 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-200 hover:bg-white/10"
                     >
                         Manage Resumes
                     </button>
                 </div>
             </div>
 
-            <div className="flex items-center gap-4 bg-[#121318]/60 backdrop-blur-xl p-3 rounded-xl border border-white/5 focus-within:border-primary/30 transition-all shadow-lg">
-                <Search className="w-5 h-5 text-slate-400 ml-2" />
+            <div className="flex items-center gap-3 bg-[#121318]/60 backdrop-blur-xl p-3 rounded-xl border border-white/5 focus-within:border-primary/30 transition-all shadow-lg">
+                <Search className="w-5 h-5 text-slate-400 ml-1" />
                 <input
                     type="text"
                     placeholder="Search history by file name..."
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
-                    className="bg-transparent border-none focus:ring-0 text-white w-full placeholder:text-slate-500 outline-none text-base"
+                    className="bg-transparent border-none focus:ring-0 text-white w-full placeholder:text-slate-500 outline-none text-sm sm:text-base"
                 />
             </div>
 
@@ -73,11 +73,11 @@ const HistoryView = ({ userId, onOpenResumes }) => {
                     <p className="text-slate-500 text-sm mt-1">Upload resumes from the Resumes tab to see entries here.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {filteredItems.map((item) => (
                         <div
                             key={item.id}
-                            className="bg-[#121318]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-lg"
+                            className="bg-[#121318]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-5 shadow-lg"
                         >
                             <div className="flex items-start justify-between gap-3">
                                 <h3 className="font-semibold text-white truncate" title={item.filename}>{item.filename}</h3>

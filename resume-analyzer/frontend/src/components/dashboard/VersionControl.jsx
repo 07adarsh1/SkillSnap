@@ -78,28 +78,28 @@ const VersionControl = ({ resumeId, onClose }) => {
     const Container = ({ children }) => {
         if (onClose) {
             return (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="glass-card bg-slate-900 rounded-2xl border border-white/10 max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl"
+                        className="glass-card bg-slate-900 rounded-xl sm:rounded-2xl border border-white/10 max-w-6xl w-full max-h-[95vh] overflow-hidden flex flex-col shadow-2xl"
                     >
                         {/* Modal Header */}
-                        <div className="p-6 border-b border-white/10 bg-gradient-to-r from-green-600/10 to-blue-600/10 flex items-center justify-between">
+                        <div className="p-4 sm:p-6 border-b border-white/10 bg-gradient-to-r from-green-600/10 to-blue-600/10 flex items-start sm:items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-green-500/10 rounded-lg">
                                     <GitBranch className="w-6 h-6 text-green-400" />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-bold text-white">Version Control</h2>
-                                    <p className="text-sm text-slate-400">Comparing versions for Resume ID: {resumeId}</p>
+                                    <h2 className="text-lg sm:text-xl font-bold text-white">Version Control</h2>
+                                    <p className="text-xs sm:text-sm text-slate-400 break-all">Comparing versions for Resume ID: {resumeId}</p>
                                 </div>
                             </div>
                             <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
                                 <X className="w-5 h-5 text-slate-400" />
                             </button>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+                        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 custom-scrollbar">
                             {children}
                         </div>
                     </motion.div>
@@ -133,7 +133,7 @@ const VersionControl = ({ resumeId, onClose }) => {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="h-[300px] w-full">
+                                <div className="h-[240px] sm:h-[300px] w-full">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart data={chartData}>
                                             <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
@@ -261,15 +261,15 @@ const VersionControl = ({ resumeId, onClose }) => {
                                     <h4 className="font-bold text-white mb-4">Key Changes Detected</h4>
                                     <div className="grid gap-3">
                                         {comparison.comparison.key_changes.map((change, i) => (
-                                            <div key={i} className="p-4 bg-slate-950 rounded-lg border border-white/5 flex items-start gap-4">
+                                            <div key={i} className="p-4 bg-slate-950 rounded-lg border border-white/5 flex flex-wrap items-start gap-3 sm:gap-4">
                                                 <div className={`mt-1 w-2 h-2 rounded-full ${change.impact === 'positive' ? 'bg-green-500' :
                                                         change.impact === 'negative' ? 'bg-red-500' : 'bg-slate-500'
                                                     }`} />
-                                                <div>
+                                                <div className="flex-1 min-w-[180px]">
                                                     <p className="font-medium text-white text-sm">{change.section}</p>
                                                     <p className="text-slate-400 text-sm">{change.description}</p>
                                                 </div>
-                                                <Badge variant={change.impact === 'positive' ? 'success' : 'default'} className="ml-auto text-xs">
+                                                <Badge variant={change.impact === 'positive' ? 'success' : 'default'} className="text-xs sm:ml-auto">
                                                     {change.change_type}
                                                 </Badge>
                                             </div>

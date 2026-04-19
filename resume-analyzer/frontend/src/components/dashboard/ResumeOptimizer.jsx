@@ -62,23 +62,23 @@ Expected ATS Improvement: +${result.ats_improvement_score} points
     };
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="glass-card bg-slate-900/95 rounded-2xl border border-white/10 max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl"
+                className="glass-card bg-slate-900/95 rounded-xl sm:rounded-2xl border border-white/10 max-w-5xl w-full max-h-[95vh] overflow-hidden flex flex-col shadow-2xl"
             >
                 {/* Header */}
-                <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-primary/10 to-purple-600/10">
-                    <div className="flex items-center justify-between">
+                <div className="p-4 sm:p-6 border-b border-slate-700 bg-gradient-to-r from-primary/10 to-purple-600/10">
+                    <div className="flex items-start sm:items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
                                 <Sparkles className="w-6 h-6 text-primary" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-bold text-white">AI Resume Optimizer</h2>
-                                <p className="text-sm text-slate-400">Tailor your resume for maximum ATS impact</p>
+                                <h2 className="text-lg sm:text-2xl font-bold text-white">AI Resume Optimizer</h2>
+                                <p className="text-xs sm:text-sm text-slate-400">Tailor your resume for maximum ATS impact</p>
                             </div>
                         </div>
                         <button
@@ -91,7 +91,7 @@ Expected ATS Improvement: +${result.ats_improvement_score} points
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 custom-scrollbar">
                     {!result ? (
                         <>
                             {/* Input Form */}
@@ -119,7 +119,7 @@ Expected ATS Improvement: +${result.ats_improvement_score} points
                                         value={jobDescription}
                                         onChange={(e) => setJobDescription(e.target.value)}
                                         placeholder="Paste the full job description here..."
-                                        rows={10}
+                                        rows={8}
                                         className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                                     />
                                 </div>
@@ -203,10 +203,10 @@ Expected ATS Improvement: +${result.ats_improvement_score} points
                             </div>
 
                             {/* Actions */}
-                            <div className="flex gap-3">
+                            <div className="flex flex-col sm:flex-row gap-3">
                                 <Button
                                     onClick={downloadOptimized}
-                                    className="flex-1"
+                                    className="w-full sm:flex-1"
                                     icon={<Download className="w-5 h-5" />}
                                 >
                                     Download Optimized Resume
@@ -214,6 +214,7 @@ Expected ATS Improvement: +${result.ats_improvement_score} points
                                 <Button
                                     variant="secondary"
                                     onClick={() => setResult(null)}
+                                    className="w-full sm:w-auto"
                                 >
                                     Optimize Another
                                 </Button>

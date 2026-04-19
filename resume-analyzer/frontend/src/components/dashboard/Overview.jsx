@@ -118,15 +118,15 @@ const Overview = ({ userId, onUploadClick, onViewHistory }) => {
 
     return (
         <div className="space-y-6">
-            <Card className="flex flex-col md:flex-row justify-between items-start md:items-center p-6 bg-[#121318]/60 backdrop-blur-xl border border-white/10 rounded-2xl gap-4">
+            <Card className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 sm:p-6 bg-[#121318]/60 backdrop-blur-xl border border-white/10 rounded-2xl gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-white mb-1">Welcome back, User</h2>
-                    <p className="text-slate-400">Here's what's happening with your job search today.</p>
+                    <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">Welcome back, User</h2>
+                    <p className="text-sm sm:text-base text-slate-400">Here's what's happening with your job search today.</p>
                 </div>
                 <Button
                     onClick={onUploadClick}
                     icon={<Plus className="w-5 h-5" />}
-                    className="shadow-[0_0_15px_rgba(0,210,255,0.3)] hover:shadow-[0_0_25px_rgba(0,210,255,0.5)]"
+                    className="w-full md:w-auto min-h-11 shadow-[0_0_15px_rgba(0,210,255,0.3)] hover:shadow-[0_0_25px_rgba(0,210,255,0.5)]"
                 >
                     New Analysis
                 </Button>
@@ -142,7 +142,7 @@ const Overview = ({ userId, onUploadClick, onViewHistory }) => {
                         key={index}
                         className="h-full"
                     >
-                        <Card hover={true} className="h-full flex flex-col justify-between p-6 border-white/10">
+                        <Card hover={true} className="h-full flex flex-col justify-between p-4 sm:p-6 border-white/10">
                             <div className="flex justify-between items-start mb-4">
                                 <div className={`p-3 rounded-xl ${
                                     stat.color === 'blue' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
@@ -155,7 +155,7 @@ const Overview = ({ userId, onUploadClick, onViewHistory }) => {
                                 {index === 1 && <span className="text-xs font-bold px-2 py-1 bg-green-500/20 text-green-400 rounded-full flex items-center gap-1 border border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.2)]"> <ArrowUpRight className="w-3 h-3" /> 12%</span>}
                             </div>
                             <div>
-                                <h3 className="text-3xl font-bold text-white mb-1">{stat.value}</h3>
+                                <h3 className="text-2xl sm:text-3xl font-bold text-white mb-1">{stat.value}</h3>
                                 <p className="text-sm text-slate-400 font-light tracking-wide">{stat.label}</p>
                                 <p className="text-xs text-primary/80 mt-2 font-medium">{stat.change}</p>
                             </div>
@@ -181,7 +181,7 @@ const Overview = ({ userId, onUploadClick, onViewHistory }) => {
                     <CardHeader>
                         <CardTitle>Score Improvement Trend</CardTitle>
                     </CardHeader>
-                    <div className="p-6 pt-0 h-64 w-full">
+                    <div className="p-4 sm:p-6 pt-0 h-56 sm:h-64 w-full">
                         {chartData.length === 0 ? (
                             <div className="h-full flex items-center justify-center text-slate-400 text-sm">
                                 Analyze resumes to see score trend.
@@ -220,7 +220,7 @@ const Overview = ({ userId, onUploadClick, onViewHistory }) => {
                 <CardHeader>
                     <CardTitle>Recent Activity</CardTitle>
                 </CardHeader>
-                <div className="p-6 pt-0 space-y-4">
+                <div className="p-4 sm:p-6 pt-0 space-y-4">
                     {loadingHistory ? (
                         <div className="flex justify-center py-6">
                             <Loader2 className="w-7 h-7 text-primary animate-spin" />
@@ -229,7 +229,7 @@ const Overview = ({ userId, onUploadClick, onViewHistory }) => {
                         <div className="text-slate-400 text-sm py-4">No activity yet. Upload a resume to begin.</div>
                     ) : (
                         history.slice(0, 4).map((item) => (
-                            <div key={item.id} className="flex items-center gap-4 p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all cursor-pointer group border border-white/5 hover:border-primary/30 hover:shadow-[0_0_15px_rgba(0,210,255,0.1)]">
+                            <div key={item.id} className="flex items-start sm:items-center gap-3 sm:gap-4 p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all cursor-pointer group border border-white/5 hover:border-primary/30 hover:shadow-[0_0_15px_rgba(0,210,255,0.1)]">
                                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
                                     <FileText className="w-5 h-5 text-primary drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]" />
                                 </div>
@@ -237,7 +237,7 @@ const Overview = ({ userId, onUploadClick, onViewHistory }) => {
                                     <h4 className="text-sm font-semibold text-white transition-colors group-hover:text-primary truncate">{item.filename}</h4>
                                     <p className="text-xs text-slate-400">Uploaded {formatTimeAgo(item.uploaded_at)}</p>
                                 </div>
-                                <div className="ml-auto">
+                                <div className="ml-0 sm:ml-auto mt-1 sm:mt-0">
                                     <span className={`text-xs font-bold px-2 py-1 rounded-md border ${typeof item.ats_score === 'number'
                                         ? 'text-green-400 bg-green-500/10 border-green-500/20 shadow-[0_0_10px_rgba(34,197,94,0.1)]'
                                         : 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20'

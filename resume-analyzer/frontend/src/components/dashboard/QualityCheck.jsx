@@ -61,22 +61,22 @@ const QualityCheck = ({ resumeId, onClose }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-slate-900 rounded-2xl border border-slate-700 max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+                className="bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-700 max-w-5xl w-full max-h-[95vh] overflow-hidden flex flex-col"
             >
                 {/* Header */}
-                <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-orange-600/10 to-red-600/10">
-                    <div className="flex items-center justify-between">
+                <div className="p-4 sm:p-6 border-b border-slate-700 bg-gradient-to-r from-orange-600/10 to-red-600/10">
+                    <div className="flex items-start sm:items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center">
                                 <Shield className="w-6 h-6 text-orange-400" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-bold text-white">Resume Quality Check</h2>
-                                <p className="text-sm text-slate-400">AI-powered authenticity and confidence analysis</p>
+                                <h2 className="text-lg sm:text-2xl font-bold text-white">Resume Quality Check</h2>
+                                <p className="text-xs sm:text-sm text-slate-400">AI-powered authenticity and confidence analysis</p>
                             </div>
                         </div>
                         <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
@@ -86,7 +86,7 @@ const QualityCheck = ({ resumeId, onClose }) => {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 custom-scrollbar">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-12">
                             <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
@@ -100,7 +100,7 @@ const QualityCheck = ({ resumeId, onClose }) => {
                     ) : report ? (
                         <>
                             {/* Score Cards */}
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5 text-center">
                                     <p className="text-sm text-slate-400 mb-2">Confidence Score</p>
                                     <p className="text-4xl font-bold text-white mb-2">{report.confidence_score}%</p>
@@ -197,7 +197,7 @@ const QualityCheck = ({ resumeId, onClose }) => {
                                                 <p className="text-sm font-medium text-green-400 mb-2 capitalize">
                                                     {suggestion.issue_type.replace(/_/g, ' ')}
                                                 </p>
-                                                <div className="grid grid-cols-2 gap-4 mb-2">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-2">
                                                     <div>
                                                         <p className="text-xs text-slate-500 mb-1">Current:</p>
                                                         <p className="text-sm text-red-400 line-through">"{suggestion.current}"</p>

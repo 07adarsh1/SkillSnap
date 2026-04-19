@@ -86,13 +86,13 @@ const JobMatcher = () => {
     };
 
     return (
-        <div className="flex flex-col lg:flex-row h-[calc(100vh-140px)] gap-6">
+        <div className="flex flex-col lg:flex-row min-h-[calc(100vh-170px)] lg:h-[calc(100vh-140px)] gap-4 sm:gap-6">
             {/* Left Side: Job List */}
             <div className={`flex-1 flex flex-col transition-all duration-300 ${selectedJob ? 'hidden lg:flex lg:w-5/12' : 'w-full'}`}>
 
                 {/* Filters */}
-                <div className="mb-4 flex items-center justify-between">
-                    <div className="flex gap-2">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex gap-2 flex-wrap">
                         {['All', 'Remote', 'Full-time'].map((f) => (
                             <button
                                 key={f}
@@ -106,7 +106,7 @@ const JobMatcher = () => {
                             </button>
                         ))}
                     </div>
-                    <span className="text-sm text-slate-500">{jobs.length} jobs found</span>
+                    <span className="text-sm text-slate-500 w-full sm:w-auto">{jobs.length} jobs found</span>
                 </div>
 
                 {/* List */}
@@ -176,10 +176,10 @@ const JobMatcher = () => {
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="flex-1 lg:w-7/12 bg-slate-900 border border-white/10 rounded-2xl overflow-hidden flex flex-col shadow-2xl absolute inset-0 z-20 lg:static"
+                        className="fixed inset-3 sm:inset-4 lg:inset-auto lg:static flex-1 lg:w-7/12 bg-slate-900 border border-white/10 rounded-2xl overflow-hidden flex flex-col shadow-2xl z-40 lg:z-20"
                     >
                         {/* Header */}
-                        <div className="p-6 border-b border-white/5 bg-slate-900/95 backdrop-blur sticky top-0 z-10">
+                        <div className="p-4 sm:p-6 border-b border-white/5 bg-slate-900/95 backdrop-blur sticky top-0 z-10">
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <button
@@ -188,19 +188,19 @@ const JobMatcher = () => {
                                     >
                                         <ArrowRight className="w-4 h-4 rotate-180" /> Back to list
                                     </button>
-                                    <h2 className="text-2xl font-bold text-white mb-1">{selectedJob.title}</h2>
+                                    <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">{selectedJob.title}</h2>
                                     <div className="flex items-center gap-3 text-slate-400 text-sm">
                                         <span className="flex items-center gap-1"><Building className="w-3 h-3" /> {selectedJob.company}</span>
                                         <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
                                         <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {selectedJob.location}</span>
                                     </div>
                                 </div>
-                                <Button onClick={handleApply} icon={<ExternalLink className="w-4 h-4" />}>
+                                <Button onClick={handleApply} icon={<ExternalLink className="w-4 h-4" />} className="text-sm px-3 py-2 sm:px-4 sm:py-2.5">
                                     Apply Now
                                 </Button>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                 <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-center">
                                     <span className="block text-2xl font-bold text-indigo-400">{selectedJob.match_score}%</span>
                                     <span className="text-xs text-indigo-300/70 uppercase font-semibold">Match Score</span>
@@ -213,7 +213,7 @@ const JobMatcher = () => {
                         </div>
 
                         {/* Content */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+                        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 sm:space-y-8 custom-scrollbar">
 
                             {/* Skills Analysis */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
