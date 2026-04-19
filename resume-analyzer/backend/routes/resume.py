@@ -103,6 +103,7 @@ async def analyze_resume(request: AnalysisRequest, db = Depends(get_database)):
         resume["content_text"],
         request.job_description or "",
     )
+    result.resume_skills = resume_skills
 
     ai_analysis = None
     try:

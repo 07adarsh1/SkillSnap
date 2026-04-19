@@ -21,9 +21,79 @@ class NLPService:
             "improved", "launched", "scaled", "automated", "delivered", "created", "reduced",
             "increased", "spearheaded", "architected", "achieved",
         }
+        self._section_headings = {
+            "experience", "education", "projects", "summary", "certifications",
+            "achievements", "work experience", "profile", "objective",
+        }
+        self._fallback_stopwords = {
+            "and", "or", "with", "using", "in", "of", "the", "to", "for", "a", "an",
+            "skills", "technologies", "tools", "frameworks", "languages", "proficient", "knowledge",
+        }
 
     def _tokenize(self, text: str) -> set[str]:
         return set(re.findall(r"[a-zA-Z0-9+#.-]+", text.lower()))
+
+    def _extract_fallback_skills(self, text: str) -> list[str]:
+        text = text or ""
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
+
+        # Prefer explicit skills sections when present.
+        collected = []
+        capture = False
+        for line in lines:
+            lower = line.lower().strip(" :|-\t")
+
+            if "skill" in lower:
+                capture = True
+                continue
+
+            if capture and lower in self._section_headings:
+                break
+
+            if capture:
+                collected.append(line)
+
+        # If no skills section found, take first lines as weak fallback.
+        source_text = "\n".join(collected[:20]) if collected else "\n".join(lines[:30])
+
+        candidates = []
+        raw_parts = re.split(r"[,|/•;\n]+", source_text)
+        for part in raw_parts:
+            chunk = re.sub(r"\s+", " ", part).strip(" -:\t")
+            if not chunk:
+                continue
+
+            # Keep short skill-like phrases.
+            words = [w for w in re.findall(r"[A-Za-z0-9+#.-]+", chunk)]
+            if not words or len(words) > 4:
+                continue
+
+            normalized = " ".join(words).lower()
+            if normalized in self._fallback_stopwords:
+                continue
+            if any(sw in normalized.split() for sw in self._fallback_stopwords):
+                # Keep tokens like 'data structures' but drop noisy phrases.
+                if len(words) == 1:
+                    continue
+
+            # Must contain at least one alphabetic character.
+            if not re.search(r"[a-zA-Z]", normalized):
+                continue
+
+            candidates.append(normalized)
+
+        # Deduplicate while preserving order.
+        seen = set()
+        ordered = []
+        for skill in candidates:
+            if skill in seen:
+                continue
+            seen.add(skill)
+            ordered.append(skill)
+            if len(ordered) >= 18:
+                break
+
+        return ordered
 
     def extract_skills(self, text: str) -> list[str]:
         text_lower = text.lower()
@@ -36,6 +106,11 @@ class NLPService:
                     skills.add(skill)
             elif skill in tokens:
                 skills.add(skill)
+
+        # If dictionary match is sparse, recover skills from explicit skills text patterns.
+        if len(skills) < 3:
+            for fallback_skill in self._extract_fallback_skills(text):
+                skills.add(fallback_skill)
 
         return sorted(skills)
 
@@ -251,6 +326,7 @@ class NLPService:
 
         return AIAnalysisResult(
             ats_score=final_score,
+            resume_skills=sorted(resume_skills),
             matched_skills=sorted(matched_skills),
             missing_skills=sorted(missing_skills),
             experience_match=exp_match,
