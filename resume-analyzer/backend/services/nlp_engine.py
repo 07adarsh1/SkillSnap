@@ -130,14 +130,22 @@ class NLPService:
         found = []
         missing = []
 
-        for section in self._required_sections:
-            pattern = rf"\b{re.escape(section)}\b"
-            if re.search(pattern, text):
-                found.append(section)
-            else:
-                missing.append(section)
+        section_aliases = {
+            "summary": ["summary", "professional summary", "profile", "about", "objective", "about me"],
+            "experience": ["experience", "work experience", "employment", "work history", "professional experience", "internship"],
+            "education": ["education", "academic", "academics", "qualification", "qualifications", "degree", "university", "college"],
+            "skills": ["skills", "technical skills", "core competencies", "competencies", "technologies", "tools", "expertise"],
+            "projects": ["projects", "personal projects", "academic projects", "key projects", "portfolio", "work samples"],
+        }
 
-        section_score = (len(found) / len(self._required_sections)) * 20
+        for section_key, aliases in section_aliases.items():
+            pattern = rf"\b({'|'.join(re.escape(a) for a in aliases)})\b"
+            if re.search(pattern, text):
+                found.append(section_key)
+            else:
+                missing.append(section_key)
+
+        section_score = (len(found) / len(section_aliases)) * 20
         return section_score, missing
 
     def _score_impact_signals(self, resume_text: str) -> tuple[float, int, int]:
@@ -145,14 +153,16 @@ class NLPService:
         tokens = self._tokenize(text)
 
         metric_matches = re.findall(
-            r"\b(\d+%|\$\d+[kKmM]?|\d+\+?\s?(years|yrs|months|users|clients|projects|features))\b",
+            r"\b(\d+(\.\d+)?%|\$\d+[\d,]*[kKmM]?|\d+\+?\s*(years|yrs|months|users|clients|customers|projects|features|engineers|team|members|downloads|stars|requests|tps|ms|fps|sales|revenue))\b",
             text,
         )
-        metric_count = len(metric_matches)
+        # Also count general numeric metrics in text
+        general_numbers = re.findall(r"\b\d+([.,]\d+)?\+?\b", text)
+        metric_count = len(metric_matches) + max(0, min(len(general_numbers) // 3, 5))
 
         verb_count = len(self._action_verbs.intersection(tokens))
 
-        metrics_component = min(metric_count, 5) / 5 * 6
+        metrics_component = min(metric_count, 6) / 6 * 6
         verbs_component = min(verb_count, 6) / 6 * 4
         return metrics_component + verbs_component, metric_count, verb_count
 
@@ -192,7 +202,7 @@ class NLPService:
 
     def _keyword_stuffing_penalty(self, resume_text: str, job_skills: set[str]) -> tuple[float, int]:
         text = (resume_text or "").lower()
-        if not text:
+        if not text or not job_skills:
             return 0.0, 0
 
         repeated_count = 0
@@ -219,31 +229,31 @@ class NLPService:
 
         missing_critical = [section for section in self._critical_sections if section in missing_sections]
 
-        # Gate 1: with JD provided, low skill coverage should hard-cap ATS score.
+        # Apply proportional penalties rather than flat hard clamping to preserve distinction
         if job_skill_count > 0:
             if skill_coverage < 0.25:
-                capped_score = min(capped_score, 45.0)
+                capped_score -= 15.0
                 cap_reasons.append("Very low role-skill coverage (<25%).")
             elif skill_coverage < 0.40:
-                capped_score = min(capped_score, 60.0)
+                capped_score -= 8.0
                 cap_reasons.append("Low role-skill coverage (<40%).")
 
-        # Gate 2: missing critical resume structure should cap readiness.
         if len(missing_critical) >= 2:
-            capped_score = min(capped_score, 55.0)
+            capped_score -= 12.0
             cap_reasons.append("Missing multiple critical sections (Experience/Skills/Education).")
+        elif len(missing_critical) == 1:
+            capped_score -= 5.0
+            cap_reasons.append(f"Missing {missing_critical[0].title()} section.")
 
-        # Gate 3: no quantifiable impact should cap strong ATS outcomes.
         if metric_count == 0:
-            capped_score = min(capped_score, 65.0)
+            capped_score -= 6.0
             cap_reasons.append("No quantifiable impact metrics detected.")
 
-        # Gate 4: very weak formatting (few bullets) should cap score.
         if bullet_count < 3:
-            capped_score = min(capped_score, 70.0)
+            capped_score -= 4.0
             cap_reasons.append("Insufficient bullet structure for ATS parsing.")
 
-        return capped_score, cap_reasons
+        return max(0.0, min(100.0, capped_score)), cap_reasons
 
     def analyze_resume_vs_job(self, resume_text: str, job_desc: str) -> AIAnalysisResult:
         resume_text = resume_text or ""

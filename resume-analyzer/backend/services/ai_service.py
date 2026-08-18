@@ -11,7 +11,7 @@ class AIService:
     def __init__(self):
         api_key = os.getenv("GROQ_API_KEY")
         self.client = Groq(api_key=api_key) if api_key else None
-        self.model_name = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+        self.model_name = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
 
     def _parse_json_response(self, response_text: str) -> Dict[str, Any]:
         """Extract and parse JSON from model response"""

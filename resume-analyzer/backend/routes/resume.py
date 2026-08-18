@@ -120,6 +120,28 @@ async def analyze_resume(request: AnalysisRequest, db = Depends(get_database)):
         else:
             result.ai_suggestions = _normalize_points(result.ai_suggestions, limit=4)
 
+        if ai_analysis and isinstance(ai_analysis, dict):
+            raw_ai_score = ai_analysis.get("ats_score", ai_analysis.get("resume_score"))
+            if raw_ai_score is not None:
+                try:
+                    ai_score_val = float(raw_ai_score)
+                    if 0 <= ai_score_val <= 100:
+                        # Blend AI score (70%) with NLP rubric (30%) for realistic, distinct scoring
+                        result.ats_score = round(ai_score_val * 0.7 + result.ats_score * 0.3, 1)
+                except (ValueError, TypeError):
+                    pass
+
+            if ai_analysis.get("experience_match"):
+                result.experience_match = str(ai_analysis["experience_match"])
+
+            ai_skills_obj = ai_analysis.get("skills", {})
+            if isinstance(ai_skills_obj, dict):
+                ai_matched = ai_skills_obj.get("matched", [])
+                ai_missing = ai_skills_obj.get("missing", [])
+                if ai_matched and isinstance(ai_matched, list):
+                    result.matched_skills = sorted(list(set(result.matched_skills + [s.lower() for s in ai_matched if isinstance(s, str)])))
+                if ai_missing and isinstance(ai_missing, list):
+                    result.missing_skills = sorted(list(set(result.missing_skills + [s.lower() for s in ai_missing if isinstance(s, str)])))
         if ai_strengths:
             result.strengths = ai_strengths
         elif not result.strengths:
