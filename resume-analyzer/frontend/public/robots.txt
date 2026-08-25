@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Sitemap URL
-Sitemap: https://skillsnap.space/sitemap.xml
+Sitemap: https://www.skillsnap.space/sitemap.xml
