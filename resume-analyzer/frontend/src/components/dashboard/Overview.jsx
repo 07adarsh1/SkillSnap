@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { FileText, Award, Briefcase, Clock, ArrowUpRight, Plus, Loader2, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
@@ -24,7 +24,7 @@ const Overview = ({ userId, onUploadClick, onViewHistory }) => {
         return `${Math.floor(seconds / 86400)}d ago`;
     };
 
-    const fetchHistory = async () => {
+    const fetchHistory = useCallback(async () => {
         if (!userId) {
             setHistory([]);
             return;
@@ -44,17 +44,17 @@ const Overview = ({ userId, onUploadClick, onViewHistory }) => {
         } finally {
             setLoadingHistory(false);
         }
-    };
+    }, [userId]);
 
     useEffect(() => {
         fetchHistory();
-    }, [userId]);
+    }, [fetchHistory]);
 
     useEffect(() => {
         if (!userId) return;
         const timer = setInterval(fetchHistory, 30000);
         return () => clearInterval(timer);
-    }, [userId]);
+    }, [userId, fetchHistory]);
 
     const analyzedItems = useMemo(
         () => history.filter((item) => item.analysis_result && typeof item.ats_score === 'number'),

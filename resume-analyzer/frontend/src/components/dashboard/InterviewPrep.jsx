@@ -72,9 +72,9 @@ const InterviewPrep = ({ resumeId, onClose }) => {
                                 <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border ${getDifficultyColor(q.difficulty)}`}>
                                     {q.difficulty}
                                 </span>
-                                {q.topic && (
+                                {(q.focus_area || q.topic) && (
                                     <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200 font-medium">
-                                        {q.topic}
+                                        {q.focus_area || q.topic}
                                     </span>
                                 )}
                             </div>
@@ -85,14 +85,18 @@ const InterviewPrep = ({ resumeId, onClose }) => {
 
                     {expandedQuestions.has(index) && (
                         <div className="p-4 pt-0 border-t border-slate-100 bg-slate-50/50 space-y-2.5 text-xs">
-                            {q.expected_points && (
+                            {(q.expected_points || q.focus_area) && (
                                 <div>
-                                    <span className="font-bold text-slate-700 uppercase tracking-wider text-[10px] block mb-1">Key Points Interviewers Look For:</span>
-                                    <ul className="list-disc list-inside space-y-1 text-slate-600">
-                                        {q.expected_points.map((pt, i) => (
-                                            <li key={i}>{pt}</li>
-                                        ))}
-                                    </ul>
+                                    <span className="font-bold text-slate-700 uppercase tracking-wider text-[10px] block mb-1">Key Evaluation Focus:</span>
+                                    {Array.isArray(q.expected_points) ? (
+                                        <ul className="list-disc list-inside space-y-1 text-slate-600">
+                                            {q.expected_points.map((pt, i) => (
+                                                <li key={i}>{pt}</li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-slate-600">{q.focus_area || 'Core competency evaluation'}</p>
+                                    )}
                                 </div>
                             )}
                             {q.sample_answer && (
@@ -172,6 +176,18 @@ const InterviewPrep = ({ resumeId, onClose }) => {
                         </div>
                     ) : (
                         <div className="space-y-5">
+                            {/* Tips banner if provided */}
+                            {questions.preparation_tips?.length > 0 && (
+                                <div className="p-4 bg-indigo-50/60 border border-indigo-100 rounded-2xl space-y-1.5">
+                                    <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-900 block">Interview Preparation Tips:</span>
+                                    <ul className="list-disc list-inside space-y-1 text-xs text-slate-700">
+                                        {questions.preparation_tips.map((tip, ti) => (
+                                            <li key={ti}>{tip}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
                             {/* Tabs */}
                             <div className="flex gap-2 p-1.5 bg-slate-100 rounded-2xl border border-slate-200/60">
                                 {tabs.map((tab) => {

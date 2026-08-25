@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Bell, Menu, Search, X } from 'lucide-react';
 import { getUserAnalysisHistory } from '../../services/api';
 import { BrandLogo } from '../ui/BrandLogo';
@@ -38,13 +38,13 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
         return Number.isFinite(timestamp) ? timestamp : 0;
     };
 
-    const persistReadState = (timestamp) => {
+    const persistReadState = useCallback((timestamp) => {
         const safeTimestamp = Number.isFinite(timestamp) ? timestamp : Date.now();
         setLastReadAt(safeTimestamp);
         if (notificationStorageKey) {
             localStorage.setItem(notificationStorageKey, String(safeTimestamp));
         }
-    };
+    }, [notificationStorageKey]);
 
     useEffect(() => {
         if (!notificationStorageKey) {
@@ -71,22 +71,21 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
         }
     }, [dismissedStorageKey]);
 
-    const resolveTabFromQuery = (query) => {
-        const normalized = query.trim().toLowerCase();
+    const resolveTabFromQuery = (rawQuery) => {
+        const normalized = rawQuery.trim().toLowerCase();
         if (!normalized) return null;
 
         const aliases = {
-            dashboard: 'overview',
             overview: 'overview',
+            dash: 'overview',
+            dashboard: 'overview',
             resume: 'resumes',
             resumes: 'resumes',
-            upload: 'resumes',
             job: 'jobs',
             jobs: 'jobs',
             career: 'career-path',
             path: 'career-path',
             history: 'history',
-            analytics: 'analytics',
         };
 
         if (aliases[normalized]) {
@@ -108,7 +107,7 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
         setActiveTab(targetTab);
     };
 
-    const loadNotifications = async ({ markAsRead = false } = {}) => {
+    const loadNotifications = useCallback(async ({ markAsRead = false } = {}) => {
         if (!user?.id) {
             setNotifications([]);
             setUnreadCount(0);
@@ -151,13 +150,13 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
         } finally {
             setLoadingNotifications(false);
         }
-    };
+    }, [user?.id, dismissedNotificationIds, lastReadAt, persistReadState]);
 
     useEffect(() => {
         if (user?.id) {
             loadNotifications();
         }
-    }, [user?.id, lastReadAt, dismissedNotificationIds]);
+    }, [user?.id, loadNotifications]);
 
     const clearNotifications = () => {
         const idsToDismiss = notifications.map((item) => item.id);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 /**
  * Custom hook for API calls with loading and error states
@@ -49,29 +49,27 @@ export const useApi = (apiFunction) => {
 export const useForm = (initialValues, onSubmit) => {
     const [values, setValues] = useState(initialValues);
     const [errors, setErrors] = useState({});
-    const [touched, setTouched] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleChange = (name, value) => {
+    const handleChange = (e) => {
+        const { name, value } = e.target;
         setValues(prev => ({ ...prev, [name]: value }));
-        // Clear error when user starts typing
+        // Clear error when field is edited
         if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: null }));
+            setErrors(prev => ({ ...prev, [name]: '' }));
         }
     };
 
-    const handleBlur = (name) => {
-        setTouched(prev => ({ ...prev, [name]: true }));
-    };
-
     const handleSubmit = async (e) => {
-        if (e) e.preventDefault();
-
+        e.preventDefault();
         setIsSubmitting(true);
+
         try {
             await onSubmit(values);
-        } catch (error) {
-            console.error('Form submission error:', error);
+        } catch (err) {
+            if (err.errors) {
+                setErrors(err.errors);
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -80,53 +78,101 @@ export const useForm = (initialValues, onSubmit) => {
     const reset = () => {
         setValues(initialValues);
         setErrors({});
-        setTouched({});
-        setIsSubmitting(false);
     };
 
-    return {
-        values,
-        errors,
-        touched,
-        isSubmitting,
-        handleChange,
-        handleBlur,
-        handleSubmit,
-        setErrors,
-        reset
-    };
+    return { values, errors, isSubmitting, handleChange, handleSubmit, reset, setValues };
 };
 
 /**
- * Custom hook for modal state management
- * Provides open/close functionality with data passing
+ * Custom hook for managing modal state
+ * Provides open/close handlers and visibility state
  * 
+ * @param {boolean} initialOpen - Initial open state
  * @returns {Object} - Modal state and handlers
  */
-export const useModal = () => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [modalData, setModalData] = useState(null);
+export const useModal = (initialOpen = false) => {
+    const [isOpen, setIsOpen] = useState(initialOpen);
 
-    const open = (data = null) => {
-        setModalData(data);
-        setIsOpen(true);
+    const open = () => setIsOpen(true);
+    const close = () => setIsOpen(false);
+    const toggle = () => setIsOpen(prev => !prev);
+
+    return { isOpen, open, close, toggle };
+};
+
+/**
+ * Custom hook for managing active tabs
+ * Useful for tabbed navigation
+ * 
+ * @param {string} initialTab - Initial active tab ID
+ * @returns {Object} - Tab state and handlers
+ */
+export const useTabs = (initialTab) => {
+    const [activeTab, setActiveTab] = useState(initialTab);
+
+    const selectTab = (tabId) => setActiveTab(tabId);
+
+    return { activeTab, selectTab };
+};
+
+/**
+ * Custom hook for copy to clipboard functionality
+ * 
+ * @param {number} resetTimeout - Time in ms to reset copied state
+ * @returns {Object} - Copy state and handler
+ */
+export const useClipboard = (resetTimeout = 2000) => {
+    const [copied, setCopied] = useState(false);
+
+    const copy = async (text) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            setCopied(true);
+            setTimeout(() => setCopied(false), resetTimeout);
+            return true;
+        } catch (err) {
+            console.error('Failed to copy text:', err);
+            setCopied(false);
+            return false;
+        }
     };
 
-    const close = () => {
-        setIsOpen(false);
-        setModalData(null);
-    };
+    return { copied, copy };
+};
 
-    const toggle = () => {
-        setIsOpen(prev => !prev);
-    };
+/**
+ * Custom hook for filtering and searching lists
+ * 
+ * @param {Array} items - List of items to filter
+ * @param {string} filterKey - Key to filter by (optional for object arrays)
+ * @returns {Object} - Filtered items and handlers
+ */
+export const useFilter = (items = [], filterKey = null) => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [category, setCategory] = useState('all');
+
+    const filteredItems = items.filter(item => {
+        const matchesSearch = searchTerm === '' || (
+            filterKey 
+                ? String(item[filterKey] || '').toLowerCase().includes(searchTerm.toLowerCase())
+                : Object.values(item).some(val => 
+                    String(val).toLowerCase().includes(searchTerm.toLowerCase())
+                )
+        );
+
+        const matchesCategory = category === 'all' || item.category === category;
+
+        return matchesSearch && matchesCategory;
+    });
 
     return {
-        isOpen,
-        modalData,
-        open,
-        close,
-        toggle
+        filteredItems,
+        searchTerm,
+        setSearchTerm,
+        category,
+        setCategory,
+        totalCount: items.length,
+        filteredCount: filteredItems.length
     };
 };
 
@@ -138,9 +184,15 @@ export const useModal = () => {
  */
 export const useToast = () => {
     const [toasts, setToasts] = useState([]);
+    const countRef = useRef(0);
 
-    const addToast = (message, type = 'info', duration = 3000) => {
-        const id = Date.now();
+    const removeToast = useCallback((id) => {
+        setToasts(prev => prev.filter(toast => toast.id !== id));
+    }, []);
+
+    const addToast = useCallback((message, type = 'info', duration = 3000) => {
+        countRef.current += 1;
+        const id = `${Date.now()}-${countRef.current}`;
         const toast = { id, message, type };
 
         setToasts(prev => [...prev, toast]);
@@ -152,16 +204,12 @@ export const useToast = () => {
         }
 
         return id;
-    };
+    }, [removeToast]);
 
-    const removeToast = (id) => {
-        setToasts(prev => prev.filter(toast => toast.id !== id));
-    };
-
-    const success = (message, duration) => addToast(message, 'success', duration);
-    const error = (message, duration) => addToast(message, 'error', duration);
-    const warning = (message, duration) => addToast(message, 'warning', duration);
-    const info = (message, duration) => addToast(message, 'info', duration);
+    const success = useCallback((message, duration) => addToast(message, 'success', duration), [addToast]);
+    const error = useCallback((message, duration) => addToast(message, 'error', duration), [addToast]);
+    const warning = useCallback((message, duration) => addToast(message, 'warning', duration), [addToast]);
+    const info = useCallback((message, duration) => addToast(message, 'info', duration), [addToast]);
 
     return {
         toasts,
@@ -217,7 +265,7 @@ export const useLocalStorage = (key, initialValue) => {
 export const useDebounce = (value, delay = 500) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
 
-    useState(() => {
+    useEffect(() => {
         const handler = setTimeout(() => {
             setDebouncedValue(value);
         }, delay);

@@ -176,16 +176,35 @@ const CareerPathGenerator = () => {
                                         <span className="text-[11px] text-slate-500 font-medium">{step.duration}</span>
                                     )}
                                 </div>
-                                <p className="text-xs text-slate-600 pl-8 leading-relaxed">{step.description || step.focus}</p>
-                                {step.skills?.length > 0 && (
-                                    <div className="flex flex-wrap gap-1.5 pl-8 pt-1">
-                                        {step.skills.map((skill, i) => (
-                                            <span key={i} className="text-[10px] font-semibold bg-white border border-slate-200 text-slate-700 px-2 py-0.5 rounded-full">
-                                                {skill}
-                                            </span>
-                                        ))}
-                                    </div>
-                                )}
+                                <div className="pl-8 space-y-2">
+                                    {(step.milestone || step.description || step.focus) && (
+                                        <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                                            {step.milestone ? `🎯 Milestone: ${step.milestone}` : (step.description || step.focus)}
+                                        </p>
+                                    )}
+
+                                    {step.skills?.length > 0 && (
+                                        <div className="flex flex-wrap gap-1.5 pt-1">
+                                            {step.skills.map((skill, i) => (
+                                                <span key={i} className="text-[10px] font-semibold bg-white border border-slate-200 text-slate-700 px-2 py-0.5 rounded-full">
+                                                    {skill}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {step.resources?.length > 0 && (
+                                        <div className="pt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500">
+                                            <BookOpen className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                                            <span className="font-semibold text-slate-600">Resources:</span>
+                                            {step.resources.map((res, ri) => (
+                                                <span key={ri} className="bg-indigo-50/60 text-indigo-800 text-[10px] px-2 py-0.5 rounded-md border border-indigo-100 font-medium">
+                                                    {res}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </motion.div>
                         ))}
                     </div>

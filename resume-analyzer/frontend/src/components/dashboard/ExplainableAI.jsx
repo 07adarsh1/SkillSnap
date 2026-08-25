@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { HelpCircle, TrendingUp, TrendingDown, Target, Zap, AlertTriangle, CheckCircle2, Loader2, X } from 'lucide-react';
 import { explainScore } from '../../services/api';
@@ -8,7 +8,7 @@ const ExplainableAI = ({ resumeId, currentScore, jobDescription, onClose }) => {
     const [explanation, setExplanation] = useState(null);
     const [error, setError] = useState(null);
 
-    const handleExplain = async () => {
+    const handleExplain = useCallback(async () => {
         if (!jobDescription) {
             setError('A target job description is required to calculate score explanation');
             return;
@@ -25,13 +25,38 @@ const ExplainableAI = ({ resumeId, currentScore, jobDescription, onClose }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [resumeId, jobDescription]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (jobDescription && !explanation && !loading) {
             handleExplain();
         }
-    }, []);
+    }, [jobDescription, explanation, loading, handleExplain]);
+
+    const renderFactorText = (item) => {
+        if (!item) return '';
+        if (typeof item === 'string') return item;
+        if (typeof item === 'object') {
+            if (item.factor && item.evidence) {
+                return `${item.factor} - ${item.evidence}`;
+            }
+            return item.factor || item.evidence || item.description || JSON.stringify(item);
+        }
+        return String(item);
+    };
+
+    const renderActionText = (item) => {
+        if (!item) return '';
+        if (typeof item === 'string') return item;
+        if (typeof item === 'object') {
+            const text = item.action || item.description || item.title || '';
+            const impact = item.expected_impact ? ` (${item.expected_impact})` : '';
+            return `${text}${impact}`;
+        }
+        return String(item);
+    };
+
+    const actionItems = explanation?.improvement_actions || explanation?.recommendations || [];
 
     return (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
@@ -86,8 +111,8 @@ const ExplainableAI = ({ resumeId, currentScore, jobDescription, onClose }) => {
                             {/* Summary Card */}
                             <div className="p-5 bg-gradient-to-r from-indigo-50/60 to-slate-50 border border-indigo-100 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4">
                                 <div>
-                                    <h3 className="text-sm font-bold text-indigo-950">Calculated ATS Score: {currentScore || explanation.score}/100</h3>
-                                    <p className="text-xs text-slate-600 mt-0.5">{explanation.summary || 'Rubric evaluation completed with sentence embeddings and rubric heuristics.'}</p>
+                                    <h3 className="text-sm font-bold text-indigo-950">Calculated ATS Score: {currentScore || explanation.score || explanation.ats_score || 75}/100</h3>
+                                    <p className="text-xs text-slate-600 mt-0.5">{explanation.reasoning || explanation.summary || 'Rubric evaluation completed with sentence embeddings and rubric heuristics.'}</p>
                                 </div>
                             </div>
 
@@ -101,7 +126,7 @@ const ExplainableAI = ({ resumeId, currentScore, jobDescription, onClose }) => {
                                         {(explanation.positive_factors || []).map((factor, i) => (
                                             <li key={i} className="flex items-start gap-2">
                                                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 mt-0.5 shrink-0" />
-                                                <span>{factor}</span>
+                                                <span>{renderFactorText(factor)}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -115,24 +140,24 @@ const ExplainableAI = ({ resumeId, currentScore, jobDescription, onClose }) => {
                                         {(explanation.negative_factors || []).map((factor, i) => (
                                             <li key={i} className="flex items-start gap-2">
                                                 <AlertTriangle className="w-3.5 h-3.5 text-rose-600 mt-0.5 shrink-0" />
-                                                <span>{factor}</span>
+                                                <span>{renderFactorText(factor)}</span>
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
                             </div>
 
-                            {/* Recommendations to reach 95+ */}
-                            {explanation.recommendations?.length > 0 && (
+                            {/* Action Items / Recommendations */}
+                            {actionItems.length > 0 && (
                                 <div className="p-5 bg-slate-50 border border-slate-200/80 rounded-3xl space-y-3">
                                     <h4 className="text-xs uppercase font-bold text-slate-900 flex items-center gap-1.5">
                                         <Target className="w-4 h-4 text-indigo-600" /> Action Items to Reach 90+ Match
                                     </h4>
                                     <div className="space-y-2">
-                                        {explanation.recommendations.map((rec, i) => (
+                                        {actionItems.map((item, i) => (
                                             <div key={i} className="p-3 bg-white border border-slate-200/70 rounded-xl text-xs text-slate-700 shadow-xs flex items-start gap-2">
                                                 <Zap className="w-3.5 h-3.5 text-indigo-600 mt-0.5 shrink-0" />
-                                                <span>{rec}</span>
+                                                <span>{renderActionText(item)}</span>
                                             </div>
                                         ))}
                                     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Briefcase,
@@ -78,7 +78,7 @@ const JobMatcher = ({ userId }) => {
     }, [userId]);
 
     // Fetch Jobs from backend API
-    const fetchJobs = async () => {
+    const fetchJobs = useCallback(async () => {
         setLoading(true);
         try {
             const data = await getRealJobs({
@@ -96,14 +96,14 @@ const JobMatcher = ({ userId }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [searchQuery, selectedCategory, selectedResumeId, selectedJob]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
             fetchJobs();
         }, 300);
         return () => clearTimeout(timer);
-    }, [searchQuery, selectedCategory, selectedResumeId]);
+    }, [fetchJobs]);
 
     const handleSync = async () => {
         setSyncing(true);

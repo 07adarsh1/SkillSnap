@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { getATSHeatmap } from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
@@ -9,13 +9,7 @@ const ATSHeatmap = ({ resumeId, sections }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        if (resumeId && !sections) {
-            fetchHeatmap();
-        }
-    }, [resumeId]);
-
-    const fetchHeatmap = async () => {
+    const fetchHeatmap = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
@@ -27,7 +21,15 @@ const ATSHeatmap = ({ resumeId, sections }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [resumeId]);
+
+    useEffect(() => {
+        if (resumeId && !sections) {
+            fetchHeatmap();
+        } else if (sections) {
+            setHeatmapData(sections);
+        }
+    }, [resumeId, sections, fetchHeatmap]);
 
     const getColorClass = (status) => {
         switch (status) {

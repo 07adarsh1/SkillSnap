@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Upload, FileText, Trash2, Calendar, Search, Loader2, ArrowRight, Eye } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UploadSection from '../UploadSection';
@@ -17,7 +17,7 @@ const ResumeManager = ({ userId }) => {
     const [deleteConfirmId, setDeleteConfirmId] = useState(null);
     const [retryingId, setRetryingId] = useState(null);
 
-    const fetchResumes = async () => {
+    const fetchResumes = useCallback(async () => {
         if (!userId) return;
         setLoading(true);
         try {
@@ -28,11 +28,11 @@ const ResumeManager = ({ userId }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [userId]);
 
     useEffect(() => {
         fetchResumes();
-    }, [userId]);
+    }, [fetchResumes]);
 
     const handleDelete = async (id, e) => {
         e.stopPropagation();

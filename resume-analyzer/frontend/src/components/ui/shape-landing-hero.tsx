@@ -76,28 +76,32 @@ function HeroGeometric({
   title2 = "in Seconds",
   subtitle = "Stop guessing what recruiters want. Our AI analyzes your resume against industry standards using semantic vector matching to increase your interview calls.",
   actions,
+  children,
+  className,
 }: {
   badge?: string;
   title1?: string;
   title2?: string;
   subtitle?: string;
   actions?: React.ReactNode;
+  children?: React.ReactNode;
+  className?: string;
 }) {
   const fadeUpVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 20 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.9,
-        delay: 0.3 + i * 0.15,
+        duration: 0.8,
+        delay: 0.15 + i * 0.1,
         ease: [0.25, 0.4, 0.25, 1],
       },
     }),
   };
 
   return (
-    <div className="relative min-h-[90vh] w-full flex items-center justify-center overflow-x-hidden bg-transparent py-16 sm:py-24">
+    <div className={cn("relative w-full flex flex-col items-center justify-center overflow-hidden bg-transparent", className)}>
       {/* Ambient background glow */}
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-100/40 via-transparent to-cyan-100/30 blur-3xl pointer-events-none" />
 
@@ -108,7 +112,7 @@ function HeroGeometric({
           height={140}
           rotate={12}
           gradient="from-indigo-500/10"
-          className="left-[-10%] md:left-[-5%] top-[15%] md:top-[20%]"
+          className="left-[-10%] md:left-[-5%] top-[10%] md:top-[15%]"
         />
 
         <ElegantShape
@@ -117,7 +121,7 @@ function HeroGeometric({
           height={120}
           rotate={-15}
           gradient="from-violet-500/10"
-          className="right-[-5%] md:right-[0%] top-[70%] md:top-[75%]"
+          className="right-[-5%] md:right-[0%] top-[60%] md:top-[65%]"
         />
 
         <ElegantShape
@@ -126,7 +130,7 @@ function HeroGeometric({
           height={80}
           rotate={-8}
           gradient="from-cyan-500/15"
-          className="left-[5%] md:left-[10%] bottom-[5%] md:bottom-[10%]"
+          className="left-[5%] md:left-[10%] bottom-[5%] md:bottom-[8%]"
         />
 
         <ElegantShape
@@ -135,7 +139,7 @@ function HeroGeometric({
           height={60}
           rotate={20}
           gradient="from-blue-500/10"
-          className="right-[15%] md:right-[20%] top-[10%] md:top-[15%]"
+          className="right-[15%] md:right-[20%] top-[8%] md:top-[12%]"
         />
 
         <ElegantShape
@@ -144,11 +148,11 @@ function HeroGeometric({
           height={40}
           rotate={-25}
           gradient="from-indigo-400/15"
-          className="left-[20%] md:left-[25%] top-[5%] md:top-[10%]"
+          className="left-[20%] md:left-[25%] top-[5%] md:top-[8%]"
         />
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 md:px-6">
+      <div className="relative z-10 container mx-auto px-4 md:px-6 flex flex-col items-center">
         <div className="max-w-3xl mx-auto text-center">
           {badge ? (
             <motion.div
@@ -156,7 +160,7 @@ function HeroGeometric({
               variants={fadeUpVariants}
               initial="hidden"
               animate="visible"
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 border border-indigo-100 shadow-[0_2px_10px_rgba(79,70,229,0.08)] mb-6 md:mb-8"
+              className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/90 border border-indigo-100 shadow-[0_2px_10px_rgba(79,70,229,0.08)] mb-4 md:mb-5"
             >
               <Circle className="h-2 w-2 fill-indigo-600 text-indigo-600" />
               <span className="text-xs sm:text-sm font-semibold text-indigo-900 tracking-wide">{badge}</span>
@@ -164,7 +168,7 @@ function HeroGeometric({
           ) : null}
 
           <motion.div custom={1} variants={fadeUpVariants} initial="hidden" animate="visible">
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold mb-6 md:mb-8 tracking-tight text-slate-900">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black mb-3 md:mb-4 tracking-tight text-slate-900 leading-tight">
               <span>{title1}</span>
               <br />
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-600">
@@ -174,12 +178,14 @@ function HeroGeometric({
           </motion.div>
 
           <motion.div custom={2} variants={fadeUpVariants} initial="hidden" animate="visible">
-            <p className="text-base sm:text-lg md:text-xl text-slate-600 mb-8 leading-relaxed font-normal max-w-2xl mx-auto px-4">
+            <p className="text-xs sm:text-sm md:text-base text-slate-600 mb-6 leading-relaxed font-normal max-w-xl mx-auto px-2">
               {subtitle}
             </p>
-            {actions ? <div className="flex flex-col sm:flex-row items-center justify-center gap-4">{actions}</div> : null}
+            {actions ? <div className="flex flex-col sm:flex-row items-center justify-center gap-3">{actions}</div> : null}
           </motion.div>
         </div>
+
+        {children}
       </div>
     </div>
   );

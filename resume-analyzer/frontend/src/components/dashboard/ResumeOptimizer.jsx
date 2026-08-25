@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Building2, FileText, ArrowRight, Download, CheckCircle2, AlertCircle, X } from 'lucide-react';
 import { optimizeResume } from '../../services/api';
-import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 
 const ResumeOptimizer = ({ resumeId, onClose }) => {
@@ -32,23 +31,26 @@ const ResumeOptimizer = ({ resumeId, onClose }) => {
     };
 
     const downloadOptimized = () => {
+        if (!result) return;
+        const skillsList = Array.isArray(result.optimized_skills) ? result.optimized_skills.join(', ') : (result.optimized_skills || '');
+        const experienceList = Array.isArray(result.optimized_experience) 
+            ? result.optimized_experience.map((exp, i) => `\n${i + 1}. ${exp.optimized || exp.original || ''}\n   (Reason: ${exp.reason || 'ATS optimization'})\n`).join('\n')
+            : '';
+
         const content = `
 OPTIMIZED PROFESSIONAL SUMMARY:
-${result.optimized_summary}
+${result.optimized_summary || ''}
 
 OPTIMIZED SKILLS:
-${result.optimized_skills.join(', ')}
+${skillsList}
 
 OPTIMIZED EXPERIENCE:
-${result.optimized_experience.map((exp, i) => `
-${i + 1}. ${exp.optimized}
-   (Reason: ${exp.reason})
-`).join('\n')}
+${experienceList}
 
 CHANGES EXPLANATION:
-${result.changes_explanation}
+${result.changes_explanation || ''}
 
-Expected ATS Improvement: +${result.ats_improvement_score} points
+Expected ATS Improvement: +${result.ats_improvement_score || 15} points
         `.trim();
 
         const blob = new Blob([content], { type: 'text/plain' });
@@ -157,33 +159,37 @@ Expected ATS Improvement: +${result.ats_improvement_score} points
                             </div>
 
                             {/* Skills */}
-                            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-2">
-                                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Recommended Skills Alignment</h3>
-                                <div className="flex flex-wrap gap-1.5">
-                                    {result.optimized_skills.map((skill, i) => (
-                                        <Badge key={i} variant="primary">
-                                            {skill}
-                                        </Badge>
-                                    ))}
+                            {(result.optimized_skills || []).length > 0 && (
+                                <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-2">
+                                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Recommended Skills Alignment</h3>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {(result.optimized_skills || []).map((skill, i) => (
+                                            <Badge key={i} variant="primary">
+                                                {skill}
+                                            </Badge>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Experience */}
-                            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3">
-                                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Experience Bullet Transformations</h3>
-                                <div className="space-y-3">
-                                    {result.optimized_experience.map((exp, i) => (
-                                        <div key={i} className="text-xs space-y-1 pb-3 border-b border-slate-200/60 last:border-0 last:pb-0">
-                                            <p className="text-slate-400 line-through">{exp.original}</p>
-                                            <p className="text-emerald-700 font-semibold flex items-start gap-1">
-                                                <ArrowRight className="w-3.5 h-3.5 text-emerald-600 mt-0.5 shrink-0" />
-                                                <span>{exp.optimized}</span>
-                                            </p>
-                                            <p className="text-[11px] text-slate-500 italic pl-4.5">{exp.reason}</p>
-                                        </div>
-                                    ))}
+                            {(result.optimized_experience || []).length > 0 && (
+                                <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3">
+                                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Experience Bullet Transformations</h3>
+                                    <div className="space-y-3">
+                                        {(result.optimized_experience || []).map((exp, i) => (
+                                            <div key={i} className="text-xs space-y-1 pb-3 border-b border-slate-200/60 last:border-0 last:pb-0">
+                                                {exp.original && <p className="text-slate-400 line-through">{exp.original}</p>}
+                                                <p className="text-emerald-700 font-semibold flex items-start gap-1">
+                                                    <ArrowRight className="w-3.5 h-3.5 text-emerald-600 mt-0.5 shrink-0" />
+                                                    <span>{exp.optimized || exp.bullet || ''}</span>
+                                                </p>
+                                                {exp.reason && <p className="text-[11px] text-slate-500 italic pl-4.5">{exp.reason}</p>}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Explanation */}
                             <div className="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-4">

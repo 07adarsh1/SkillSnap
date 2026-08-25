@@ -159,8 +159,8 @@ class JobsService {
         const db = getDatabase();
         const resume = await db.collection('resumes').findOne({ id: resumeId });
         if (resume) {
-          candidateSkills = resume.skills || resume.analysis_result?.skills_extracted || [];
-          candidateText = resume.text || '';
+          candidateSkills = resume.analysis_result?.resume_skills || resume.skills || resume.analysis_result?.skills_extracted || [];
+          candidateText = resume.content_text || resume.text || '';
         }
       } catch (err) {
         console.warn('[JobsService] Could not fetch resume for scoring:', err.message);

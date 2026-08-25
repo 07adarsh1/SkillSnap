@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, FileText, Trash2, Calendar, ChevronRight, Loader2 } from 'lucide-react';
 import { getUserAnalysisHistory, deleteResume } from '../services/api';
@@ -8,7 +8,7 @@ const HistoryPanel = ({ isOpen, onClose, userId, onLoadResult }) => {
     const [loading, setLoading] = useState(false);
     const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
-    const fetchHistory = async () => {
+    const fetchHistory = useCallback(async () => {
         if (!userId) return;
         setLoading(true);
         try {
@@ -19,13 +19,13 @@ const HistoryPanel = ({ isOpen, onClose, userId, onLoadResult }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [userId]);
 
     useEffect(() => {
         if (isOpen) {
             fetchHistory();
         }
-    }, [isOpen, userId]);
+    }, [isOpen, fetchHistory]);
 
     // Step 1: Trigger the modal
     const handleDeleteClick = (e, resumeId) => {

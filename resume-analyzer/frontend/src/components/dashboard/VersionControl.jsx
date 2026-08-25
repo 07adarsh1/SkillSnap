@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { GitBranch, TrendingUp, TrendingDown, Minus, Calendar, FileText, ArrowRight, X } from 'lucide-react';
+import { GitBranch, TrendingUp, TrendingDown, FileText, ArrowRight, X, CheckCircle2, AlertCircle } from 'lucide-react';
 import { getResumeVersions, compareVersions } from '../../services/api';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
@@ -14,20 +14,20 @@ const VersionControl = ({ resumeId, onClose }) => {
     const [comparison, setComparison] = useState(null);
     const [comparing, setComparing] = useState(false);
 
-    useEffect(() => {
-        loadVersions();
-    }, [resumeId]);
-
-    const loadVersions = async () => {
+    const loadVersions = useCallback(async () => {
         try {
             const data = await getResumeVersions(resumeId);
             setVersions(data.versions || []);
-        } catch (err) {
+        } catch {
             setError('Failed to load version history');
         } finally {
             setLoading(false);
         }
-    };
+    }, [resumeId]);
+
+    useEffect(() => {
+        loadVersions();
+    }, [loadVersions]);
 
     const handleCompare = async () => {
         if (!selectedVersions[0] || !selectedVersions[1]) {
@@ -44,8 +44,8 @@ const VersionControl = ({ resumeId, onClose }) => {
                 selectedVersions[0],
                 selectedVersions[1]
             );
-            setComparison(data);
-        } catch (err) {
+            setComparison(data.comparison || data);
+        } catch {
             setError('Failed to compare versions');
         } finally {
             setComparing(false);
@@ -208,6 +208,55 @@ const VersionControl = ({ resumeId, onClose }) => {
                                     {comparing ? 'Comparing...' : 'Run Version Diff'}
                                 </button>
                             </div>
+
+                            {/* Comparison Result Render */}
+                            {comparison && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="mt-6 pt-4 border-t border-slate-200 space-y-4"
+                                >
+                                    {comparison.score_change && (
+                                        <div className="p-4 bg-white border border-slate-200 rounded-2xl flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`p-2.5 rounded-xl ${comparison.score_change.trend === 'improved' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                                                    {comparison.score_change.trend === 'improved' ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-xs font-bold text-slate-900">Score Delta: {comparison.score_change.previous} → {comparison.score_change.current} pts</h4>
+                                                    <p className="text-[11px] text-slate-500 capitalize">Overall trend: {comparison.score_change.trend} ({comparison.score_change.delta > 0 ? `+${comparison.score_change.delta}` : comparison.score_change.delta} pts)</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {comparison.key_changes?.length > 0 && (
+                                        <div className="space-y-2">
+                                            <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Key Section Modifications</h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                {comparison.key_changes.map((change, ci) => (
+                                                    <div key={ci} className="p-3.5 bg-white border border-slate-200/80 rounded-2xl space-y-1">
+                                                        <div className="flex items-center justify-between text-xs font-bold">
+                                                            <span className="text-slate-900">{change.section}</span>
+                                                            <Badge variant={change.impact === 'positive' ? 'success' : 'primary'} size="sm">
+                                                                {change.change_type || change.impact}
+                                                            </Badge>
+                                                        </div>
+                                                        <p className="text-xs text-slate-600 leading-relaxed">{change.description}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {comparison.recommendation && (
+                                        <div className="p-4 bg-indigo-50/70 border border-indigo-100 rounded-2xl text-xs text-indigo-950 flex items-start gap-2">
+                                            <CheckCircle2 className="w-4 h-4 text-indigo-600 mt-0.5 shrink-0" />
+                                            <p className="leading-relaxed"><strong className="font-bold">Recommendation:</strong> {comparison.recommendation}</p>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            )}
                         </div>
                     )}
                 </>

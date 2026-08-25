@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Calendar, Clock3, FileText, Loader2, Search } from 'lucide-react';
 import { getUserAnalysisHistory } from '../../services/api';
 
@@ -7,7 +7,7 @@ const HistoryView = ({ userId, onOpenResumes }) => {
     const [loading, setLoading] = useState(false);
     const [query, setQuery] = useState('');
 
-    const fetchHistory = async () => {
+    const fetchHistory = useCallback(async () => {
         if (!userId) return;
         setLoading(true);
         try {
@@ -19,11 +19,11 @@ const HistoryView = ({ userId, onOpenResumes }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [userId]);
 
     useEffect(() => {
         fetchHistory();
-    }, [userId]);
+    }, [fetchHistory]);
 
     const filteredItems = useMemo(() => {
         const normalized = query.trim().toLowerCase();

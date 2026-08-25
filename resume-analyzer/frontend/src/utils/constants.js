@@ -194,7 +194,7 @@ export const CHART_CONFIG = {
 // Regex Patterns
 export const REGEX = {
     EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-    PHONE: /^[\d\s\-\+\(\)]+$/,
+    PHONE: /^[\d\s\-+()]+$/,
     URL: /^https?:\/\/.+/,
     LINKEDIN: /^https?:\/\/(www\.)?linkedin\.com\/.+/
 };
