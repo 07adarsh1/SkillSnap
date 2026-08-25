@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Building2, FileText, ArrowRight, Download, CheckCircle2, AlertCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Sparkles, Building2, FileText, ArrowRight, Download, CheckCircle2, AlertCircle, X } from 'lucide-react';
 import { optimizeResume } from '../../services/api';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
@@ -14,7 +14,7 @@ const ResumeOptimizer = ({ resumeId, onClose }) => {
 
     const handleOptimize = async () => {
         if (!jobDescription.trim()) {
-            setError('Please provide a job description');
+            setError('Please provide a target job description');
             return;
         }
 
@@ -32,7 +32,6 @@ const ResumeOptimizer = ({ resumeId, onClose }) => {
     };
 
     const downloadOptimized = () => {
-        // Create downloadable content
         const content = `
 OPTIMIZED PROFESSIONAL SUMMARY:
 ${result.optimized_summary}
@@ -56,116 +55,111 @@ Expected ATS Improvement: +${result.ats_improvement_score} points
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `optimized_resume_${companyName || 'generic'}.txt`;
+        a.download = `optimized_resume_${companyName || 'tailored'}.txt`;
         a.click();
         URL.revokeObjectURL(url);
     };
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
             <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="glass-card bg-slate-900/95 rounded-xl sm:rounded-2xl border border-white/10 max-w-5xl w-full max-h-[95vh] overflow-hidden flex flex-col shadow-2xl"
+                exit={{ opacity: 0, scale: 0.96 }}
+                className="bg-white rounded-3xl border border-slate-200/90 max-w-4xl w-full max-h-[92vh] overflow-hidden flex flex-col shadow-2xl"
             >
                 {/* Header */}
-                <div className="p-4 sm:p-6 border-b border-slate-700 bg-gradient-to-r from-primary/10 to-purple-600/10">
+                <div className="p-6 border-b border-slate-100 bg-slate-50/50">
                     <div className="flex items-start sm:items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                                <Sparkles className="w-6 h-6 text-primary" />
+                            <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
+                                <Sparkles className="w-5 h-5" />
                             </div>
                             <div>
-                                <h2 className="text-lg sm:text-2xl font-bold text-white">AI Resume Optimizer</h2>
-                                <p className="text-xs sm:text-sm text-slate-400">Tailor your resume for maximum ATS impact</p>
+                                <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">AI Resume Optimizer</h2>
+                                <p className="text-xs text-slate-500">Tailor your resume for specific companies with Groq LPU inference</p>
                             </div>
                         </div>
                         <button
                             onClick={onClose}
-                            className="text-slate-400 hover:text-white transition-colors"
+                            className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all cursor-pointer"
                         >
-                            ✕
+                            <X className="w-4 h-4" />
                         </button>
                     </div>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
                     {!result ? (
-                        <>
-                            {/* Input Form */}
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                                        <Building2 className="w-4 h-4 inline mr-2" />
-                                        Company Name (Optional)
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={companyName}
-                                        onChange={(e) => setCompanyName(e.target.value)}
-                                        placeholder="e.g., Google, Microsoft, Amazon"
-                                        className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                                        <FileText className="w-4 h-4 inline mr-2" />
-                                        Job Description *
-                                    </label>
-                                    <textarea
-                                        value={jobDescription}
-                                        onChange={(e) => setJobDescription(e.target.value)}
-                                        placeholder="Paste the full job description here..."
-                                        rows={8}
-                                        className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-                                    />
-                                </div>
-
-                                {error && (
-                                    <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3">
-                                        <AlertCircle className="w-5 h-5 text-red-400 mt-0.5" />
-                                        <p className="text-red-400 text-sm">{error}</p>
-                                    </div>
-                                )}
-
-                                <Button
-                                    onClick={handleOptimize}
-                                    disabled={loading || !jobDescription.trim()}
-                                    loading={loading}
-                                    className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500"
-                                >
-                                    {!loading && <Sparkles className="w-5 h-5" />}
-                                    {loading ? 'Optimizing with AI...' : 'Optimize Resume'}
-                                </Button>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                                    <Building2 className="w-3.5 h-3.5 inline mr-1 text-indigo-600" />
+                                    Target Company (Optional)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={companyName}
+                                    onChange={(e) => setCompanyName(e.target.value)}
+                                    placeholder="e.g., Google, Microsoft, Stripe..."
+                                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                                />
                             </div>
-                        </>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                                    <FileText className="w-3.5 h-3.5 inline mr-1 text-indigo-600" />
+                                    Target Job Description *
+                                </label>
+                                <textarea
+                                    value={jobDescription}
+                                    onChange={(e) => setJobDescription(e.target.value)}
+                                    placeholder="Paste the full target job description or requirements here..."
+                                    rows={7}
+                                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none"
+                                />
+                            </div>
+
+                            {error && (
+                                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-2 text-rose-700 text-xs">
+                                    <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                                    <p>{error}</p>
+                                </div>
+                            )}
+
+                            <button
+                                onClick={handleOptimize}
+                                disabled={loading || !jobDescription.trim()}
+                                className="w-full py-3 px-5 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold text-xs shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                            >
+                                <Sparkles className="w-4 h-4" />
+                                <span>{loading ? 'Optimizing Resume with AI...' : 'Generate Tailored Resume'}</span>
+                            </button>
+                        </div>
                     ) : (
-                        <div className="space-y-6 animate-fade-in">
+                        <div className="space-y-6">
                             {/* Success Banner */}
-                            <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center gap-3">
-                                <CheckCircle2 className="w-6 h-6 text-green-400" />
+                            <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3">
+                                <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
                                 <div>
-                                    <p className="text-green-400 font-semibold">Optimization Complete!</p>
-                                    <p className="text-sm text-slate-400">Expected ATS improvement: +{result.ats_improvement_score} points</p>
+                                    <p className="text-xs font-bold text-emerald-900">Optimization Complete!</p>
+                                    <p className="text-xs text-emerald-700">Estimated ATS score increase: +{result.ats_improvement_score} points</p>
                                 </div>
                             </div>
 
-                            {/* Optimized Summary */}
-                            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
-                                <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-                                    <Sparkles className="w-5 h-5 text-primary" />
-                                    Optimized Professional Summary
+                            {/* Summary */}
+                            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-2">
+                                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                                    <Sparkles className="w-3.5 h-3.5 text-indigo-600" /> Optimized Professional Summary
                                 </h3>
-                                <p className="text-slate-300 leading-relaxed">{result.optimized_summary}</p>
+                                <p className="text-xs text-slate-700 leading-relaxed">{result.optimized_summary}</p>
                             </div>
 
-                            {/* Optimized Skills */}
-                            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
-                                <h3 className="text-lg font-bold text-white mb-3">Optimized Skills</h3>
-                                <div className="flex flex-wrap gap-2">
+                            {/* Skills */}
+                            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-2">
+                                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Recommended Skills Alignment</h3>
+                                <div className="flex flex-wrap gap-1.5">
                                     {result.optimized_skills.map((skill, i) => (
                                         <Badge key={i} variant="primary">
                                             {skill}
@@ -174,50 +168,44 @@ Expected ATS Improvement: +${result.ats_improvement_score} points
                                 </div>
                             </div>
 
-                            {/* Experience Improvements */}
-                            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
-                                <h3 className="text-lg font-bold text-white mb-4">Experience Improvements</h3>
-                                <div className="space-y-4">
+                            {/* Experience */}
+                            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3">
+                                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Experience Bullet Transformations</h3>
+                                <div className="space-y-3">
                                     {result.optimized_experience.map((exp, i) => (
-                                        <div key={i} className="space-y-2">
-                                            <div className="flex items-start gap-3">
-                                                <ArrowRight className="w-5 h-5 text-green-400 mt-1 shrink-0" />
-                                                <div className="flex-1">
-                                                    <p className="text-slate-400 text-sm line-through mb-1">{exp.original}</p>
-                                                    <p className="text-green-400 font-medium">{exp.optimized}</p>
-                                                    <p className="text-xs text-slate-500 mt-1 italic">{exp.reason}</p>
-                                                </div>
-                                            </div>
-                                            {i < result.optimized_experience.length - 1 && (
-                                                <div className="border-b border-slate-700/50" />
-                                            )}
+                                        <div key={i} className="text-xs space-y-1 pb-3 border-b border-slate-200/60 last:border-0 last:pb-0">
+                                            <p className="text-slate-400 line-through">{exp.original}</p>
+                                            <p className="text-emerald-700 font-semibold flex items-start gap-1">
+                                                <ArrowRight className="w-3.5 h-3.5 text-emerald-600 mt-0.5 shrink-0" />
+                                                <span>{exp.optimized}</span>
+                                            </p>
+                                            <p className="text-[11px] text-slate-500 italic pl-4.5">{exp.reason}</p>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Changes Explanation */}
-                            <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-5">
-                                <h3 className="text-lg font-bold text-blue-400 mb-2">What Changed?</h3>
-                                <p className="text-slate-300 leading-relaxed">{result.changes_explanation}</p>
+                            {/* Explanation */}
+                            <div className="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-4">
+                                <h3 className="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1">AI Rationale</h3>
+                                <p className="text-xs text-slate-700 leading-relaxed">{result.changes_explanation}</p>
                             </div>
 
                             {/* Actions */}
-                            <div className="flex flex-col sm:flex-row gap-3">
-                                <Button
+                            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                                <button
                                     onClick={downloadOptimized}
-                                    className="w-full sm:flex-1"
-                                    icon={<Download className="w-5 h-5" />}
+                                    className="flex-1 py-2.5 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold text-xs rounded-xl shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2 cursor-pointer"
                                 >
-                                    Download Optimized Resume
-                                </Button>
-                                <Button
-                                    variant="secondary"
+                                    <Download className="w-3.5 h-3.5" />
+                                    Download Optimized Content
+                                </button>
+                                <button
                                     onClick={() => setResult(null)}
-                                    className="w-full sm:w-auto"
+                                    className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl cursor-pointer"
                                 >
-                                    Optimize Another
-                                </Button>
+                                    Tailor For Another Role
+                                </button>
                             </div>
                         </div>
                     )}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, Menu, Search, X } from 'lucide-react';
 import { getUserAnalysisHistory } from '../../services/api';
+import { BrandLogo } from '../ui/BrandLogo';
 
 const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -17,16 +18,16 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
     const navItems = [
         { id: 'overview', label: 'Dashboard' },
         { id: 'resumes', label: 'Resumes' },
-        { id: 'jobs', label: 'Jobs' },
+        { id: 'jobs', label: 'Job Matcher' },
         { id: 'career-path', label: 'Career Path' },
         { id: 'history', label: 'History' },
         { id: 'analytics', label: 'Analytics' },
     ];
 
-    // Force Dark Mode
+    // Initialize Light Mode
     useEffect(() => {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
     }, []);
 
     const notificationStorageKey = user?.id ? `skillsnap:lastReadNotif:${user.id}` : null;
@@ -204,27 +205,24 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
     }, [activeTab]);
 
     return (
-        <div className="min-h-screen text-white font-sans relative z-10 px-4 md:px-8 py-6">
-            <header className="relative z-40 max-w-7xl mx-auto mb-8 rounded-2xl border border-white/10 bg-[rgba(5,5,5,0.92)] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.55)]">
+        <div className="min-h-screen text-slate-900 font-sans relative z-10 px-4 md:px-8 py-6">
+            <header className="relative z-40 max-w-7xl mx-auto mb-8 rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05),0_10px_30px_-4px_rgba(79,70,229,0.04)]">
                 <div className="min-h-16 px-4 sm:px-5 md:px-6 py-2 flex items-center justify-between gap-3 sm:gap-4">
-                    <button
-                        type="button"
+                    <BrandLogo
+                        size="md"
                         onClick={() => setActiveTab('overview')}
-                        className="font-bold text-lg sm:text-xl tracking-tight text-white hover:text-slate-100 transition-colors"
-                    >
-                        SkillSnap
-                    </button>
+                    />
 
-                    <nav className="hidden md:flex items-center gap-2">
+                    <nav className="hidden md:flex items-center gap-1.5 bg-slate-100/70 p-1.5 rounded-2xl border border-slate-200/60">
                         {navItems.map((item) => {
                             const isActive = item.id === activeTab;
                             return (
                                 <button
                                     key={item.id}
                                     onClick={() => setActiveTab(item.id)}
-                                    className={`px-4 py-2 rounded-xl text-sm transition-all ${isActive
-                                        ? 'bg-white/12 text-white shadow-[0_0_24px_rgba(255,255,255,0.12)]'
-                                        : 'text-slate-300 hover:text-white hover:bg-white/8'}`}
+                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${isActive
+                                        ? 'bg-white text-indigo-700 shadow-sm border border-slate-200/60'
+                                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'}`}
                                 >
                                     {item.label}
                                 </button>
@@ -233,8 +231,8 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                     </nav>
 
                     <div className="flex items-center gap-3">
-                        <div className="hidden lg:flex items-center px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-sm w-64 focus-within:border-primary/50 transition-all group">
-                            <Search className="w-4 h-4 text-slate-400 mr-2" />
+                        <div className="hidden lg:flex items-center px-3.5 py-2 bg-slate-100/70 border border-slate-200/70 rounded-xl text-sm w-64 focus-within:bg-white focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100 transition-all group">
+                            <Search className="w-4 h-4 text-slate-400 mr-2 group-focus-within:text-indigo-600 transition-colors" />
                             <input
                                 type="text"
                                 value={searchQuery}
@@ -249,39 +247,39 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                                         handleSearchSubmit();
                                     }
                                 }}
-                                placeholder="Search sections..."
-                                className="w-full bg-transparent text-slate-100 placeholder:text-slate-500 outline-none"
+                                placeholder="Search tabs..."
+                                className="w-full bg-transparent text-slate-900 placeholder:text-slate-400 outline-none text-xs"
                             />
                         </div>
                         <div ref={notificationRef} className="relative">
-                        <button
-                            onClick={handleBellClick}
-                            className="p-3 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl relative transition-all border border-transparent hover:border-white/10"
-                        >
-                            <Bell className="w-5 h-5" />
-                            {hasUnread && (
-                                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold bg-slate-200 text-slate-900 rounded-full border border-[#0b0f16]">
-                                    {unreadCount > 9 ? '9+' : unreadCount}
-                                </span>
-                            )}
-                        </button>
+                            <button
+                                onClick={handleBellClick}
+                                className="p-2.5 text-slate-600 hover:text-slate-900 bg-slate-100/80 hover:bg-slate-200/80 rounded-xl relative transition-all border border-slate-200/60"
+                            >
+                                <Bell className="w-4 h-4" />
+                                {hasUnread && (
+                                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold bg-rose-600 text-white rounded-full shadow-sm">
+                                        {unreadCount > 9 ? '9+' : unreadCount}
+                                    </span>
+                                )}
+                            </button>
                             {isNotifOpen && (
-                                <div className="absolute right-0 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-xl border border-white/10 bg-[#0e1118] p-3 shadow-2xl z-30">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="text-sm font-semibold text-white">Notifications</div>
+                                <div className="absolute right-0 mt-2 w-[min(22rem,calc(100vw-2rem))] rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xl z-30">
+                                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+                                        <div className="text-sm font-bold text-slate-900">Notifications</div>
                                         {notifications.length > 0 && (
                                             <button
                                                 onClick={clearNotifications}
-                                                className="text-xs sm:text-sm text-slate-400 hover:text-white min-h-9 px-2"
+                                                className="text-xs text-indigo-600 hover:text-indigo-700 font-semibold"
                                             >
                                                 Clear all
                                             </button>
                                         )}
                                     </div>
                                     {loadingNotifications ? (
-                                        <div className="text-sm text-slate-400 py-3">Loading...</div>
+                                        <div className="text-xs text-slate-500 py-3 text-center">Loading notifications...</div>
                                     ) : notifications.length === 0 ? (
-                                        <div className="text-sm text-slate-400 py-3">No notifications yet.</div>
+                                        <div className="text-xs text-slate-500 py-3 text-center">No notifications yet.</div>
                                     ) : (
                                         <div className="space-y-2 max-h-72 overflow-auto custom-scrollbar pr-1">
                                             {notifications.map((item) => (
@@ -291,15 +289,15 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                                                         setActiveTab('history');
                                                         setIsNotifOpen(false);
                                                     }}
-                                                    className="w-full text-left rounded-lg p-3 hover:bg-white/5 transition-colors"
+                                                    className="w-full text-left rounded-xl p-3 bg-slate-50 hover:bg-indigo-50/50 border border-slate-100 hover:border-indigo-100 transition-all"
                                                 >
-                                                    <div className="text-sm text-white flex items-center justify-between gap-3">
+                                                    <div className="text-xs font-semibold text-slate-900 flex items-center justify-between gap-2">
                                                         <span>{item.title}</span>
-                                                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${item.status === 'ready' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'}`}>
+                                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${item.status === 'ready' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
                                                             {item.status}
                                                         </span>
                                                     </div>
-                                                    <div className="text-xs text-slate-400 truncate">{item.detail}</div>
+                                                    <div className="text-xs text-slate-500 truncate mt-1">{item.detail}</div>
                                                 </button>
                                             ))}
                                         </div>
@@ -309,28 +307,22 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                         </div>
                         <button
                             onClick={onLogout}
-                            className="hidden sm:inline-flex min-h-11 px-4 py-2 rounded-xl border border-white/15 text-slate-200 hover:bg-white/10"
+                            className="hidden sm:inline-flex px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 text-sm font-medium transition-all"
                         >
                             Logout
                         </button>
                         <button
-                            onClick={onLogout}
-                            className="sm:hidden inline-flex min-h-11 px-3 py-2 rounded-xl border border-white/15 text-slate-200 hover:bg-white/10 text-sm"
-                        >
-                            Exit
-                        </button>
-                        <button
                             type="button"
                             onClick={() => setIsMobileNavOpen((prev) => !prev)}
-                            className="md:hidden p-3 text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl border border-white/10"
+                            className="md:hidden p-2.5 text-slate-700 hover:text-slate-900 bg-slate-100 rounded-xl border border-slate-200"
                             aria-label="Toggle navigation"
                         >
-                            {isMobileNavOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                            {isMobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
                         </button>
                     </div>
                 </div>
                 {isMobileNavOpen && (
-                    <div className="md:hidden px-5 pb-4 space-y-3 border-t border-white/10">
+                    <div className="md:hidden px-5 pb-4 space-y-3 border-t border-slate-100">
                         <div className="grid grid-cols-2 gap-2 pt-3">
                             {navItems.map((item) => {
                                 const isActive = item.id === activeTab;
@@ -338,17 +330,17 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                                     <button
                                         key={item.id}
                                         onClick={() => setActiveTab(item.id)}
-                                        className={`px-3 py-2.5 rounded-lg text-sm text-left transition-all ${isActive
-                                            ? 'bg-white/12 text-white border border-white/20'
-                                            : 'text-slate-300 bg-white/5 border border-white/10 hover:bg-white/10'}`}
+                                        className={`px-3 py-2.5 rounded-xl text-xs font-medium text-left transition-all ${isActive
+                                            ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                                            : 'text-slate-600 bg-slate-50 border border-slate-200/60 hover:bg-slate-100'}`}
                                     >
                                         {item.label}
                                     </button>
                                 );
                             })}
                         </div>
-                        <div className="flex items-center px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-sm focus-within:border-primary/50 transition-all">
-                            <Search className="w-4 h-4 text-slate-400 mr-2" />
+                        <div className="flex items-center px-3 py-2 bg-slate-100 rounded-xl text-xs border border-slate-200">
+                            <Search className="w-3.5 h-3.5 text-slate-400 mr-2" />
                             <input
                                 type="text"
                                 value={searchQuery}
@@ -363,14 +355,14 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                                         handleSearchSubmit();
                                     }
                                 }}
-                                placeholder="Search sections..."
-                                className="w-full bg-transparent text-slate-100 placeholder:text-slate-500 outline-none"
+                                placeholder="Search tabs..."
+                                className="w-full bg-transparent text-slate-900 placeholder:text-slate-400 outline-none"
                             />
                         </div>
                     </div>
                 )}
                 {searchError && (
-                    <div className="px-5 md:px-6 pb-3 text-xs text-yellow-400">{searchError}</div>
+                    <div className="px-5 md:px-6 pb-3 text-xs text-amber-600 font-medium">{searchError}</div>
                 )}
             </header>
 
@@ -379,7 +371,6 @@ const DashboardLayout = ({ children, activeTab, setActiveTab, onLogout, user }) 
                     {children}
                 </div>
             </main>
-
         </div>
     );
 };

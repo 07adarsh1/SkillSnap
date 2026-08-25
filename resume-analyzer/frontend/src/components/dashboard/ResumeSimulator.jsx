@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, TrendingUp, BarChart3 } from 'lucide-react';
+import { Plus, X, Sparkles } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 
 const ResumeSimulator = () => {
-    const [currentScore, setCurrentScore] = useState(75);
-    const [currentJobMatch, setCurrentJobMatch] = useState(68);
+    const [currentScore] = useState(75);
+    const [currentJobMatch] = useState(68);
     const [simulatedScore, setSimulatedScore] = useState(null);
     const [simulatedJobMatch, setSimulatedJobMatch] = useState(null);
     const [addedItems, setAddedItems] = useState([]);
@@ -20,27 +19,23 @@ const ResumeSimulator = () => {
             id: Date.now(),
             type: itemType,
             value: inputValue,
-            impact: Math.floor(Math.random() * 10) + 3 // Random impact 3-12%
+            impact: Math.floor(Math.random() * 8) + 4
         };
 
-        setAddedItems([...addedItems, newItem]);
+        const nextItems = [...addedItems, newItem];
+        setAddedItems(nextItems);
 
-        // Simulate score improvement
-        const scoreIncrease = newItem.impact;
-        const jobMatchIncrease = Math.floor(newItem.impact * 0.8);
-
-        setSimulatedScore(Math.min(100, currentScore + scoreIncrease));
-        setSimulatedJobMatch(Math.min(100, currentJobMatch + jobMatchIncrease));
+        const totalImpact = nextItems.reduce((sum, i) => sum + i.impact, 0);
+        setSimulatedScore(Math.min(100, currentScore + totalImpact));
+        setSimulatedJobMatch(Math.min(100, currentJobMatch + Math.floor(totalImpact * 0.8)));
 
         setInputValue('');
     };
 
     const handleRemoveItem = (id) => {
-        const item = addedItems.find(i => i.id === id);
-        setAddedItems(addedItems.filter(i => i.id !== id));
-
-        // Recalculate scores
         const remainingItems = addedItems.filter(i => i.id !== id);
+        setAddedItems(remainingItems);
+
         if (remainingItems.length === 0) {
             setSimulatedScore(null);
             setSimulatedJobMatch(null);
@@ -53,137 +48,96 @@ const ResumeSimulator = () => {
 
     const chartData = [
         {
-            name: 'Resume Score',
-            current: currentScore,
-            simulated: simulatedScore || currentScore
+            name: 'ATS Score',
+            Current: currentScore,
+            Simulated: simulatedScore || currentScore
         },
         {
-            name: 'Job Match',
-            current: currentJobMatch,
-            simulated: simulatedJobMatch || currentJobMatch
+            name: 'Role Match',
+            Current: currentJobMatch,
+            Simulated: simulatedJobMatch || currentJobMatch
         }
     ];
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-center gap-2 pb-2">
-                <TrendingUp className="w-5 h-5 text-primary" />
-                <CardTitle>Resume Improvement Simulator</CardTitle>
+        <Card className="bg-white border-slate-200/80 shadow-sm rounded-3xl">
+            <CardHeader className="pb-2 border-b border-slate-100">
+                <CardTitle className="text-base text-slate-900 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-indigo-600" />
+                    Interactive Resume What-If Simulator
+                </CardTitle>
+                <p className="text-xs text-slate-500">Test how adding certifications, skills, or metrics elevates your score in real time</p>
             </CardHeader>
-            <CardContent>
-            <p className="text-sm text-slate-400 mb-6">
-                Add skills, projects, or certifications to see how they impact your resume score and job match percentage in real-time.
-            </p>
-
-            {/* Input Section */}
-            <div className="space-y-4 mb-6">
-                <div className="flex gap-3">
-                    <select
-                        value={itemType}
-                        onChange={(e) => setItemType(e.target.value)}
-                        className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-primary focus:border-transparent"
-                    >
-                        <option value="skill" className="text-slate-900 bg-white">Skill</option>
-                        <option value="project" className="text-slate-900 bg-white">Project</option>
-                        <option value="certification" className="text-slate-900 bg-white">Certification</option>
-                        <option value="experience" className="text-slate-900 bg-white">Experience</option>
-                    </select>
-
-                    <input
-                        type="text"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
-                        placeholder={`Add a ${itemType}...`}
-                        className="flex-1 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent"
-                    />
-
-                    <button
-                        onClick={handleAddItem}
-                        className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-all flex items-center gap-2"
-                    >
-                        <Plus className="w-4 h-4" />
-                        Add
-                    </button>
-                </div>
-
-                {/* Added Items */}
-                <AnimatePresence>
-                    {addedItems.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-4">
-                            {addedItems.map((item) => (
-                                <motion.div
-                                    key={item.id}
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.8 }}
-                                    className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-full text-sm"
-                                >
-                                    <span className="text-primary font-medium capitalize">{item.type}:</span>
-                                    <span className="text-white">{item.value}</span>
-                                    <span className="text-green-400 text-xs">+{item.impact}%</span>
-                                    <button
-                                        onClick={() => handleRemoveItem(item.id)}
-                                        className="ml-1 text-slate-400 hover:text-white transition-colors"
-                                    >
-                                        <X className="w-3 h-3" />
-                                    </button>
-                                </motion.div>
-                            ))}
-                        </div>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            {/* Comparison Chart */}
-            <div className="bg-white/5 rounded-xl p-4 mb-4 border border-white/5">
-                <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
-                            <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
-                            <YAxis stroke="#94a3b8" fontSize={12} domain={[0, 100]} />
-                            <Tooltip
-                                contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', color: '#f8fafc', borderRadius: '8px' }}
+            <CardContent className="pt-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Simulator Inputs */}
+                    <div className="space-y-4">
+                        <div className="flex gap-2">
+                            <select
+                                value={itemType}
+                                onChange={(e) => setItemType(e.target.value)}
+                                className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none"
+                            >
+                                <option value="skill">Skill</option>
+                                <option value="certification">Certification</option>
+                                <option value="metric">STAR Metric</option>
+                            </select>
+                            <input
+                                type="text"
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
+                                placeholder="e.g. AWS Solutions Architect, Docker..."
+                                className="flex-1 px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-indigo-500"
                             />
-                            <Legend />
-                            <Bar dataKey="current" fill="#64748b" name="Current" radius={[4, 4, 0, 0]} />
-                            <Bar dataKey="simulated" fill="#3b82f6" name="Simulated" radius={[4, 4, 0, 0]} />
-                        </BarChart>
-                    </ResponsiveContainer>
+                            <button
+                                onClick={handleAddItem}
+                                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-1 cursor-pointer"
+                            >
+                                <Plus className="w-3.5 h-3.5" /> Add
+                            </button>
+                        </div>
+
+                        {/* Added Items Pill Container */}
+                        <div className="flex flex-wrap gap-2 min-h-[50px] p-3 bg-slate-50 border border-slate-100 rounded-2xl">
+                            {addedItems.length === 0 ? (
+                                <span className="text-slate-400 text-xs italic self-center">No simulated additions yet. Add one above!</span>
+                            ) : (
+                                addedItems.map(item => (
+                                    <span
+                                        key={item.id}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-indigo-200 text-indigo-800 rounded-xl text-xs font-semibold shadow-xs"
+                                    >
+                                        <span>{item.value} (+{item.impact}%)</span>
+                                        <button
+                                            onClick={() => handleRemoveItem(item.id)}
+                                            className="text-slate-400 hover:text-rose-600 transition-colors"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </button>
+                                    </span>
+                                ))
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Simulation Result Comparison Chart */}
+                    <div className="h-52 w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={chartData}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                                <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
+                                <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} domain={[0, 100]} />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '0.75rem', color: '#0f172a' }}
+                                />
+                                <Legend />
+                                <Bar dataKey="Current" fill="#94A3B8" radius={[6, 6, 0, 0]} />
+                                <Bar dataKey="Simulated" fill="#4F46E5" radius={[6, 6, 0, 0]} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
-            </div>
-
-            {/* Score Comparison */}
-            {simulatedScore && (
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="grid grid-cols-2 gap-4"
-                >
-                    <div className="p-4 bg-white/5 rounded-xl border border-white/10 text-center">
-                        <div className="text-sm text-slate-400 mb-1">Resume Score</div>
-                        <div className="flex items-baseline justify-center gap-2">
-                            <span className="text-2xl font-bold text-white">{simulatedScore}%</span>
-                            <span className="text-sm text-green-400 flex items-center gap-1 font-medium bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/20">
-                                <TrendingUp className="w-3 h-3" />
-                                +{simulatedScore - currentScore}%
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="p-4 bg-white/5 rounded-xl border border-white/10 text-center">
-                        <div className="text-sm text-slate-400 mb-1">Job Match</div>
-                        <div className="flex items-baseline justify-center gap-2">
-                            <span className="text-2xl font-bold text-white">{simulatedJobMatch}%</span>
-                            <span className="text-sm text-green-400 flex items-center gap-1 font-medium bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/20">
-                                <TrendingUp className="w-3 h-3" />
-                                +{simulatedJobMatch - currentJobMatch}%
-                            </span>
-                        </div>
-                    </div>
-                </motion.div>
-            )}
             </CardContent>
         </Card>
     );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, FileText, Trash2, Calendar, Search, Loader2, ArrowRight, RefreshCw, Eye } from 'lucide-react';
+import { Upload, FileText, Trash2, Calendar, Search, Loader2, ArrowRight, Eye } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UploadSection from '../UploadSection';
 import ResultsDashboard from '../ResultsDashboard';
@@ -33,13 +33,6 @@ const ResumeManager = ({ userId }) => {
     useEffect(() => {
         fetchResumes();
     }, [userId]);
-
-    const handleUploadComplete = (newResumeData) => {
-        setUploadSuccess(true);
-        setTimeout(() => setUploadSuccess(false), 3000);
-        setIsUploading(false);
-        fetchResumes(); // Refresh list
-    };
 
     const handleDelete = async (id, e) => {
         e.stopPropagation();
@@ -78,13 +71,16 @@ const ResumeManager = ({ userId }) => {
             <div className="space-y-6">
                 <button
                     onClick={handleBackToList}
-                    className="flex items-center gap-2 text-slate-300 hover:text-primary transition-all hover:shadow-[0_0_15px_rgba(0,210,255,0.3)] bg-white/5 py-2 px-4 rounded-xl border border-white/5 hover:border-primary/30 w-fit"
+                    className="flex items-center gap-2 text-slate-700 hover:text-indigo-600 transition-all bg-white hover:bg-slate-50 py-2 px-4 rounded-xl border border-slate-200 shadow-sm font-semibold text-xs w-fit cursor-pointer"
                 >
-                    <ArrowRight className="w-4 h-4 rotate-180" /> Back to Resumes
+                    <ArrowRight className="w-3.5 h-3.5 rotate-180" /> Back to Resumes
                 </button>
-                <div className="flex items-center justify-between bg-[#121318]/60 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-lg">
-                    <h2 className="text-2xl font-bold text-white tracking-tight">{selectedResume.filename}</h2>
-                    <span className="text-sm font-medium text-slate-400 bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700/50">
+                <div className="flex items-center justify-between bg-white border border-slate-200/80 p-5 rounded-3xl shadow-sm">
+                    <div>
+                        <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">{selectedResume.filename}</h2>
+                        <p className="text-xs text-slate-500 mt-0.5">Resume ID: {selectedResume.id}</p>
+                    </div>
+                    <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
                         Uploaded {new Date(selectedResume.uploaded_at).toLocaleDateString()}
                     </span>
                 </div>
@@ -95,9 +91,9 @@ const ResumeManager = ({ userId }) => {
                         jobDescription={selectedResume.job_description || ""}
                     />
                 ) : (
-                    <div className="text-center py-20 bg-[#121318]/60 backdrop-blur-xl rounded-2xl border border-white/10 shadow-lg">
-                        <Loader2 className="w-10 h-10 text-primary animate-spin mx-auto mb-4 drop-shadow-[0_0_10px_rgba(0,210,255,0.8)]" />
-                        <p className="text-slate-400">Analysis in progress or not found...</p>
+                    <div className="text-center py-20 bg-white rounded-3xl border border-slate-200 shadow-sm">
+                        <Loader2 className="w-8 h-8 text-indigo-600 animate-spin mx-auto mb-3" />
+                        <p className="text-slate-500 text-xs">Analysis in progress or not found...</p>
                     </div>
                 )}
             </div>
@@ -105,14 +101,18 @@ const ResumeManager = ({ userId }) => {
     }
 
     return (
-            <div className="space-y-8 text-white">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-black/45 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-lg gap-4">
-                <h2 className="text-2xl font-bold text-white tracking-tight">Resume Management</h2>
+        <div className="space-y-6 text-slate-900">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white border border-slate-200/80 p-6 rounded-3xl shadow-sm gap-4">
+                <div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Resume Management</h2>
+                    <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Upload, manage, and analyze your resumes with AI.</p>
+                </div>
                 <button
                     onClick={() => setShowUploadPanel(!showUploadPanel)}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-primary/15 text-slate-100 rounded-xl font-semibold border border-white/15 hover:border-primary/40 transition-all shadow-[0_0_12px_rgba(0,210,255,0.15)] hover:shadow-[0_0_22px_rgba(0,210,255,0.3)] hover:-translate-y-0.5"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl font-bold text-xs shadow-md shadow-indigo-500/20 transition-all cursor-pointer"
                 >
-                    <Upload className="w-5 h-5" />
+                    <Upload className="w-4 h-4" />
                     {showUploadPanel ? "Cancel Upload" : "Upload New Resume"}
                 </button>
             </div>
@@ -120,26 +120,21 @@ const ResumeManager = ({ userId }) => {
             <AnimatePresence>
                 {showUploadPanel && (
                     <motion.div
-                        initial={{ opacity: 0, height: 0, scale: 0.95 }}
+                        initial={{ opacity: 0, height: 0, scale: 0.98 }}
                         animate={{ opacity: 1, height: 'auto', scale: 1 }}
-                        exit={{ opacity: 0, height: 0, scale: 0.95 }}
+                        exit={{ opacity: 0, height: 0, scale: 0.98 }}
                         className="overflow-hidden"
                     >
-                        <div className="bg-black/45 backdrop-blur-xl border border-white/10 rounded-2xl p-6 mb-8 shadow-[0_0_30px_rgba(0,0,0,0.5)] relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
+                        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 mb-6 shadow-sm relative overflow-hidden">
                             <UploadSection
-                                onUpload={async (file) => {
+                                onUpload={async (file, optionalJobDesc = '') => {
                                     setIsProcessing(true);
                                     try {
-                                        // 1. Upload
                                         const uploadResp = await uploadResume(file, userId);
-
-                                        // 2. Show success immediately after upload.
                                         setUploadSuccess(true);
                                         await fetchResumes();
 
-                                        // 3. Run analysis in background so rate limits don't block UI.
-                                        analyzeResume(uploadResp.resume_id, "")
+                                        analyzeResume(uploadResp.resume_id, optionalJobDesc)
                                             .then(() => fetchResumes())
                                             .catch((error) => {
                                                 console.error("Background analysis failed", error);
@@ -164,76 +159,76 @@ const ResumeManager = ({ userId }) => {
                 )}
             </AnimatePresence>
 
-            {/* Search & Filter */}
-            <div className="flex items-center gap-4 bg-[#121318]/60 backdrop-blur-xl p-3 rounded-xl border border-white/5 focus-within:border-primary/30 focus-within:shadow-[0_0_20px_rgba(0,210,255,0.1)] transition-all shadow-lg">
-                <Search className="w-5 h-5 text-slate-400 ml-2" />
+            {/* Search Bar */}
+            <div className="flex items-center gap-3 bg-white p-3.5 rounded-2xl border border-slate-200/80 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100 transition-all shadow-sm">
+                <Search className="w-4 h-4 text-slate-400 ml-1" />
                 <input
                     type="text"
-                    placeholder="Search resumes..."
+                    placeholder="Search resumes by filename..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="bg-transparent border-none focus:ring-0 text-white w-full placeholder:text-slate-500 outline-none text-base"
+                    className="bg-transparent border-none focus:ring-0 text-slate-900 w-full placeholder:text-slate-400 outline-none text-xs"
                 />
             </div>
 
-            {/* Resume List */}
+            {/* Resume Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {loading ? (
                     [1, 2, 3].map(i => (
-                        <div key={i} className="h-48 bg-[#121318]/60 border border-white/5 backdrop-blur-md rounded-2xl animate-pulse shadow-lg" />
+                        <div key={i} className="h-48 bg-white border border-slate-200 rounded-3xl animate-pulse shadow-sm" />
                     ))
                 ) : filteredResumes.length > 0 ? (
                     filteredResumes.map((resume) => (
                         <motion.div
                             layout
                             key={resume.id}
-                            className="group bg-[#121318]/60 backdrop-blur-xl hover:bg-[#121318]/80 border border-white/10 hover:border-primary/40 rounded-2xl p-6 transition-all duration-300 flex flex-col justify-between h-full relative hover:shadow-[0_0_30px_rgba(0,210,255,0.15)]"
+                            className="group bg-white hover:bg-slate-50/50 border border-slate-200/80 hover:border-indigo-300 rounded-3xl p-5 transition-all duration-300 flex flex-col justify-between h-full relative shadow-sm hover:shadow-md"
                         >
                             <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
                                 <button
                                     onClick={(e) => handleDelete(resume.id, e)}
-                                    className="p-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-colors border border-red-500/20 hover:border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]"
+                                    className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-xl transition-all border border-rose-200"
                                     title="Delete"
                                 >
-                                    <Trash2 className="w-4 h-4" />
+                                    <Trash2 className="w-3.5 h-3.5" />
                                 </button>
                             </div>
 
                             <div>
-                                <div className="flex items-center gap-4 mb-5">
-                                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 shadow-[inset_0_0_10px_rgba(59,130,246,0.2)]">
-                                        <FileText className="w-6 h-6 text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-11 h-11 rounded-2xl bg-indigo-50 flex items-center justify-center border border-indigo-100 text-indigo-600 shadow-sm">
+                                        <FileText className="w-5 h-5" />
                                     </div>
                                     <div className="overflow-hidden flex-1">
-                                        <h3 className="font-bold text-white text-lg truncate pr-8 tracking-tight" title={resume.filename}>{resume.filename}</h3>
-                                        <span className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
-                                            <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                                        <h3 className="font-bold text-slate-900 text-sm truncate pr-6 tracking-tight" title={resume.filename}>{resume.filename}</h3>
+                                        <span className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5 font-normal">
+                                            <Calendar className="w-3 h-3 text-slate-400" />
                                             {new Date(resume.uploaded_at).toLocaleDateString()}
                                         </span>
                                     </div>
                                 </div>
 
                                 {resume.analysis_result ? (
-                                    <div className="space-y-2.5 bg-white/5 p-4 rounded-xl border border-white/5">
-                                        <div className="flex justify-between items-center text-sm font-medium">
-                                            <span className="text-slate-300">ATS Score</span>
-                                            <span className={`text-lg font-bold drop-shadow-md ${resume.ats_score > 70 ? 'text-green-400' :
-                                                resume.ats_score > 50 ? 'text-yellow-400' : 'text-red-400'
+                                    <div className="space-y-2 bg-slate-50/80 p-3.5 rounded-2xl border border-slate-100">
+                                        <div className="flex justify-between items-center text-xs font-semibold">
+                                            <span className="text-slate-600">ATS Score</span>
+                                            <span className={`text-base font-black font-mono ${resume.ats_score > 70 ? 'text-emerald-700' :
+                                                resume.ats_score > 50 ? 'text-amber-700' : 'text-rose-700'
                                                 }`}>{Math.round(resume.ats_score)}/100</span>
                                         </div>
-                                        <div className="w-full bg-slate-900 rounded-full h-2 overflow-hidden shadow-inner">
+                                        <div className="w-full bg-slate-200/80 rounded-full h-1.5 overflow-hidden">
                                             <div
-                                                className={`h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(currentColor,0.5)] ${resume.ats_score > 70 ? 'bg-green-500' :
-                                                    resume.ats_score > 50 ? 'bg-yellow-500' : 'bg-red-500'
+                                                className={`h-full rounded-full transition-all duration-700 ${resume.ats_score > 70 ? 'bg-emerald-500' :
+                                                    resume.ats_score > 50 ? 'bg-amber-500' : 'bg-rose-500'
                                                     }`}
                                                 style={{ width: `${resume.ats_score}%` }}
                                             />
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="bg-yellow-500/5 border border-yellow-500/20 p-4 rounded-xl flex flex-col items-center justify-center gap-3">
-                                        <span className="flex items-center gap-2 text-yellow-400 text-sm font-semibold">
-                                            <Loader2 className="w-4 h-4 animate-spin drop-shadow-[0_0_5px_rgba(234,179,8,0.5)]" /> Processing Analysis...
+                                    <div className="bg-amber-50 border border-amber-200 p-3.5 rounded-2xl flex flex-col items-center justify-center gap-2">
+                                        <span className="flex items-center gap-1.5 text-amber-800 text-xs font-semibold">
+                                            <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-600" /> Processing Analysis...
                                         </span>
                                         <button
                                             onClick={async () => {
@@ -249,7 +244,7 @@ const ResumeManager = ({ userId }) => {
                                                 }
                                             }}
                                             disabled={retryingId === resume.id}
-                                            className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-yellow-500/40 text-yellow-300 hover:bg-yellow-500/10 disabled:opacity-60"
+                                            className="px-3 py-1 text-[11px] font-semibold rounded-lg bg-white border border-amber-300 text-amber-800 hover:bg-amber-100 disabled:opacity-60 cursor-pointer shadow-xs"
                                         >
                                             {retryingId === resume.id ? "Retrying..." : "Retry Analysis"}
                                         </button>
@@ -257,23 +252,23 @@ const ResumeManager = ({ userId }) => {
                                 )}
                             </div>
 
-                            <div className="mt-6 pt-4 border-t border-white/10 flex gap-3">
+                            <div className="mt-5 pt-3 border-t border-slate-100 flex gap-2">
                                 <button
                                     onClick={() => handleViewAnalysis(resume)}
-                                    className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/40 text-white text-sm font-semibold transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_15px_rgba(0,210,255,0.2)] group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/30"
+                                    className="flex-1 py-2 rounded-xl bg-slate-50 hover:bg-indigo-50 border border-slate-200/80 hover:border-indigo-200 text-slate-700 hover:text-indigo-700 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                                 >
-                                    <Eye className="w-4 h-4" /> View Full Analysis
+                                    <Eye className="w-3.5 h-3.5" /> View Full Analysis
                                 </button>
                             </div>
                         </motion.div>
                     ))
                 ) : (
-                    <div className="col-span-full text-center py-24 bg-[#121318]/40 backdrop-blur-md rounded-2xl border border-white/5 border-dashed">
-                        <div className="w-20 h-20 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-primary/20">
-                            <FileText className="w-10 h-10 text-primary drop-shadow-[0_0_15px_rgba(0,210,255,0.4)]" />
+                    <div className="col-span-full text-center py-20 bg-white rounded-3xl border border-slate-200/80 shadow-sm">
+                        <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-indigo-100 text-indigo-600">
+                            <FileText className="w-8 h-8" />
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-2">No resumes found</h3>
-                        <p className="text-slate-400 max-w-sm mx-auto">Upload your first resume to get actionable feedback and improve your callback rate.</p>
+                        <h3 className="text-lg font-bold text-slate-900 mb-1">No resumes uploaded yet</h3>
+                        <p className="text-xs text-slate-500 max-w-sm mx-auto">Upload your first resume to get actionable feedback and improve your callback rate.</p>
                     </div>
                 )}
             </div>
@@ -281,52 +276,47 @@ const ResumeManager = ({ userId }) => {
             {/* Delete Confirmation Modal */}
             <AnimatePresence>
                 {deleteConfirmId && (
-                    <>
-                        {/* Backdrop */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setDeleteConfirmId(null)}
+                        className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                    >
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setDeleteConfirmId(null)}
-                            className="fixed inset-0 bg-[#0f172a]/80 backdrop-blur-md z-50 flex items-center justify-center p-4"
+                            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white border border-slate-200 rounded-3xl p-6 max-w-md w-full shadow-2xl relative overflow-hidden"
                         >
-                            {/* Modal */}
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                                onClick={(e) => e.stopPropagation()}
-                                className="bg-[#121318]/90 backdrop-blur-xl border border-white/10 rounded-2xl p-8 max-w-md w-full shadow-[0_0_50px_rgba(0,0,0,0.5)] relative overflow-hidden"
-                            >
-                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500/50 to-transparent"></div>
-                                <div className="flex flex-col items-center text-center mb-6">
-                                    <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4 border border-red-500/20 shadow-[inset_0_0_15px_rgba(239,68,68,0.2)]">
-                                        <Trash2 className="w-8 h-8 text-red-400 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
-                                    </div>
-                                    <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">Delete Resume?</h3>
-                                    <p className="text-slate-400">
-                                        Are you sure you want to delete this resume and its analysis? All associated data will be <span className="text-red-400 font-medium">permanently removed</span>.
-                                    </p>
+                            <div className="flex flex-col items-center text-center mb-5">
+                                <div className="w-14 h-14 rounded-2xl bg-rose-50 flex items-center justify-center mb-3 border border-rose-100 text-rose-600">
+                                    <Trash2 className="w-7 h-7" />
                                 </div>
+                                <h3 className="text-xl font-bold text-slate-900 mb-1 tracking-tight">Delete Resume?</h3>
+                                <p className="text-xs text-slate-500">
+                                    Are you sure you want to delete this resume and its analysis? All associated data will be permanently removed.
+                                </p>
+                            </div>
 
-                                <div className="flex gap-4">
-                                    <button
-                                        onClick={() => setDeleteConfirmId(null)}
-                                        className="flex-1 px-4 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl transition-all border border-white/10 font-medium hover:border-white/20"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        onClick={confirmDelete}
-                                        className="flex-1 px-4 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 hover:text-red-400 rounded-xl transition-all flex items-center justify-center gap-2 border border-red-500/30 hover:border-red-500 font-bold hover:shadow-[0_0_15px_rgba(239,68,68,0.3)]"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                        Delete Forever
-                                    </button>
-                                </div>
-                            </motion.div>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setDeleteConfirmId(null)}
+                                    className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all border border-slate-200"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={confirmDelete}
+                                    className="flex-1 px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                                >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                    Delete
+                                </button>
+                            </div>
                         </motion.div>
-                    </>
+                    </motion.div>
                 )}
             </AnimatePresence>
         </div>

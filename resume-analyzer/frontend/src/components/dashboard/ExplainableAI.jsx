@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { HelpCircle, TrendingUp, TrendingDown, Target, Zap, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { HelpCircle, TrendingUp, TrendingDown, Target, Zap, AlertTriangle, CheckCircle2, Loader2, X } from 'lucide-react';
 import { explainScore } from '../../services/api';
 
 const ExplainableAI = ({ resumeId, currentScore, jobDescription, onClose }) => {
@@ -10,7 +10,7 @@ const ExplainableAI = ({ resumeId, currentScore, jobDescription, onClose }) => {
 
     const handleExplain = async () => {
         if (!jobDescription) {
-            setError('Job description is required to explain the score');
+            setError('A target job description is required to calculate score explanation');
             return;
         }
 
@@ -27,207 +27,119 @@ const ExplainableAI = ({ resumeId, currentScore, jobDescription, onClose }) => {
         }
     };
 
-    // Auto-load on mount if job description is provided
     React.useEffect(() => {
         if (jobDescription && !explanation && !loading) {
             handleExplain();
         }
     }, []);
 
-    const getImpactColor = (impact) => {
-        switch (impact) {
-            case 'high': return 'text-red-400 bg-red-500/10 border-red-500/20';
-            case 'medium': return 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20';
-            case 'low': return 'text-green-400 bg-green-500/10 border-green-500/20';
-            default: return 'text-slate-400 bg-slate-500/10 border-slate-500/20';
-        }
-    };
-
-    const getPriorityColor = (priority) => {
-        switch (priority) {
-            case 'high': return 'bg-red-500';
-            case 'medium': return 'bg-yellow-500';
-            case 'low': return 'bg-blue-500';
-            default: return 'bg-slate-500';
-        }
-    };
-
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
             <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-slate-900 rounded-2xl border border-slate-700 max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+                exit={{ opacity: 0, scale: 0.96 }}
+                className="bg-white rounded-3xl border border-slate-200/90 max-w-4xl w-full max-h-[92vh] overflow-hidden flex flex-col shadow-2xl"
             >
                 {/* Header */}
-                <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-purple-600/10 to-pink-600/10">
-                    <div className="flex items-center justify-between">
+                <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+                    <div className="flex items-start sm:items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                                <HelpCircle className="w-6 h-6 text-purple-400" />
+                            <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100">
+                                <HelpCircle className="w-5 h-5" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-bold text-white">Why This Score?</h2>
-                                <p className="text-sm text-slate-400">AI-powered explanation of your ATS score</p>
+                                <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">Score Explainability (XAI)</h2>
+                                <p className="text-xs text-slate-500">Deconstructing your ATS score and rubric calculations</p>
                             </div>
                         </div>
                         <button
                             onClick={onClose}
-                            className="text-slate-400 hover:text-white transition-colors"
+                            className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all cursor-pointer"
                         >
-                            ✕
+                            <X className="w-4 h-4" />
                         </button>
                     </div>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                    {loading ? (
-                        <div className="flex flex-col items-center justify-center py-12">
-                            <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
-                            <p className="text-slate-400">Analyzing your score...</p>
+                <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar text-slate-900">
+                    {!jobDescription && !explanation ? (
+                        <div className="p-8 text-center bg-slate-50 border border-slate-200/80 rounded-3xl space-y-2">
+                            <AlertTriangle className="w-8 h-8 text-amber-600 mx-auto mb-2" />
+                            <h3 className="text-sm font-bold text-slate-900">Target Job Description Required</h3>
+                            <p className="text-xs text-slate-500 max-w-md mx-auto">
+                                To see an in-depth score explanation and factor weights, please provide a target Job Description in the dashboard.
+                            </p>
+                        </div>
+                    ) : loading ? (
+                        <div className="py-16 text-center space-y-3">
+                            <Loader2 className="w-8 h-8 text-indigo-600 animate-spin mx-auto" />
+                            <p className="text-xs text-slate-500 font-medium">Computing factor attribution and SHAP weights...</p>
                         </div>
                     ) : error ? (
-                        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3">
-                            <AlertTriangle className="w-5 h-5 text-red-400 mt-0.5" />
-                            <p className="text-red-400 text-sm">{error}</p>
+                        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-700">
+                            {error}
                         </div>
                     ) : explanation ? (
-                        <>
-                            {/* Current Score */}
-                            <div className="p-6 bg-slate-800/50 border border-slate-700 rounded-xl text-center">
-                                <p className="text-sm text-slate-400 mb-2">Your Current ATS Score</p>
-                                <p className="text-5xl font-bold text-white mb-2">{currentScore}%</p>
-                                <div className="w-full bg-slate-700 rounded-full h-2">
-                                    <div
-                                        className="bg-gradient-to-r from-primary to-purple-600 h-2 rounded-full transition-all"
-                                        style={{ width: `${currentScore}%` }}
-                                    />
+                        <div className="space-y-6">
+                            {/* Summary Card */}
+                            <div className="p-5 bg-gradient-to-r from-indigo-50/60 to-slate-50 border border-indigo-100 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div>
+                                    <h3 className="text-sm font-bold text-indigo-950">Calculated ATS Score: {currentScore || explanation.score}/100</h3>
+                                    <p className="text-xs text-slate-600 mt-0.5">{explanation.summary || 'Rubric evaluation completed with sentence embeddings and rubric heuristics.'}</p>
                                 </div>
                             </div>
 
-                            {/* Main Reasoning */}
-                            <div className="p-5 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                                <h3 className="text-lg font-bold text-blue-400 mb-3">Overall Reasoning</h3>
-                                <p className="text-slate-300 leading-relaxed">{explanation.reasoning}</p>
+                            {/* Positive & Negative Factors */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="p-5 bg-emerald-50/40 border border-emerald-100 rounded-3xl space-y-3">
+                                    <h4 className="text-xs uppercase font-bold text-emerald-800 flex items-center gap-1.5">
+                                        <TrendingUp className="w-4 h-4 text-emerald-600" /> Positive Score Drivers
+                                    </h4>
+                                    <ul className="space-y-2 text-xs text-slate-700">
+                                        {(explanation.positive_factors || []).map((factor, i) => (
+                                            <li key={i} className="flex items-start gap-2">
+                                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 mt-0.5 shrink-0" />
+                                                <span>{factor}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                <div className="p-5 bg-rose-50/40 border border-rose-100 rounded-3xl space-y-3">
+                                    <h4 className="text-xs uppercase font-bold text-rose-800 flex items-center gap-1.5">
+                                        <TrendingDown className="w-4 h-4 text-rose-600" /> Score Penalties & Gaps
+                                    </h4>
+                                    <ul className="space-y-2 text-xs text-slate-700">
+                                        {(explanation.negative_factors || []).map((factor, i) => (
+                                            <li key={i} className="flex items-start gap-2">
+                                                <AlertTriangle className="w-3.5 h-3.5 text-rose-600 mt-0.5 shrink-0" />
+                                                <span>{factor}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </div>
 
-                            {/* Score Breakdown */}
-                            {explanation.score_breakdown && (
-                                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
-                                    <h3 className="text-lg font-bold text-white mb-4">Score Breakdown</h3>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        {Object.entries(explanation.score_breakdown).map(([key, value]) => (
-                                            <div key={key} className="p-3 bg-slate-900/50 rounded-lg">
-                                                <p className="text-xs text-slate-400 mb-1 capitalize">
-                                                    {key.replace(/_/g, ' ')}
-                                                </p>
-                                                <div className="flex items-center gap-2">
-                                                    <div className="flex-1 bg-slate-700 rounded-full h-2">
-                                                        <div
-                                                            className={`h-2 rounded-full ${value >= 75 ? 'bg-green-500' :
-                                                                    value >= 50 ? 'bg-yellow-500' :
-                                                                        'bg-red-500'
-                                                                }`}
-                                                            style={{ width: `${value}%` }}
-                                                        />
-                                                    </div>
-                                                    <span className="text-sm font-bold text-white">{value}%</span>
-                                                </div>
+                            {/* Recommendations to reach 95+ */}
+                            {explanation.recommendations?.length > 0 && (
+                                <div className="p-5 bg-slate-50 border border-slate-200/80 rounded-3xl space-y-3">
+                                    <h4 className="text-xs uppercase font-bold text-slate-900 flex items-center gap-1.5">
+                                        <Target className="w-4 h-4 text-indigo-600" /> Action Items to Reach 90+ Match
+                                    </h4>
+                                    <div className="space-y-2">
+                                        {explanation.recommendations.map((rec, i) => (
+                                            <div key={i} className="p-3 bg-white border border-slate-200/70 rounded-xl text-xs text-slate-700 shadow-xs flex items-start gap-2">
+                                                <Zap className="w-3.5 h-3.5 text-indigo-600 mt-0.5 shrink-0" />
+                                                <span>{rec}</span>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
                             )}
-
-                            {/* Positive Factors */}
-                            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
-                                <h3 className="text-lg font-bold text-green-400 mb-4 flex items-center gap-2">
-                                    <TrendingUp className="w-5 h-5" />
-                                    What Helped Your Score
-                                </h3>
-                                <div className="space-y-3">
-                                    {explanation.positive_factors.map((factor, i) => (
-                                        <div key={i} className="p-3 bg-green-500/5 border border-green-500/10 rounded-lg">
-                                            <div className="flex items-start justify-between gap-3 mb-2">
-                                                <p className="font-medium text-green-400">{factor.factor}</p>
-                                                <span className={`text-xs px-2 py-1 rounded-full border ${getImpactColor(factor.impact)}`}>
-                                                    {factor.impact} impact
-                                                </span>
-                                            </div>
-                                            <p className="text-sm text-slate-400 italic">"{factor.evidence}"</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Negative Factors */}
-                            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
-                                <h3 className="text-lg font-bold text-red-400 mb-4 flex items-center gap-2">
-                                    <TrendingDown className="w-5 h-5" />
-                                    What Hurt Your Score
-                                </h3>
-                                <div className="space-y-3">
-                                    {explanation.negative_factors.map((factor, i) => (
-                                        <div key={i} className="p-3 bg-red-500/5 border border-red-500/10 rounded-lg">
-                                            <div className="flex items-start justify-between gap-3 mb-2">
-                                                <p className="font-medium text-red-400">{factor.factor}</p>
-                                                <span className={`text-xs px-2 py-1 rounded-full border ${getImpactColor(factor.impact)}`}>
-                                                    {factor.impact} impact
-                                                </span>
-                                            </div>
-                                            <p className="text-sm text-slate-400 italic">"{factor.evidence}"</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Improvement Actions */}
-                            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
-                                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                                    <Target className="w-5 h-5 text-primary" />
-                                    Recommended Actions
-                                </h3>
-                                <div className="space-y-3">
-                                    {explanation.improvement_actions.map((action, i) => (
-                                        <div key={i} className="p-4 bg-slate-900/50 border border-slate-700 rounded-lg">
-                                            <div className="flex items-start gap-3">
-                                                <div className={`w-1 h-full ${getPriorityColor(action.priority)} rounded-full`} />
-                                                <div className="flex-1">
-                                                    <div className="flex items-start justify-between gap-3 mb-2">
-                                                        <p className="font-medium text-white">{action.action}</p>
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full border border-primary/20">
-                                                                {action.expected_impact}
-                                                            </span>
-                                                            <span className={`text-xs px-2 py-1 rounded-full ${action.priority === 'high' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
-                                                                    action.priority === 'medium' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' :
-                                                                        'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                                                                }`}>
-                                                                {action.priority} priority
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </>
-                    ) : (
-                        <div className="text-center py-12">
-                            <HelpCircle className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-                            <p className="text-slate-400">Click below to generate explanation</p>
-                            <button
-                                onClick={handleExplain}
-                                className="mt-4 px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-all"
-                            >
-                                Explain My Score
-                            </button>
                         </div>
-                    )}
+                    ) : null}
                 </div>
             </motion.div>
         </div>

@@ -3,84 +3,86 @@
 @plugin "tailwindcss-animate";
 
 :root {
-  font-family: 'Manrope', 'Plus Jakarta Sans', system-ui, sans-serif;
-  --bg-color: #000000;
-  --bg-color-2: #040406;
-  --surface: #070707;
-  --surface-soft: #0c0c0c;
-  --text-color: #f5f7fb;
-  --accent: #d5d7de;
-  --accent-soft: #aeb5c2;
+  font-family: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --bg-color: #F8FAFC;
+  --bg-color-2: #F1F5F9;
+  --surface: #FFFFFF;
+  --surface-soft: #F8FAFC;
+  --text-color: #0F172A;
+  --accent: #4F46E5;
+  --accent-soft: #6366F1;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background:
-    radial-gradient(1200px 700px at 10% -10%, rgba(255, 255, 255, 0.04), transparent 55%),
-    radial-gradient(900px 500px at 90% 0%, rgba(255, 255, 255, 0.03), transparent 60%),
-    linear-gradient(180deg, var(--bg-color) 0%, var(--bg-color-2) 100%);
+  background-color: var(--bg-color);
   color: var(--text-color);
+  background-image: 
+    radial-gradient(1200px 700px at 15% -5%, rgba(99, 102, 241, 0.08), transparent 55%),
+    radial-gradient(1000px 600px at 85% 0%, rgba(6, 182, 212, 0.07), transparent 50%),
+    linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+  background-attachment: fixed;
   transition: background-color 0.3s, color 0.3s;
 }
 
 @layer utilities {
   .glass-card {
-    @apply bg-[rgba(7,7,7,0.86)] backdrop-blur-2xl border border-[rgba(255,255,255,0.08)] shadow-[0_8px_32px_rgba(0,0,0,0.6)];
+    @apply bg-white/85 backdrop-blur-xl border border-slate-200/80 shadow-[0_10px_30px_-5px_rgba(79,70,229,0.05),0_4px_12px_-2px_rgba(0,0,0,0.03)];
   }
 
   .glass-card-hover {
-    @apply hover:bg-[rgba(12,12,12,0.96)] hover:border-[rgba(255,255,255,0.12)] transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,0,0,0.55)] hover:-translate-y-1;
+    @apply hover:bg-white hover:border-indigo-200 transition-all duration-300 hover:shadow-[0_20px_40px_-10px_rgba(79,70,229,0.12),0_4px_15px_-2px_rgba(0,0,0,0.05)] hover:-translate-y-1;
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#F6F7FB] to-[#B7BECD];
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-indigo-950 to-indigo-700;
+  }
+
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-600;
   }
 
   .text-gradient-secondary {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#E3E6EE] to-[#A3AAB9];
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-slate-700 via-slate-800 to-indigo-900;
   }
 
   .btn-gradient {
-    @apply px-6 py-3 rounded-2xl font-semibold text-[#050505] shadow-[0_0_15px_rgba(255,255,255,0.18)] transition-all duration-300 hover:shadow-[0_0_25px_rgba(255,255,255,0.28)] hover:scale-[1.02] active:scale-[0.98] bg-gradient-to-br from-[#F4F5F8] to-[#C7CDD8];
+    @apply px-6 py-3 rounded-2xl font-semibold text-white shadow-[0_8px_20px_-4px_rgba(79,70,229,0.35)] transition-all duration-300 hover:shadow-[0_12px_28px_-4px_rgba(79,70,229,0.45)] hover:scale-[1.02] active:scale-[0.98] bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600;
   }
 
   .btn-gradient-secondary {
-    @apply px-6 py-3 rounded-2xl font-semibold text-[#050505] shadow-[0_0_15px_rgba(255,255,255,0.12)] transition-all duration-300 hover:shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:scale-[1.02] active:scale-[0.98] bg-gradient-to-br from-[#DADDE4] to-[#A7ADBA];
+    @apply px-6 py-3 rounded-2xl font-semibold text-slate-700 bg-white border border-slate-200 shadow-[0_4px_14px_rgba(0,0,0,0.04)] transition-all duration-300 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 hover:scale-[1.02] active:scale-[0.98];
   }
 
   /* Custom Scrollbar */
   .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    @apply bg-white/5 rounded-full;
+    @apply bg-slate-100/60 rounded-full;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-slate-500/60 rounded-full border-2 border-transparent bg-clip-padding;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-slate-400/70;
+    @apply bg-slate-300/80 rounded-full hover:bg-slate-400;
   }
 
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgba(100, 116, 139, 0.65) rgba(255, 255, 255, 0.06);
+    scrollbar-color: rgba(148, 163, 184, 0.7) rgba(241, 245, 249, 0.6);
   }
 }
 
 @layer components {
   .card {
-    @apply bg-[rgba(7,7,7,0.88)] backdrop-blur-2xl border border-[rgba(255,255,255,0.08)] shadow-2xl rounded-2xl p-6;
+    @apply bg-white/90 backdrop-blur-xl border border-slate-200/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl p-6;
   }
 }
 
-/* Themed Background */
+/* Themed Ambient Light Background */
 .neural-bg {
   position: fixed;
   top: 0;
@@ -90,84 +92,47 @@ body {
   z-index: -1;
   overflow: hidden;
   background:
-    radial-gradient(800px 460px at 0% 0%, rgba(255, 255, 255, 0.03), transparent 60%),
-    radial-gradient(900px 500px at 100% 100%, rgba(255, 255, 255, 0.025), transparent 62%),
-    linear-gradient(180deg, var(--bg-color) 0%, var(--bg-color-2) 100%);
-}
-
-.neural-bg::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(rgba(255, 255, 255, 0.9) 0.7px, transparent 0.7px),
-    radial-gradient(rgba(255, 255, 255, 0.55) 0.6px, transparent 0.6px),
-    radial-gradient(rgba(255, 255, 255, 0.35) 0.5px, transparent 0.5px);
-  background-size: 120px 120px, 190px 190px, 260px 260px;
-  background-position: 0 0, 40px 20px, 80px 60px;
-  opacity: 0.38;
-  animation: star-drift 120s linear infinite;
-}
-
-.neural-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(rgba(255, 255, 255, 0.55) 0.9px, transparent 0.9px),
-    radial-gradient(rgba(255, 255, 255, 0.3) 0.7px, transparent 0.7px);
-  background-size: 80px 80px, 150px 150px;
-  background-position: 20px 10px, 60px 50px;
-  opacity: 0.18;
-  animation: star-drift-slow 180s linear infinite;
+    radial-gradient(900px 500px at 5% 0%, rgba(99, 102, 241, 0.08), transparent 60%),
+    radial-gradient(1100px 600px at 95% 10%, rgba(6, 182, 212, 0.07), transparent 60%),
+    radial-gradient(1000px 600px at 50% 100%, rgba(139, 92, 246, 0.06), transparent 60%),
+    linear-gradient(180deg, #F8FAFC 0%, #EEF2F6 100%);
 }
 
 .neural-blob-1 {
   position: absolute;
   top: 10%;
-  left: -10%;
-  width: 50vw;
-  height: 50vw;
-  background-color: rgba(255, 255, 255, 0.035);
+  left: -5%;
+  width: 45vw;
+  height: 45vw;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0) 70%);
   border-radius: 50%;
-  filter: blur(100px);
-  animation: float-blob 20s ease-in-out infinite alternate;
+  filter: blur(80px);
+  animation: float-blob 22s ease-in-out infinite alternate;
 }
 
 .neural-blob-2 {
   position: absolute;
-  bottom: -10%;
-  right: -10%;
-  width: 60vw;
-  height: 60vw;
-  background-color: rgba(255, 255, 255, 0.025);
+  bottom: -5%;
+  right: -5%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.09) 0%, rgba(6, 182, 212, 0) 70%);
   border-radius: 50%;
-  filter: blur(100px);
-  animation: float-blob 25s ease-in-out infinite alternate-reverse;
+  filter: blur(90px);
+  animation: float-blob 28s ease-in-out infinite alternate-reverse;
 }
 
 @keyframes float-blob {
   0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(5%, 10%) scale(1.1); }
+  100% { transform: translate(4%, 8%) scale(1.08); }
 }
 
-@keyframes star-drift {
-  from { transform: translateY(0); }
-  to { transform: translateY(-1200px); }
-}
-
-@keyframes star-drift-slow {
-  from { transform: translateY(0); }
-  to { transform: translateY(-900px); }
-}
-
-/* Custom Animation Utils */
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
 
 @keyframes float {
   0% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
+  50% { transform: translateY(-12px); }
   100% { transform: translateY(0px); }
 }

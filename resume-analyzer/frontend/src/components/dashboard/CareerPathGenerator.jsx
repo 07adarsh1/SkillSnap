@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Target, TrendingUp, BookOpen, Award, Clock, ChevronRight } from 'lucide-react';
+import { Target, TrendingUp, BookOpen, Award, Clock, ChevronRight, Sparkles } from 'lucide-react';
 import { generateCareerPath } from '../../services/api';
 
 const CareerPathGenerator = () => {
@@ -18,7 +18,7 @@ const CareerPathGenerator = () => {
         setShowRoadmap(false);
 
         try {
-            const data = await generateCareerPath(currentRole, targetRole, []); // Pass empty array for currentSkills for now
+            const data = await generateCareerPath(currentRole, targetRole, []);
             setRoadmapData(data);
             setShowRoadmap(true);
         } catch (err) {
@@ -29,39 +29,41 @@ const CareerPathGenerator = () => {
         }
     };
 
-    // Use API data or fallback to empty array if not yet loaded
     const roadmapSteps = roadmapData?.roadmap || [];
     const totalDuration = roadmapData?.total_duration || '';
 
     const popularTransitions = [
         { from: 'Frontend Developer', to: 'Full Stack Developer', demand: 'High' },
-        { from: 'Backend Developer', to: 'DevOps Engineer', demand: 'Very High' },
+        { from: 'Backend Developer', to: 'DevOps Platform Engineer', demand: 'Very High' },
         { from: 'Full Stack Developer', to: 'Solutions Architect', demand: 'High' },
-        { from: 'Software Engineer', to: 'ML Engineer', demand: 'Very High' },
+        { from: 'Software Engineer', to: 'AI / ML Engineer', demand: 'Very High' },
     ];
 
     return (
-        <div className="space-y-6">
-            <div className="bg-black/45 border border-white/10 p-6 rounded-2xl">
-                <div className="flex items-center gap-2 mb-6">
-                    <Target className="w-5 h-5 text-white" />
-                    <h3 className="text-lg font-bold text-white">AI Career Path Generator</h3>
+        <div className="space-y-6 text-slate-900">
+            {/* Input Form Card */}
+            <div className="bg-white border border-slate-200/80 p-6 rounded-3xl shadow-sm">
+                <div className="flex items-center gap-2.5 mb-2">
+                    <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
+                        <Target className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900 tracking-tight">AI Career Path Generator</h3>
                 </div>
 
-                <p className="text-sm text-slate-400 mb-6">
-                    Get a personalized learning roadmap based on your current skills and career goals.
+                <p className="text-xs text-slate-500 mb-5">
+                    Generate an actionable step-by-step upskilling roadmap based on your current background and target aspirational role.
                 </p>
 
                 {error && (
-                    <div className="mb-6 p-4 bg-white/5 border border-white/10 text-slate-200 rounded-lg text-sm">
+                    <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs">
                         {error}
                     </div>
                 )}
 
-                {/* Input Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {/* Input Fields */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">
+                        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                             Current Role
                         </label>
                         <input
@@ -69,20 +71,20 @@ const CareerPathGenerator = () => {
                             value={currentRole}
                             onChange={(e) => setCurrentRole(e.target.value)}
                             placeholder="e.g., Frontend Developer"
-                            className="w-full px-4 py-2 bg-black/60 border border-white/10 rounded-lg text-white placeholder:text-slate-500 focus:ring-2 focus:ring-white/20 focus:border-transparent"
+                            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">
+                        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                             Target Role
                         </label>
                         <input
                             type="text"
                             value={targetRole}
                             onChange={(e) => setTargetRole(e.target.value)}
-                            placeholder="e.g., Full Stack Developer"
-                            className="w-full px-4 py-2 bg-black/60 border border-white/10 rounded-lg text-white placeholder:text-slate-500 focus:ring-2 focus:ring-white/20 focus:border-transparent"
+                            placeholder="e.g., Full Stack Engineer"
+                            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                         />
                     </div>
                 </div>
@@ -90,43 +92,43 @@ const CareerPathGenerator = () => {
                 <button
                     onClick={generateRoadmap}
                     disabled={!currentRole || !targetRole || loading}
-                    className="w-full px-6 py-3 bg-white/10 hover:bg-white/15 disabled:bg-black/60 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2 border border-white/10"
+                    className="w-full py-3 px-5 bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl font-bold text-xs shadow-md shadow-indigo-500/20 disabled:opacity-50 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                     {loading ? (
                         <>
-                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            Generating Roadmap...
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            <span>Synthesizing Learning Milestones...</span>
                         </>
                     ) : (
                         <>
-                            <TrendingUp className="w-5 h-5" />
-                            Generate Career Roadmap
+                            <Sparkles className="w-4 h-4" />
+                            <span>Generate Career Roadmap</span>
                         </>
                     )}
                 </button>
             </div>
 
             {/* Popular Career Transitions */}
-            <div className="bg-black/45 border border-white/10 p-6 rounded-2xl">
-                <h4 className="text-md font-bold text-white mb-4">Popular Career Transitions</h4>
-                <div className="space-y-3">
+            <div className="bg-white border border-slate-200/80 p-6 rounded-3xl shadow-sm">
+                <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">Popular Career Transitions</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {popularTransitions.map((transition, index) => (
                         <div
                             key={index}
-                            className="flex items-center justify-between p-3 bg-black/50 rounded-lg hover:bg-black/65 transition-colors cursor-pointer group border border-white/5"
+                            className="flex items-center justify-between p-3.5 bg-slate-50 hover:bg-indigo-50/50 rounded-2xl transition-all cursor-pointer group border border-slate-100 hover:border-indigo-100"
                             onClick={() => {
                                 setCurrentRole(transition.from);
                                 setTargetRole(transition.to);
                             }}
                         >
-                            <div className="flex items-center gap-3">
-                                <span className="text-slate-300">{transition.from}</span>
-                                <ChevronRight className="w-4 h-4 text-slate-500" />
-                                <span className="text-white font-medium">{transition.to}</span>
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs text-slate-600 group-hover:text-slate-900 font-medium">{transition.from}</span>
+                                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                                <span className="text-xs text-indigo-700 font-bold">{transition.to}</span>
                             </div>
-                            <span className={`text-xs px-2 py-1 rounded-full ${transition.demand === 'Very High'
-                                ? 'bg-white/10 text-white'
-                                : 'bg-white/5 text-slate-200'
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${transition.demand === 'Very High'
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                : 'bg-indigo-50 text-indigo-700 border-indigo-200'
                                 }`}>
                                 {transition.demand} Demand
                             </span>
@@ -138,94 +140,54 @@ const CareerPathGenerator = () => {
             {/* Roadmap Display */}
             {showRoadmap && (
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-black/45 border border-white/10 p-6 rounded-2xl"
+                    className="bg-white border border-slate-200/80 p-6 rounded-3xl shadow-sm space-y-6"
                 >
-                    <div className="flex items-center justify-between mb-6">
-                        <h4 className="text-lg font-bold text-white">
-                            Your Personalized Roadmap: {currentRole} → {targetRole}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100">
+                        <h4 className="text-base font-bold text-slate-900">
+                            Roadmap: {currentRole} → {targetRole}
                         </h4>
-                        <div className="flex items-center gap-2 text-sm text-slate-400">
-                            <Clock className="w-4 h-4" />
-                            <span>Total: {totalDuration}</span>
-                        </div>
+                        {totalDuration && (
+                            <div className="flex items-center gap-1.5 text-xs text-indigo-600 font-semibold bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+                                <Clock className="w-3.5 h-3.5" />
+                                <span>Estimated Timeline: {totalDuration}</span>
+                            </div>
+                        )}
                     </div>
 
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                         {roadmapSteps.map((step, index) => (
                             <motion.div
                                 key={index}
-                                initial={{ opacity: 0, x: -20 }}
+                                initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className="relative pl-8 pb-6 border-l-2 border-white/10 last:border-l-0 last:pb-0"
+                                transition={{ delay: index * 0.08 }}
+                                className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-2"
                             >
-                                {/* Timeline dot */}
-                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white border-4 border-black" />
-
-                                <div className="bg-black/55 rounded-xl p-5 border border-white/10">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <h5 className="text-lg font-bold text-white">{step.phase}</h5>
-                                        <span className="text-sm text-white font-medium flex items-center gap-1">
-                                            <Clock className="w-3 h-3" />
-                                            {step.duration}
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-6 h-6 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">
+                                            {index + 1}
                                         </span>
+                                        <h5 className="text-xs font-bold text-slate-900">{step.phase || step.title || `Phase ${index + 1}`}</h5>
                                     </div>
-
-                                    {/* Skills to Learn */}
-                                    <div className="mb-4">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <BookOpen className="w-4 h-4 text-white" />
-                                            <span className="text-sm font-semibold text-white">Skills to Learn</span>
-                                        </div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {step.skills.map((skill, i) => (
-                                                <span
-                                                    key={i}
-                                                    className="px-3 py-1 bg-white/5 text-slate-200 rounded-full text-sm border border-white/10"
-                                                >
-                                                    {skill}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Resources */}
-                                    <div className="mb-4">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <BookOpen className="w-4 h-4 text-white" />
-                                            <span className="text-sm font-semibold text-white">Recommended Resources</span>
-                                        </div>
-                                        <ul className="space-y-1">
-                                            {step.resources.map((resource, i) => (
-                                                <li key={i} className="text-sm text-slate-300 flex items-center gap-2">
-                                                    <ChevronRight className="w-3 h-3 text-slate-500" />
-                                                    {resource}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-
-                                    {/* Milestone */}
-                                    <div className="flex items-start gap-2 p-3 bg-white/5 border border-white/10 rounded-lg">
-                                        <Award className="w-4 h-4 text-white mt-0.5" />
-                                        <div>
-                                            <span className="text-xs font-semibold text-white uppercase">Milestone</span>
-                                            <p className="text-sm text-slate-300 mt-1">{step.milestone}</p>
-                                        </div>
-                                    </div>
+                                    {step.duration && (
+                                        <span className="text-[11px] text-slate-500 font-medium">{step.duration}</span>
+                                    )}
                                 </div>
+                                <p className="text-xs text-slate-600 pl-8 leading-relaxed">{step.description || step.focus}</p>
+                                {step.skills?.length > 0 && (
+                                    <div className="flex flex-wrap gap-1.5 pl-8 pt-1">
+                                        {step.skills.map((skill, i) => (
+                                            <span key={i} className="text-[10px] font-semibold bg-white border border-slate-200 text-slate-700 px-2 py-0.5 rounded-full">
+                                                {skill}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
                             </motion.div>
                         ))}
-                    </div>
-
-                    {/* Action Button */}
-                    <div className="mt-6 pt-6 border-t border-slate-700/50">
-                        <button className="w-full px-6 py-3 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2">
-                            <BookOpen className="w-5 h-5" />
-                            Start Learning Journey
-                        </button>
                     </div>
                 </motion.div>
             )}

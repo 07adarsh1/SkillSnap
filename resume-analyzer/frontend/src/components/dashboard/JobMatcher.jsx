@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Briefcase, MapPin, DollarSign, Building, CheckCircle, XCircle, ArrowRight, ExternalLink, RefreshCw, Search } from 'lucide-react';
-import { Card, CardContent } from '../ui/Card';
+import { Briefcase, MapPin, DollarSign, Building, CheckCircle, XCircle, ArrowRight, ExternalLink, Search } from 'lucide-react';
+import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 
@@ -22,22 +22,22 @@ const JobMatcher = () => {
                 type: "Full-time",
                 salary: "$140k - $180k",
                 match_score: 94,
-                skills_matched: ["React", "Python", "AWS", "Docker", "FastAPI"],
+                skills_matched: ["React", "Node.js", "Express", "Docker", "AWS"],
                 skills_missing: ["GraphQL"],
-                description: "We are looking for a senior engineer to lead our core platform team...",
+                description: "We are looking for a senior engineer to lead our core platform team building real-time collaboration tools...",
                 logo_color: "indigo"
             },
             {
                 id: 2,
-                title: "Backend Developer",
+                title: "Backend Platform Developer",
                 company: "DataStream Inc.",
                 location: "New York, NY (Hybrid)",
                 type: "Full-time",
                 salary: "$130k - $160k",
                 match_score: 82,
-                skills_matched: ["Python", "Docker", "PostgreSQL"],
+                skills_matched: ["Node.js", "Docker", "PostgreSQL", "REST APIs"],
                 skills_missing: ["Kubernetes", "Redis"],
-                description: "Join our data team to build high-scale pipelines...",
+                description: "Join our data infrastructure team to build high-scale processing pipelines and reliable microservices...",
                 logo_color: "emerald"
             },
             {
@@ -48,22 +48,22 @@ const JobMatcher = () => {
                 type: "Contract",
                 salary: "$120k - $150k",
                 match_score: 68,
-                skills_matched: ["React", "Tailwind CSS"],
+                skills_matched: ["React", "Tailwind CSS", "Vite"],
                 skills_missing: ["Next.js", "TypeScript", "Figma"],
-                description: "Seeking a frontend expert to redesign our client portal...",
+                description: "Seeking a frontend expert to modernize our design system and client web experience...",
                 logo_color: "purple"
             },
             {
                 id: 4,
-                title: "AI Engineer",
+                title: "AI Solutions Engineer",
                 company: "NeuralNet Corp",
                 location: "Remote",
                 type: "Full-time",
                 salary: "$160k - $200k",
                 match_score: 88,
-                skills_matched: ["Python", "Machine Learning", "PyTorch"],
-                skills_missing: ["TensorFlow", "NLP"],
-                description: "Build the next generation of LLM applications...",
+                skills_matched: ["Node.js", "Vector Embeddings", "Transformers", "Python"],
+                skills_missing: ["LangChain", "Fine-tuning"],
+                description: "Build the next generation of AI search and document analysis applications using modern LLMs...",
                 logo_color: "orange"
             }
         ];
@@ -71,7 +71,7 @@ const JobMatcher = () => {
         setTimeout(() => {
             setJobs(mockJobs);
             setLoading(false);
-        }, 1000);
+        }, 600);
     }, []);
 
     const getMatchColor = (score) => {
@@ -82,11 +82,11 @@ const JobMatcher = () => {
 
     const handleApply = (e) => {
         e.stopPropagation();
-        alert("Redirecting to job application...");
+        alert("Redirecting to job application portal...");
     };
 
     return (
-        <div className="flex flex-col lg:flex-row min-h-[calc(100vh-170px)] lg:h-[calc(100vh-140px)] gap-4 sm:gap-6">
+        <div className="flex flex-col lg:flex-row min-h-[calc(100vh-170px)] lg:h-[calc(100vh-140px)] gap-4 sm:gap-6 text-slate-900">
             {/* Left Side: Job List */}
             <div className={`flex-1 flex flex-col transition-all duration-300 ${selectedJob ? 'hidden lg:flex lg:w-5/12' : 'w-full'}`}>
 
@@ -97,73 +97,76 @@ const JobMatcher = () => {
                             <button
                                 key={f}
                                 onClick={() => setFilter(f)}
-                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filter === f
-                                        ? 'bg-indigo-600 text-white'
-                                        : 'bg-slate-800 text-slate-400 hover:text-white'
-                                    }`}
+                                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${filter === f
+                                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
+                                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900'
+                                }`}
                             >
                                 {f}
                             </button>
                         ))}
                     </div>
-                    <span className="text-sm text-slate-500 w-full sm:w-auto">{jobs.length} jobs found</span>
+                    <span className="text-xs text-slate-500 font-medium">{jobs.length} matched jobs</span>
                 </div>
 
                 {/* List */}
                 <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
                     {loading ? (
                         [1, 2, 3].map(i => (
-                            <Card key={i} className="h-32 bg-slate-800/50 animate-pulse border-0" />
+                            <Card key={i} className="h-32 bg-white border border-slate-200 rounded-3xl animate-pulse" />
                         ))
                     ) : (
                         jobs.map((job) => (
-                            <Card
+                            <div
                                 key={job.id}
-                                hover={true}
                                 onClick={() => setSelectedJob(job)}
-                                className={`cursor-pointer transition-all border-l-4 ${selectedJob?.id === job.id
-                                        ? 'bg-slate-800 border-indigo-500 ring-1 ring-indigo-500/50 custom-shadow'
-                                        : 'bg-slate-900/40 border-l-transparent hover:bg-slate-800 hover:border-l-indigo-500/50'
-                                    }`}
+                                className={`cursor-pointer rounded-3xl p-5 transition-all border ${selectedJob?.id === job.id
+                                    ? 'bg-indigo-50/50 border-indigo-500 shadow-sm'
+                                    : 'bg-white border-slate-200/80 hover:border-indigo-300 hover:shadow-sm'
+                                }`}
                             >
-                                <div className="p-4">
+                                <div>
                                     <div className="flex justify-between items-start mb-3">
                                         <div className="flex items-center gap-3">
-                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg bg-${job.logo_color}-500/20 text-${job.logo_color}-400`}>
+                                            <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center font-bold text-base text-indigo-600 border border-indigo-100">
                                                 {job.company[0]}
                                             </div>
                                             <div>
-                                                <h3 className="font-semibold text-white">{job.title}</h3>
-                                                <div className="flex items-center gap-2 text-xs text-slate-400">
-                                                    <Building className="w-3 h-3" /> {job.company}
+                                                <h3 className="font-bold text-slate-900 text-sm tracking-tight">{job.title}</h3>
+                                                <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-0.5">
+                                                    <Building className="w-3.5 h-3.5" /> {job.company}
                                                 </div>
                                             </div>
                                         </div>
-                                        <Badge variant={getMatchColor(job.match_score)}>{job.match_score}%</Badge>
+                                        <Badge variant={getMatchColor(job.match_score)} className="font-bold text-xs">
+                                            {job.match_score}% Match
+                                        </Badge>
                                     </div>
 
-                                    <div className="flex items-center gap-4 text-xs text-slate-400 mb-3">
-                                        <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {job.location}</span>
-                                        <span className="flex items-center gap-1"><DollarSign className="w-3 h-3" /> {job.salary}</span>
+                                    <div className="flex items-center gap-4 text-xs text-slate-500 mb-3">
+                                        <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-slate-400" /> {job.location}</span>
+                                        <span className="flex items-center gap-1"><DollarSign className="w-3.5 h-3.5 text-slate-400" /> {job.salary}</span>
                                     </div>
 
-                                    <div className="flex justify-between items-center border-t border-slate-700/50 pt-3">
-                                        <div className="flex -space-x-1.5">
+                                    <div className="flex justify-between items-center border-t border-slate-100 pt-3">
+                                        <div className="flex -space-x-1">
                                             {job.skills_matched.slice(0, 3).map((skill, i) => (
-                                                <div key={i} className="w-5 h-5 rounded-full bg-slate-700 border border-slate-800 flex items-center justify-center text-[8px] text-white font-medium" title={skill}>
+                                                <div key={i} className="w-5 h-5 rounded-full bg-slate-100 border border-white flex items-center justify-center text-[8px] text-slate-700 font-bold" title={skill}>
                                                     {skill[0]}
                                                 </div>
                                             ))}
                                             {job.skills_matched.length > 3 && (
-                                                <div className="w-5 h-5 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[8px] text-slate-400">
+                                                <div className="w-5 h-5 rounded-full bg-indigo-50 border border-white flex items-center justify-center text-[8px] text-indigo-600 font-bold">
                                                     +{job.skills_matched.length - 3}
                                                 </div>
                                             )}
                                         </div>
-                                        <span className="text-xs font-medium text-indigo-400 group-hover:underline">View Analysis</span>
+                                        <span className="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                                            View Match Analysis <ArrowRight className="w-3 h-3" />
+                                        </span>
                                     </div>
                                 </div>
-                            </Card>
+                            </div>
                         ))
                     )}
                 </div>
@@ -173,107 +176,110 @@ const JobMatcher = () => {
             <AnimatePresence mode='wait'>
                 {selectedJob ? (
                     <motion.div
-                        initial={{ opacity: 0, x: 20 }}
+                        initial={{ opacity: 0, x: 15 }}
                         animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        className="fixed inset-3 sm:inset-4 lg:inset-auto lg:static flex-1 lg:w-7/12 bg-slate-900 border border-white/10 rounded-2xl overflow-hidden flex flex-col shadow-2xl z-40 lg:z-20"
+                        exit={{ opacity: 0, x: 15 }}
+                        className="fixed inset-3 sm:inset-4 lg:inset-auto lg:static flex-1 lg:w-7/12 bg-white border border-slate-200/90 rounded-3xl overflow-hidden flex flex-col shadow-xl z-40 lg:z-20"
                     >
                         {/* Header */}
-                        <div className="p-4 sm:p-6 border-b border-white/5 bg-slate-900/95 backdrop-blur sticky top-0 z-10">
+                        <div className="p-6 border-b border-slate-100 bg-white sticky top-0 z-10">
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <button
                                         onClick={() => setSelectedJob(null)}
-                                        className="lg:hidden text-slate-400 hover:text-white mb-2 flex items-center gap-1 text-sm"
+                                        className="lg:hidden text-slate-500 hover:text-slate-900 mb-2 flex items-center gap-1 text-xs font-semibold"
                                     >
-                                        <ArrowRight className="w-4 h-4 rotate-180" /> Back to list
+                                        <ArrowRight className="w-3.5 h-3.5 rotate-180" /> Back to job list
                                     </button>
-                                    <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">{selectedJob.title}</h2>
-                                    <div className="flex items-center gap-3 text-slate-400 text-sm">
-                                        <span className="flex items-center gap-1"><Building className="w-3 h-3" /> {selectedJob.company}</span>
-                                        <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
-                                        <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {selectedJob.location}</span>
+                                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">{selectedJob.title}</h2>
+                                    <div className="flex items-center gap-3 text-slate-500 text-xs mt-1">
+                                        <span className="flex items-center gap-1"><Building className="w-3.5 h-3.5" /> {selectedJob.company}</span>
+                                        <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
+                                        <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {selectedJob.location}</span>
                                     </div>
                                 </div>
-                                <Button onClick={handleApply} icon={<ExternalLink className="w-4 h-4" />} className="text-sm px-3 py-2 sm:px-4 sm:py-2.5">
-                                    Apply Now
-                                </Button>
+                                <button
+                                    onClick={handleApply}
+                                    className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-500/20 flex items-center gap-1.5 cursor-pointer"
+                                >
+                                    <span>Apply Now</span>
+                                    <ExternalLink className="w-3.5 h-3.5" />
+                                </button>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                                <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-center">
-                                    <span className="block text-2xl font-bold text-indigo-400">{selectedJob.match_score}%</span>
-                                    <span className="text-xs text-indigo-300/70 uppercase font-semibold">Match Score</span>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div className="p-3.5 rounded-2xl bg-indigo-50 border border-indigo-100 text-center">
+                                    <span className="block text-2xl font-black text-indigo-700 font-mono">{selectedJob.match_score}%</span>
+                                    <span className="text-[10px] text-indigo-600 uppercase font-bold tracking-wider">ATS Match Score</span>
                                 </div>
-                                <div className="p-3 rounded-xl bg-slate-800 border border-white/5 text-center">
-                                    <span className="block text-2xl font-bold text-white">{selectedJob.salary}</span>
-                                    <span className="text-xs text-slate-500 uppercase font-semibold">Est. Compensation</span>
+                                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/60 text-center">
+                                    <span className="block text-2xl font-black text-slate-900 font-mono">{selectedJob.salary}</span>
+                                    <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Est. Compensation</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Content */}
-                        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 sm:space-y-8 custom-scrollbar">
+                        <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
 
                             {/* Skills Analysis */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <h3 className="flex items-center gap-2 text-sm font-bold text-green-400 uppercase mb-3">
-                                        <CheckCircle className="w-4 h-4" /> Matched Skills
+                                    <h3 className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2.5">
+                                        <CheckCircle className="w-4 h-4 text-emerald-600" /> Matched Skills
                                     </h3>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap gap-1.5">
                                         {selectedJob.skills_matched.map(skill => (
-                                            <Badge key={skill} variant="success" className="bg-green-500/10 border border-green-500/20 text-green-400">
+                                            <Badge key={skill} variant="success">
                                                 {skill}
                                             </Badge>
                                         ))}
                                     </div>
                                 </div>
                                 <div>
-                                    <h3 className="flex items-center gap-2 text-sm font-bold text-red-400 uppercase mb-3">
-                                        <XCircle className="w-4 h-4" /> Missing Skills
+                                    <h3 className="flex items-center gap-1.5 text-xs font-bold text-rose-700 uppercase tracking-wider mb-2.5">
+                                        <XCircle className="w-4 h-4 text-rose-600" /> Missing Skills
                                     </h3>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap gap-1.5">
                                         {selectedJob.skills_missing.map(skill => (
-                                            <Badge key={skill} variant="danger" className="bg-red-500/10 border border-red-500/20 text-red-400">
+                                            <Badge key={skill} variant="danger">
                                                 {skill}
                                             </Badge>
                                         ))}
                                         {selectedJob.skills_missing.length === 0 && (
-                                            <span className="text-slate-500 text-sm italic">None! You are a perfect technical match.</span>
+                                            <span className="text-emerald-700 text-xs font-semibold">Perfect technical match!</span>
                                         )}
                                     </div>
                                 </div>
                             </div>
 
                             {/* Comparison Insight */}
-                            <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/10">
-                                <h3 className="text-sm font-bold text-blue-400 mb-2 flex items-center gap-2">
-                                    <Search className="w-4 h-4" /> AI Analysis
+                            <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100">
+                                <h3 className="text-xs font-bold text-indigo-900 mb-1.5 flex items-center gap-1.5">
+                                    <Search className="w-3.5 h-3.5 text-indigo-600" /> AI Alignment Insights
                                 </h3>
-                                <p className="text-slate-300 text-sm leading-relaxed">
-                                    Your profile strongly aligns with the <strong>{selectedJob.title}</strong> role at {selectedJob.company}.
+                                <p className="text-slate-700 text-xs leading-relaxed">
+                                    Your resume strongly aligns with the <strong>{selectedJob.title}</strong> position at {selectedJob.company}.
                                     Key strengths include {selectedJob.skills_matched.slice(0, 3).join(", ")}.
-                                    To increase your chances to 99%, consider adding a project demonstrating {selectedJob.skills_missing[0] || "leadership skills"}.
+                                    To maximize interview probability, highlight experience with {selectedJob.skills_missing[0] || "system design and architecture"}.
                                 </p>
                             </div>
 
                             {/* Job Description (Excerpt) */}
                             <div>
-                                <h3 className="text-lg font-bold text-white mb-3">About the Role</h3>
-                                <p className="text-slate-400 leading-relaxed text-sm">
+                                <h3 className="text-sm font-bold text-slate-900 mb-2">About the Role</h3>
+                                <p className="text-slate-600 leading-relaxed text-xs">
                                     {selectedJob.description}
-                                    <br /><br />
-                                    (Full job description would be parsed here via Groq...)
                                 </p>
                             </div>
                         </div>
                     </motion.div>
                 ) : (
-                    <div className="hidden lg:flex flex-1 items-center justify-center bg-slate-900/40 rounded-2xl border border-white/5 border-dashed">
-                        <div className="text-center text-slate-500">
-                            <Briefcase className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                            <p className="text-lg font-medium">Select a job to view AI comparison</p>
+                    <div className="hidden lg:flex flex-1 items-center justify-center bg-white rounded-3xl border border-slate-200/80 shadow-sm">
+                        <div className="text-center text-slate-400 p-6">
+                            <Briefcase className="w-10 h-10 mx-auto mb-3 opacity-40 text-indigo-600" />
+                            <p className="text-sm font-semibold text-slate-600">Select a job from the list to view AI comparison</p>
+                            <p className="text-xs text-slate-400 mt-1">Review matched skills, missing keywords, and salary insights.</p>
                         </div>
                     </div>
                 )}

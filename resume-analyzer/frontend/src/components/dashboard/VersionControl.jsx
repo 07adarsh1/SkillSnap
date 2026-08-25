@@ -4,7 +4,6 @@ import { GitBranch, TrendingUp, TrendingDown, Minus, Calendar, FileText, ArrowRi
 import { getResumeVersions, compareVersions } from '../../services/api';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
-import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 
 const VersionControl = ({ resumeId, onClose }) => {
@@ -59,100 +58,89 @@ const VersionControl = ({ resumeId, onClose }) => {
         setSelectedVersions(newSelected);
     };
 
-    // Prepare chart data
     const chartData = versions.map(v => ({
         version: `v${v.version}`,
         score: v.ats_score || 0,
         date: new Date(v.uploaded_at).toLocaleDateString()
     }));
 
-    const getTrendIcon = (trend) => {
-        switch (trend) {
-            case 'improved': return <TrendingUp className="w-5 h-5 text-green-500" />;
-            case 'declined': return <TrendingDown className="w-5 h-5 text-red-500" />;
-            default: return <Minus className="w-5 h-5 text-slate-400" />;
-        }
-    };
-
-    // Responsive container depending on mode (Modal vs Full Page)
     const Container = ({ children }) => {
         if (onClose) {
             return (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
+                        initial={{ opacity: 0, scale: 0.96 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="glass-card bg-slate-900 rounded-xl sm:rounded-2xl border border-white/10 max-w-6xl w-full max-h-[95vh] overflow-hidden flex flex-col shadow-2xl"
+                        exit={{ opacity: 0, scale: 0.96 }}
+                        className="bg-white rounded-3xl border border-slate-200/90 max-w-6xl w-full max-h-[92vh] overflow-hidden flex flex-col shadow-2xl text-slate-900"
                     >
-                        {/* Modal Header */}
-                        <div className="p-4 sm:p-6 border-b border-white/10 bg-gradient-to-r from-green-600/10 to-blue-600/10 flex items-start sm:items-center justify-between gap-3">
+                        <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-start sm:items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-green-500/10 rounded-lg">
-                                    <GitBranch className="w-6 h-6 text-green-400" />
+                                <div className="p-2.5 bg-indigo-50 border border-indigo-100 rounded-2xl text-indigo-600">
+                                    <GitBranch className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg sm:text-xl font-bold text-white">Version Control</h2>
-                                    <p className="text-xs sm:text-sm text-slate-400 break-all">Comparing versions for Resume ID: {resumeId}</p>
+                                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">Version Control & Iteration Tracking</h2>
+                                    <p className="text-xs text-slate-500">Track ATS score progression and diff changes across resume uploads</p>
                                 </div>
                             </div>
-                            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                                <X className="w-5 h-5 text-slate-400" />
+                            <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all cursor-pointer">
+                                <X className="w-4 h-4" />
                             </button>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 custom-scrollbar">
+                        <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
                             {children}
                         </div>
                     </motion.div>
                 </div>
             );
         }
-        return <div className="space-y-6 animate-fade-in">{children}</div>;
+        return <div className="space-y-6 animate-fade-in text-slate-900">{children}</div>;
     };
 
     return (
         <Container>
             {loading ? (
                 <div className="flex justify-center p-12">
-                    <div className="animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full" />
+                    <div className="animate-spin w-7 h-7 border-3 border-indigo-600 border-t-transparent rounded-full" />
                 </div>
             ) : error ? (
-                <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg">
+                <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-2xl">
                     {error}
                 </div>
             ) : (
                 <>
-                    {/* Top Section: Chart & History */}
+                    {/* Chart & History */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                        {/* Chart */}
-                        <Card className="lg:col-span-2">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <TrendingUp className="w-5 h-5 text-indigo-500" />
-                                    Score History
+                        <Card className="lg:col-span-2 bg-white border-slate-200/80 shadow-sm rounded-3xl">
+                            <CardHeader className="pb-2 border-b border-slate-100">
+                                <CardTitle className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                                    <TrendingUp className="w-4 h-4 text-indigo-600" />
+                                    Score Evolution
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent>
-                                <div className="h-[240px] sm:h-[300px] w-full">
+                            <CardContent className="pt-4">
+                                <div className="h-[220px] sm:h-[260px] w-full">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart data={chartData}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
-                                            <XAxis dataKey="version" stroke="#94a3b8" />
-                                            <YAxis stroke="#94a3b8" domain={[0, 100]} />
+                                            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                                            <XAxis dataKey="version" stroke="#94a3b8" fontSize={11} />
+                                            <YAxis stroke="#94a3b8" domain={[0, 100]} fontSize={11} />
                                             <Tooltip
                                                 contentStyle={{
-                                                    backgroundColor: '#0f172a',
-                                                    border: '1px solid #334155',
-                                                    borderRadius: '8px',
-                                                    color: '#f8fafc'
+                                                    backgroundColor: '#ffffff',
+                                                    border: '1px solid #e2e8f0',
+                                                    borderRadius: '0.75rem',
+                                                    boxShadow: '0 4px 15px rgba(0,0,0,0.06)',
+                                                    color: '#0f172a'
                                                 }}
                                             />
                                             <Line
                                                 type="monotone"
                                                 dataKey="score"
-                                                stroke="#6366f1"
+                                                stroke="#4F46E5"
                                                 strokeWidth={3}
-                                                dot={{ fill: '#6366f1', r: 4, strokeWidth: 2, stroke: '#fff' }}
+                                                dot={{ fill: '#4F46E5', r: 4, strokeWidth: 2, stroke: '#ffffff' }}
                                                 activeDot={{ r: 6 }}
                                             />
                                         </LineChart>
@@ -161,26 +149,25 @@ const VersionControl = ({ resumeId, onClose }) => {
                             </CardContent>
                         </Card>
 
-                        {/* Recent Versions List */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <FileText className="w-5 h-5 text-indigo-500" />
-                                    Recent Versions
+                        <Card className="bg-white border-slate-200/80 shadow-sm rounded-3xl">
+                            <CardHeader className="pb-2 border-b border-slate-100">
+                                <CardTitle className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                                    <FileText className="w-4 h-4 text-indigo-600" />
+                                    Recorded Snapshots
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar">
+                            <CardContent className="pt-4 space-y-2.5 max-h-[260px] overflow-y-auto custom-scrollbar">
                                 {versions.map((v) => (
-                                    <div key={v.version} className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-white/5 flex items-center justify-between group hover:border-indigo-500/30 transition-colors">
-                                        <div className="flex items-center gap-3">
+                                    <div key={v.version} className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center justify-between hover:border-indigo-200 transition-colors">
+                                        <div className="flex items-center gap-2.5">
                                             <Badge variant="primary" size="sm">v{v.version}</Badge>
                                             <div>
-                                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                                <p className="text-[11px] text-slate-500 font-medium">
                                                     {new Date(v.uploaded_at).toLocaleDateString()}
                                                 </p>
                                             </div>
                                         </div>
-                                        <span className="font-bold text-slate-700 dark:text-white">{v.ats_score}%</span>
+                                        <span className="text-xs font-black font-mono text-slate-900">{v.ats_score || 0}/100</span>
                                     </div>
                                 ))}
                             </CardContent>
@@ -188,97 +175,41 @@ const VersionControl = ({ resumeId, onClose }) => {
                     </div>
 
                     {/* Compare Section */}
-                    <Card className="bg-gradient-to-br from-slate-900 to-slate-800 border-indigo-500/20">
-                        <CardHeader>
-                            <CardTitle className="text-white flex items-center gap-2">
-                                <GitBranch className="w-5 h-5 text-indigo-400" />
-                                Comparative Analysis
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-6">
-                                <div>
-                                    <label className="text-sm text-slate-400 mb-2 block">Base Version</label>
-                                    <select
-                                        className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                                        onChange={(e) => selectVersion(parseInt(e.target.value), 0)}
-                                    >
-                                        <option value="">Select Version...</option>
-                                        {versions.map(v => <option key={v.version} value={v.version}>v{v.version} ({v.ats_score}%)</option>)}
-                                    </select>
-                                </div>
-                                <div className="hidden md:flex justify-center pb-3">
-                                    <ArrowRight className="text-slate-500" />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-slate-400 mb-2 block">Target Version</label>
-                                    <select
-                                        className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                                        onChange={(e) => selectVersion(parseInt(e.target.value), 1)}
-                                    >
-                                        <option value="">Select Version...</option>
-                                        {versions.map(v => <option key={v.version} value={v.version}>v{v.version} ({v.ats_score}%)</option>)}
-                                    </select>
-                                </div>
-                            </div>
-
-                            <Button
-                                onClick={handleCompare}
-                                disabled={comparing || !selectedVersions[0] || !selectedVersions[1]}
-                                loading={comparing}
-                                className="w-full md:w-auto"
-                            >
-                                Compare Metrics
-                            </Button>
-
-                            {/* Comparison Output */}
-                            {comparison && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="mt-8 pt-8 border-t border-white/10"
+                    {versions.length >= 2 && (
+                        <div className="p-6 bg-slate-50 border border-slate-200/80 rounded-3xl space-y-4">
+                            <h3 className="text-sm font-bold text-slate-900">Compare Resume Snapshots</h3>
+                            <div className="flex flex-col sm:flex-row items-center gap-3">
+                                <select
+                                    className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-800 outline-none w-full sm:w-auto"
+                                    value={selectedVersions[0] || ''}
+                                    onChange={(e) => selectVersion(Number(e.target.value), 0)}
                                 >
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                                        <div className="text-center p-4 bg-slate-950/50 rounded-xl border border-white/5">
-                                            <p className="text-slate-400 text-sm mb-1">Score Delta</p>
-                                            <div className="flex items-center justify-center gap-2">
-                                                {getTrendIcon(comparison.comparison.score_change.trend)}
-                                                <span className={`text-3xl font-bold ${comparison.comparison.score_change.delta > 0 ? 'text-green-400' : 'text-slate-200'
-                                                    }`}>
-                                                    {comparison.comparison.score_change.delta > 0 && '+'}
-                                                    {comparison.comparison.score_change.delta}%
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div className="col-span-2 p-4 bg-slate-950/50 rounded-xl border border-white/5">
-                                            <p className="text-indigo-400 font-bold mb-2">AI Recommendation</p>
-                                            <p className="text-slate-300 text-sm leading-relaxed">
-                                                {comparison.comparison.recommendation}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <h4 className="font-bold text-white mb-4">Key Changes Detected</h4>
-                                    <div className="grid gap-3">
-                                        {comparison.comparison.key_changes.map((change, i) => (
-                                            <div key={i} className="p-4 bg-slate-950 rounded-lg border border-white/5 flex flex-wrap items-start gap-3 sm:gap-4">
-                                                <div className={`mt-1 w-2 h-2 rounded-full ${change.impact === 'positive' ? 'bg-green-500' :
-                                                        change.impact === 'negative' ? 'bg-red-500' : 'bg-slate-500'
-                                                    }`} />
-                                                <div className="flex-1 min-w-[180px]">
-                                                    <p className="font-medium text-white text-sm">{change.section}</p>
-                                                    <p className="text-slate-400 text-sm">{change.description}</p>
-                                                </div>
-                                                <Badge variant={change.impact === 'positive' ? 'success' : 'default'} className="text-xs sm:ml-auto">
-                                                    {change.change_type}
-                                                </Badge>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </motion.div>
-                            )}
-                        </CardContent>
-                    </Card>
+                                    <option value="">Select Base Version</option>
+                                    {versions.map(v => (
+                                        <option key={v.version} value={v.version}>v{v.version} ({v.ats_score} pts)</option>
+                                    ))}
+                                </select>
+                                <span className="text-xs text-slate-400 font-bold">vs</span>
+                                <select
+                                    className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-800 outline-none w-full sm:w-auto"
+                                    value={selectedVersions[1] || ''}
+                                    onChange={(e) => selectVersion(Number(e.target.value), 1)}
+                                >
+                                    <option value="">Select Target Version</option>
+                                    {versions.map(v => (
+                                        <option key={v.version} value={v.version}>v{v.version} ({v.ats_score} pts)</option>
+                                    ))}
+                                </select>
+                                <button
+                                    onClick={handleCompare}
+                                    disabled={comparing || !selectedVersions[0] || !selectedVersions[1]}
+                                    className="px-5 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold text-xs rounded-xl shadow-sm disabled:opacity-50 cursor-pointer"
+                                >
+                                    {comparing ? 'Comparing...' : 'Run Version Diff'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </>
             )}
         </Container>

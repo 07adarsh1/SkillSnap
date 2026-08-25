@@ -1,18 +1,19 @@
-# Resume Analyzer - Root .gitignore
-
-# Backend
-backend/__pycache__/
-backend/venv/
-backend/.env
-backend/*.db
-backend/*.sqlite
-backend/uploads/
-
-# Frontend
+# Dependencies
+node_modules/
+backend/node_modules/
 frontend/node_modules/
-frontend/dist/
+
+# Environment Variables
+.env
+.env.local
+backend/.env
 frontend/.env
 frontend/.env.local
+
+# Build Outputs
+frontend/dist/
+dist/
+build/
 
 # OS Files
 .DS_Store
