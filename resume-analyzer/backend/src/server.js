@@ -47,6 +47,10 @@ app.use((err, req, res, next) => {
   });
 });
 
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok", detail: "AI Resume Analyzer API is running" });
+});
+
 // Start Server & Connect Database
 const startServer = async () => {
   try {
@@ -54,6 +58,7 @@ const startServer = async () => {
     jobsService.startPeriodicSync();
 
     const PORT = config.PORT || 8000;
+
     app.listen(PORT, () => {
       console.log(`========================================`);
       console.log(`🚀 ${config.PROJECT_NAME} v${config.VERSION}`);
