@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Briefcase,
@@ -14,7 +14,9 @@ import {
     Sparkles,
     FileText,
     Calendar,
-    Globe
+    Globe,
+    ChevronDown,
+    Check
 } from 'lucide-react';
 import { getRealJobs, syncJobs, getUserAnalysisHistory } from '../../services/api';
 import { Card } from '../ui/Card';
@@ -29,6 +31,21 @@ const JobMatcher = ({ userId }) => {
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [userResumes, setUserResumes] = useState([]);
     const [selectedResumeId, setSelectedResumeId] = useState('');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const selectedResume = userResumes.find((r) => r.id === selectedResumeId) || userResumes[0];
 
     const categories = [
         { id: 'All', label: 'All Roles' },
@@ -132,23 +149,85 @@ const JobMatcher = ({ userId }) => {
                         </p>
                     </div>
 
-                    {/* Resume Selector & Force Refresh */}
+                    {/* Custom Styled Resume Selector & Force Refresh */}
                     <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
                         {userResumes.length > 0 && (
-                            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200/80 px-3 py-1.5 rounded-2xl">
-                                <FileText className="w-4 h-4 text-indigo-600 shrink-0" />
-                                <span className="text-xs text-slate-500 font-medium shrink-0">Match with:</span>
-                                <select
-                                    value={selectedResumeId}
-                                    onChange={(e) => setSelectedResumeId(e.target.value)}
-                                    className="bg-transparent text-xs font-bold text-slate-800 outline-none max-w-[160px] truncate"
+                            <div className="relative" ref={dropdownRef}>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    className="flex items-center gap-2 bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 px-3.5 py-2 rounded-2xl transition-all cursor-pointer text-left shadow-xs focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400"
                                 >
-                                    {userResumes.map((r) => (
-                                        <option key={r.id} value={r.id}>
-                                            {r.filename || `Resume v${r.version || 1}`}
-                                        </option>
-                                    ))}
-                                </select>
+                                    <FileText className="w-4 h-4 text-indigo-600 shrink-0" />
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider leading-none">
+                                            Match with
+                                        </span>
+                                        <span className="text-xs font-bold text-slate-800 max-w-[170px] truncate leading-tight mt-0.5">
+                                            {selectedResume?.filename || `Resume v${selectedResume?.version || 1}`}
+                                        </span>
+                                    </div>
+                                    <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 shrink-0 ml-1 ${isDropdownOpen ? 'rotate-180 text-indigo-600' : ''}`} />
+                                </button>
+
+                                {/* Dropdown Menu */}
+                                <AnimatePresence>
+                                    {isDropdownOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                                            transition={{ duration: 0.15 }}
+                                            className="absolute right-0 top-full mt-2 w-72 bg-white/95 backdrop-blur-xl border border-slate-200/90 shadow-2xl rounded-2xl p-1.5 z-50 overflow-hidden"
+                                        >
+                                            <div className="px-3 py-2 border-b border-slate-100 flex justify-between items-center text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                                                <span>Your Resumes</span>
+                                                <span className="text-indigo-600 font-mono font-bold bg-indigo-50 px-2 py-0.5 rounded-full">
+                                                    {userResumes.length}
+                                                </span>
+                                            </div>
+
+                                            <div className="max-h-56 overflow-y-auto custom-scrollbar p-1 space-y-1">
+                                                {userResumes.map((r) => {
+                                                    const isSelected = selectedResumeId === r.id;
+                                                    return (
+                                                        <button
+                                                            key={r.id}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setSelectedResumeId(r.id);
+                                                                setIsDropdownOpen(false);
+                                                            }}
+                                                            className={`w-full flex items-center justify-between gap-2 p-2.5 rounded-xl text-left transition-all cursor-pointer ${
+                                                                isSelected
+                                                                    ? 'bg-indigo-50 text-indigo-900 font-bold border border-indigo-100'
+                                                                    : 'hover:bg-slate-50 text-slate-700 font-medium'
+                                                            }`}
+                                                        >
+                                                            <div className="flex items-center gap-2 min-w-0">
+                                                                <div className={`p-1.5 rounded-lg ${isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                                                                    <FileText className="w-3.5 h-3.5 shrink-0" />
+                                                                </div>
+                                                                <span className="text-xs truncate block" title={r.filename}>
+                                                                    {r.filename || `Resume v${r.version || 1}`}
+                                                                </span>
+                                                            </div>
+
+                                                            <div className="flex items-center gap-1.5 shrink-0">
+                                                                {typeof r.ats_score === 'number' && (
+                                                                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-700">
+                                                                        {Math.round(r.ats_score)} pts
+                                                                    </span>
+                                                                )}
+                                                                {isSelected && <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />}
+                                                            </div>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
                         )}
 
