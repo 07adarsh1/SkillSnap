@@ -5,6 +5,8 @@ import { dbService } from './db/firebase.js';
 import resumeRoutes from './routes/resume.js';
 import aiRoutes from './routes/aiRoutes.js';
 import advancedFeaturesRoutes from './routes/advancedFeatures.js';
+import jobsRoutes from './routes/jobs.js';
+import { jobsService } from './services/jobsService.js';
 
 const app = express();
 
@@ -32,6 +34,7 @@ app.get('/', (req, res) => {
 });
 
 // Mount Routes under /api
+app.use('/api/jobs', jobsRoutes);
 app.use('/api', resumeRoutes);
 app.use('/api', aiRoutes);
 app.use('/api', advancedFeaturesRoutes);
@@ -48,6 +51,7 @@ app.use((err, req, res, next) => {
 const startServer = async () => {
   try {
     await dbService.init();
+    jobsService.startPeriodicSync();
 
     const PORT = config.PORT || 8000;
     app.listen(PORT, () => {

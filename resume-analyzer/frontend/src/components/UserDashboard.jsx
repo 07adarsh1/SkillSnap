@@ -25,7 +25,7 @@ const UserDashboard = ({ user, onClose }) => {
             case 'resumes':
                 return <ResumeManager userId={user?.id} />;
             case 'jobs':
-                return <JobMatcher />;
+                return <JobMatcher userId={user?.id} />;
             case 'analytics':
                 return <Analytics userId={user?.id} />;
             case 'career-path':

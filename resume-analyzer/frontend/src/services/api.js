@@ -297,3 +297,15 @@ export const checkResumeQuality = async (resumeId) => {
     });
     return response.data;
 };
+
+// Real Jobs Engine (Remotive API)
+export const getRealJobs = async (params = {}) => {
+    const response = await api.get('/jobs', { params });
+    return response.data;
+};
+
+export const syncJobs = async () => {
+    const response = await api.post('/jobs/sync');
+    return response.data;
+};
+
