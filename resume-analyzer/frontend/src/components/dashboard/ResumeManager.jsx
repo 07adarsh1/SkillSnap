@@ -5,11 +5,20 @@ import UploadSection from '../UploadSection';
 import ResultsDashboard from '../ResultsDashboard';
 import { getUserAnalysisHistory, deleteResume, analyzeResume, uploadResume } from '../../services/api';
 
-const ResumeManager = ({ userId }) => {
+const ResumeManager = ({ userId, initialScanResult }) => {
     const [resumes, setResumes] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [viewMode, setViewMode] = useState('list'); // 'list' or 'detail'
-    const [selectedResume, setSelectedResume] = useState(null);
+    const [viewMode, setViewMode] = useState(() => initialScanResult ? 'detail' : 'list');
+    const [selectedResume, setSelectedResume] = useState(() => {
+        if (!initialScanResult) return null;
+        return {
+            id: initialScanResult.resume_id || initialScanResult.scanId,
+            filename: initialScanResult.filename || 'Your Scanned Resume',
+            analysis_result: initialScanResult.analysis_result,
+            job_description: initialScanResult.job_description || '',
+            uploaded_at: new Date().toISOString(),
+        };
+    });
     const [showUploadPanel, setShowUploadPanel] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [uploadSuccess, setUploadSuccess] = useState(false);

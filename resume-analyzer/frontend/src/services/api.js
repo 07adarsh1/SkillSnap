@@ -1,10 +1,52 @@
 import axios from 'axios';
+import { auth } from './firebase';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 export const api = axios.create({
     baseURL: API_URL,
 });
+
+// Automatically attach Firebase ID token to outgoing requests
+api.interceptors.request.use(async (config) => {
+    try {
+        const user = auth.currentUser;
+        if (user) {
+            const token = await user.getIdToken();
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+        }
+    } catch (err) {
+        console.warn('Could not attach Firebase auth token:', err);
+    }
+    return config;
+});
+
+// Guest ATS Scan & Claim APIs
+export const runGuestScan = async (file, jobDescription = '') => {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (jobDescription && jobDescription.trim()) {
+        formData.append('job_description', jobDescription.trim());
+    }
+    const response = await api.post('/ats/guest-scan', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+    return response.data;
+};
+
+export const claimScan = async (scanId) => {
+    const response = await api.post('/ats/claim-scan', { scanId });
+    return response.data;
+};
+
+export const getScanReport = async (scanId) => {
+    const response = await api.get(`/ats/scans/${scanId}`);
+    return response.data;
+};
 
 export const uploadResume = async (file, userId) => {
     const formData = new FormData();

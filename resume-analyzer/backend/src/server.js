@@ -6,6 +6,7 @@ import resumeRoutes from './routes/resume.js';
 import aiRoutes from './routes/aiRoutes.js';
 import advancedFeaturesRoutes from './routes/advancedFeatures.js';
 import jobsRoutes from './routes/jobs.js';
+import atsRoutes from './routes/atsRoutes.js';
 import { jobsService } from './services/jobsService.js';
 
 const app = express();
@@ -34,6 +35,8 @@ app.get('/', (req, res) => {
 });
 
 // Mount Routes under /api
+app.use('/api/ats', atsRoutes);
+app.use('/api', atsRoutes);
 app.use('/api/jobs', jobsRoutes);
 app.use('/api', resumeRoutes);
 app.use('/api', aiRoutes);

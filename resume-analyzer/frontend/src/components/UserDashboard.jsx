@@ -9,8 +9,8 @@ import ResumeOptimizer from './dashboard/ResumeOptimizer';
 import VersionControl from './dashboard/VersionControl';
 import HistoryView from './dashboard/HistoryView';
 
-const UserDashboard = ({ user, onClose }) => {
-    const [activeTab, setActiveTab] = useState('overview');
+const UserDashboard = ({ user, onClose, initialScanResult }) => {
+    const [activeTab, setActiveTab] = useState(() => initialScanResult ? 'resumes' : 'overview');
 
     const renderContent = () => {
         switch (activeTab) {
@@ -23,7 +23,7 @@ const UserDashboard = ({ user, onClose }) => {
                     />
                 );
             case 'resumes':
-                return <ResumeManager userId={user?.id} />;
+                return <ResumeManager userId={user?.id} initialScanResult={initialScanResult} />;
             case 'jobs':
                 return <JobMatcher userId={user?.id} />;
             case 'analytics':
